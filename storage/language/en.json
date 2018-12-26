@@ -1,0 +1,22 @@
+{
+    "//": "QUYNHTM +++++++++++++++++++++++++++++++++++++++",
+    "hello": "Hello",
+    "changePass": "Change password",
+    "logout": "Logout",
+    "home": "Home",
+    "status_show": "Show",
+    "status_active": "Khoá",
+    "status_delete": "Delete",
+    "status_hidden": "Hidden",
+    "status_block": "Block",
+    "status_choose": "--Choose status--",
+    "status_all": "All",
+    "sex_girl": "Female",
+    "sex_boy": "Male",
+    "add": "Add new",
+    "search": "Search",
+    "back": "Back",
+    "save": "Save",
+
+	"///": "DUYNX +++++++++++++++++++++++++++++++++++++++"
+}

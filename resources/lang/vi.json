@@ -1,0 +1,15 @@
+{
+  "///": "DUCNT +++++++++++++++++++++++++++++++++++++++",
+  "Có khoản vay mới đang chờ phê duyệt, hãy mở App lên để đầu tư ngay !" : "Có :SoYCV khoản vay mới đang chờ phê duyệt, hãy mở App lên để đầu tư ngay !",
+  "Chúc mừng bạn đã trở thành Nhà Đầu Tư, vui lòng vào phê duyệt các yêu cầu vay của khách hàng đang chờ !":"Chúc mừng bạn đã trở thành Nhà Đầu Tư, vui lòng vào phê duyệt các yêu cầu vay của khách hàng đang chờ !",
+  "Yêu cầu trở thành Nhà Đầu Tư bị từ Chối ! Vui lòng liên hệ bộ phận chăm sóc khách hàng của Vay Mượn !":"Yêu cầu trở thành Nhà Đầu Tư bị từ Chối !\n Vui lòng liên hệ bộ phận chăm sóc khách hàng của Vay Mượn !",
+  "Hồ sơ Nhà đầu tư của bạn đang tạm khóa. Vui lòng liên hệ 19002094 để biết chi tiết !":"Hồ sơ Nhà đầu tư của bạn đang tạm khóa. Vui lòng liên hệ 19002094 để biết chi tiết !",
+  "Hồ sơ Nhà đầu tư của bạn đã được mở khóa. Vui lòng liên hệ 19002094 để biết chi tiết !":"Hồ sơ Nhà đầu tư của bạn đã được mở khóa. Vui lòng liên hệ 19002094 để biết chi tiết !",
+  "Khoản đầu tư đã được thanh toán thành công về ví của bạn với số tiền!":"Khoản đầu tư :MaHDNDT được thanh toán thành công về ví của bạn với số tiền :SoTienTra !",
+  "Có khoản vay mới, hãy mở app lên để đầu tư ngay!":"Khoản vay mới: :HoTenNguoiVay vay :SoTienVay kỳ hạn :SoNgayVay , hãy mở App lên để đầu tư ngay!",
+  "Khoản vay đã được xác nhận thành công. Xin vui lòng chờ nhận tiền vay!": "Khoản vay đã được xác nhận thành công. Xin vui lòng chờ nhận tiền vay . CSKH 1900-2094.",
+  "Yêu cầu vay có hồ sơ bị từ chối do chưa đạt yêu cầu !": "Yêu cầu vay :MaYCV có hồ sơ :TenHoSo bị từ chối do chưa đạt yêu cầu !",
+  "Hợp đồng vay của bạn đã được giải ngân thành công . Vui lòng kiểm tra lại tài khoản!": "[VAYMUON] TB: Hợp đồng vay :MaHD của bạn đã được giải ngân thành công. Hẹn gặp lại bạn vào kỳ hạn thanh toán. Bạn vui lòng thanh toán đúng hạn vào tài khoản của Vay Mượn tại: https://vaymuon.vn/thanh_toan_khoan_vay . Trường hợp bạn không thanh toán đúng bạn, Vay Mượn sẽ sử dụng các biện pháp thu hồi như trong cam kết và công khai thông tin của bạn trên https://chuachom.com/ ( với Vay Mượn là một thành viên). Cảm ơn bạn đã sử dụng dịch vụ của Vay Mượn !",
+  "status_show":"Kích hoạt",
+  "status_hide":"Ẩn"
+}
