@@ -3,14 +3,9 @@
 Auth::routes();
 
 const Admin = "Admin";
-const Loan = "Loans";
-const Lender = "Lender";
-const Report = "Report";
-const Guarantor = "Guarantor"; //nhà đảm bảo
-const Company = "Company"; //Công ty
-const Maketting = "Maketting";
+const TracNghiem = "Tracnghiem";
 const Api = "Api";
-const LogCall = "LogCall";
+
 
 // Used for dev by Quynh
 $isDev = Request::get('is_debug','');

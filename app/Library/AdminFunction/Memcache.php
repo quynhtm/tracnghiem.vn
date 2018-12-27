@@ -249,6 +249,8 @@ class Memcache{
 
     const CACHE_CONTRACT_DOCUMENT_ENTITY_ID = 'cache_contract_document_entity_id_';
 
+    const CACHE_QUESTION_ID = 'cache_question_id_';
+
     const CACHE_VMDEFINE_ID = 'cache_vmdefine_id_';
     const CACHE_VMDEFINE_BY_TYPE = 'cache_vmdefine_by_type_';
 
