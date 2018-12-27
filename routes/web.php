@@ -33,40 +33,10 @@ Route::group(array('prefix' => 'manager', 'before' => ''), function(){
 	require __DIR__.'/admin.php';
 });
 
-//Router Loan
 Route::group(array('prefix' => 'manager', 'before' => ''), function(){
-	require __DIR__.'/loan.php';
+	require __DIR__.'/tracnghiem.php';
 });
 
-//Router Lender
-Route::group(array('prefix' => 'manager', 'before' => ''), function () {
-    require __DIR__.'/lender.php';
-});
-
-//Router Report
-Route::group(array('prefix' => 'manager', 'before' => ''), function () {
-    require __DIR__.'/report.php';
-});
-
-//Router Guarantor
-Route::group(array('prefix' => 'manager', 'before' => ''), function () {
-    require __DIR__.'/guarantor.php';
-});
-
-//Router Company
-Route::group(array('prefix' => 'manager', 'before' => ''), function () {
-    require __DIR__.'/company.php';
-});
-
-//Router Marketing
-Route::group(array('prefix' => 'manager', 'before' => ''), function () {
-    require __DIR__.'/maketting.php';
-});
-
-//Router Api
-Route::group(array('prefix' => 'manager', 'before' => ''), function () {
-    require __DIR__.'/api_web.php';
-});
 
 Route::group(array('prefix' => 'manager', 'before' => ''), function () {
     require __DIR__.'/api.php';

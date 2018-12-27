@@ -4,22 +4,7 @@ Route::post('forgot_password', array('as' => 'admin.forgot_password','uses' => A
 Route::get('dashboard', array('as' => 'admin.dashboard','uses' => Admin.'\AdminDashBoardController@dashboard'));
 
 //testData
-Route::get('testUser',array('as' => 'admin.testUser','uses' => Admin.'\TestDataController@testDataUser'));
-Route::get('runCronjob',array('as' => 'admin.runCronjob','uses' => Admin.'\TestDataController@runCronjob'));
 Route::get('clear',array('as' => 'admin.clear','uses' => Admin.'\TestDataController@clearCache'));
-Route::get('testElasticsearch',array('as' => 'admin.testElasticsearch','uses' => Admin.'\TestDataController@testElasticsearchService'));
-
-//Define common
-Route::match(['GET','POST'],'define', array('as' => 'admin.viewDefine','uses' => Admin.'\AdminDefineController@view'));
-Route::post('define/post/{id?}', array('as' => 'admin.getDefine','uses' => Admin.'\AdminDefineController@postItem'))->where('id', '[0-9]+');
-Route::get('define/delete',array('as' => 'admin.deleteDefine','uses' => Admin.'\AdminDefineController@deleteItem'));
-Route::post('define/ajaxLoad', array('as' => 'admin.ajaxDefine','uses' => Admin.'\AdminDefineController@ajaxLoadForm'));
-
-//Define Bank
-Route::match(['GET','POST'],'defineBank', array('as' => 'admin.viewDefineBank','uses' => Admin.'\AdminDefineBankController@view'));
-Route::post('defineBank/post/{id?}', array('as' => 'admin.getDefineBank','uses' => Admin.'\AdminDefineBankController@postItem'))->where('id', '[0-9]+');
-Route::get('defineBank/delete',array('as' => 'admin.deleteDefineBank','uses' => Admin.'\AdminDefineBankController@deleteItem'));
-Route::post('defineBank/ajaxLoad', array('as' => 'admin.ajaxDefineBank','uses' => Admin.'\AdminDefineBankController@ajaxLoadForm'));
 
 /*thông tin tài khoản*/
 Route::match(['GET','POST'],'user/view', array('as' => 'admin.user_view','uses' => Admin.'\AdminUserController@view'));
@@ -73,128 +58,16 @@ Route::post('menu/edit/{id?}', array('as' => 'admin.menuEdit','uses' => Admin.'\
 Route::post('menu/deleteMenu', array('as' => 'admin.deleteMenu','uses' => Admin.'\AdminManageMenuController@deleteMenu'));//ajax/
 Route::post('menu/ajaxGetOptionParent', array('as' => 'admin.ajaxGetOptionParent','uses' => Admin.'\AdminManageMenuController@ajaxGetOptionParent'));//ajax
 
-//Career
-Route::match(['GET','POST'],'career', array('as' => 'admin.careerView','uses' => Admin.'\AdminCareerController@view'));
-Route::post('career/post/{id?}', array('as' => 'admin.careerEdit','uses' => Admin.'\AdminCareerController@postItem'))->where('id', '[0-9]+');
-Route::get('career/delete',array('as' => 'admin.deleteCareer','uses' => Admin.'\AdminCareerController@deleteItem'));
-Route::post('career/ajaxLoad', array('as' => 'admin.ajaxCareer','uses' => Admin.'\AdminCareerController@ajaxLoadForm'));
-
-//Version App
-Route::match(['GET','POST'],'version_app', array('as' => 'admin.versionAppView','uses' => Admin.'\AdminVersionAppController@view'));
-Route::post('version_app/post/{id?}', array('as' => 'admin.versionAppEdit','uses' => Admin.'\AdminVersionAppController@postItem'))->where('id', '[0-9]+');
-//Route::get('version_app/delete',array('as' => 'admin.deleteCareer','uses' => Admin.'\AdminCareerController@deleteItem'));
-Route::post('version_app/ajaxLoad', array('as' => 'admin.ajaxVersionAppCareer','uses' => Admin.'\AdminVersionAppController@ajaxLoadForm'));
-
-//Relationship
-Route::match(['GET','POST'],'relationships', array('as' => 'admin.relationshipsView','uses' => Admin.'\AdminRelationshipController@view'));
-Route::post('relationships/post/{id?}', array('as' => 'admin.relationshipsEdit','uses' => Admin.'\AdminRelationshipController@postItem'))->where('id', '[0-9]+');
-Route::get('relationships/delete',array('as' => 'admin.deleteRelationships','uses' => Admin.'\AdminRelationshipController@deleteItem'));
-Route::post('relationships/ajaxLoad', array('as' => 'admin.ajaxRelationships','uses' => Admin.'\AdminRelationshipController@ajaxLoadForm'));
-
 //*thông tin banner */
 Route::match(['GET','POST'],'banner',array('as' => 'admin.bannerView','uses' => Admin.'\AdminBannersController@view'));
 Route::get('banner/edit/{id?}', array('as' => 'admin.bannerEdit','uses' => Admin.'\AdminBannersController@getItem'));
 Route::post('banner/edit/{id?}', array('as' => 'admin.bannerEdit','uses' => Admin.'\AdminBannersController@postItem'));
 Route::post('banner/deleteBanner', array('as' => 'admin.deleteBanner','uses' => Admin.'\AdminBannersController@deleteBanner'));//ajax
 
-//*thông tin product */
-Route::match(['GET','POST'],'product',array('as' => 'admin.productView','uses' => Admin.'\AdminProductsController@view'));
-Route::get('product/edit/{id?}', array('as' => 'admin.productEdit','uses' => Admin.'\AdminProductsController@getItem'));
-Route::post('product/edit/{id?}', array('as' => 'admin.productEdit','uses' => Admin.'\AdminProductsController@postItem'));
-Route::post('product/deleteProduct', array('as' => 'admin.deleteProduct','uses' => Admin.'\AdminProductsController@deleteProduct'));//ajax
-Route::post('product/activeProduct', array('as' => 'admin.activeProduct','uses' => Admin.'\AdminProductsController@activeProduct'));//ajax
+//Define common
+Route::match(['GET','POST'],'define', array('as' => 'admin.viewDefine','uses' => Admin.'\AdminDefineController@view'));
+Route::post('define/post/{id?}', array('as' => 'admin.getDefine','uses' => Admin.'\AdminDefineController@postItem'))->where('id', '[0-9]+');
+Route::get('define/delete',array('as' => 'admin.deleteDefine','uses' => Admin.'\AdminDefineController@deleteItem'));
+Route::post('define/ajaxLoad', array('as' => 'admin.ajaxDefine','uses' => Admin.'\AdminDefineController@ajaxLoadForm'));
 
 
-//Literacy
-Route::match(['GET','POST'],'literacy', array('as' => 'admin.literacyView','uses' => Admin.'\AdminLiteracyController@view'));
-Route::post('literacy/post/{id?}', array('as' => 'admin.literacyEdit','uses' => Admin.'\AdminLiteracyController@postItem'))->where('id', '[0-9]+');
-Route::get('literacy/delete',array('as' => 'admin.deleteLiteracy','uses' => Admin.'\AdminLiteracyController@deleteItem'));
-Route::post('literacy/ajaxLoad', array('as' => 'admin.ajaxLiteracy','uses' => Admin.'\AdminLiteracyController@ajaxLoadForm'));
-
-//Purpose
-Route::match(['GET','POST'],'purpose', array('as' => 'admin.purposeView','uses' => Admin.'\AdminPurposeController@view'));
-Route::post('purpose/post/{id?}', array('as' => 'admin.purposeEdit','uses' => Admin.'\AdminPurposeController@postItem'))->where('id', '[0-9]+');
-Route::get('purpose/delete',array('as' => 'admin.deletePurpose','uses' => Admin.'\AdminPurposeController@deleteItem'));
-Route::post('purpose/ajaxLoad', array('as' => 'admin.ajaxPurpose','uses' => Admin.'\AdminPurposeController@ajaxLoadForm'));
-
-//*thông tin notification */
-Route::match(['GET','POST'],'notification',array('as' => 'admin.notificationView','uses' => Admin.'\AdminNotificationController@view'));
-
-//Document Type
-Route::match(['GET','POST'],'document_entity_attribute', array('as' => 'admin.documentEntityAttributeView','uses' => Admin.'\AdminDocumentEntityAttributeController@view'));
-Route::post('document_entity_attribute/post/{id?}', array('as' => 'admin.documentEntityAttributeEdit','uses' => Admin.'\AdminDocumentEntityAttributeController@postItem'))->where('id', '[0-9]+');
-Route::get('document_entity_attribute/post/{id?}', array('as' => 'admin.documentEntityAttributeEdit','uses' => Admin.'\AdminDocumentEntityAttributeController@getItem'))->where('id', '[0-9]+');
-
-//Document Type
-Route::match(['GET','POST'],'document_type', array('as' => 'admin.documentTypeView','uses' => Admin.'\AdminDocumentTypeController@view'));
-Route::post('document_type/post/{id?}', array('as' => 'admin.documentTypeEdit','uses' => Admin.'\AdminDocumentTypeController@postItem'))->where('id', '[0-9]+');
-Route::get('document_type/post/{id?}', array('as' => 'admin.documentTypeEdit','uses' => Admin.'\AdminDocumentTypeController@getItem'))->where('id', '[0-9]+');
-
-//option commission
-Route::match(['GET','POST'],'option_commission', array('as' => 'admin.optionCommissionView','uses' => Admin.'\AdminOptionCommissionController@view'));
-Route::post('option_commission/post/{id?}', array('as' => 'admin.optionCommissionEdit','uses' => Admin.'\AdminOptionCommissionController@postItem'))->where('id', '[0-9]+');
-Route::get('option_commission/post/{id?}', array('as' => 'admin.optionCommissionEdit','uses' => Admin.'\AdminOptionCommissionController@getItem'))->where('id', '[0-9]+');
-
-//Career lender
-Route::match(['GET','POST'],'lender_career', array('as' => 'admin.lenderCareerView','uses' => Admin.'\AdminLenderCareerController@view'));
-Route::post('lender_career/post/{id?}', array('as' => 'admin.lenderCareeEdit','uses' => Admin.'\AdminLenderCareerController@postItem'))->where('id', '[0-9]+');
-Route::get('lender_career/delete',array('as' => 'admin.deleteLenderCareer','uses' => Admin.'\AdminLenderCareerController@deleteItem'));
-Route::post('lender_career/ajaxLoad', array('as' => 'admin.ajaxLenderCareer','uses' => Admin.'\AdminLenderCareerController@ajaxLoadForm'));
-
-// User Loan Log - Lich su chia YCV
-Route::match(['GET','POST'], 'loan_logs', array('as' => 'admin.loanLogsView', 'uses' => Admin.'\AdminUserLoanLogController@view'));
-
-// SMS Log - Lich su sms
-Route::match(['GET','POST'], 'sms_logs', array('as' => 'admin.smsLogsView', 'uses' => Admin.'\AdminSMSLogController@view'));
-
-// Content Notification - Cau hinh noi dung thong bao
-Route::match(['GET','POST'], 'content_notify', array('as' => 'admin.contentNotifyView', 'uses' => Admin.'\AdminContentNotifyController@view'));
-Route::get('content_notify/edit/{id?}', array('as' => 'admin.contentNotifyEdit', 'uses' => Admin.'\AdminContentNotifyController@getItem'));
-Route::post('content_notify/edit/{id?}', array('as' => 'admin.contentNotifyEdit', 'uses' => Admin.'\AdminContentNotifyController@postItem'));
-Route::post('content_notify/deleteContentNotify', array('as' => 'admin.contentNotifyDelete', 'uses' => Admin.'\AdminContentNotifyController@deleteContentNotifications'));
-Route::post('content_notify/ajax_lock_or_active_content_notify', array('as' => 'admin.ajaxLockOrActiveContentNotify', 'uses' => Admin.'\AdminContentNotifyController@ajaxlockOrActiveContentNotifications'));
-Route::post('content_notify/ajaxSend', array('as' => 'admin.ajaxContentNotify','uses' => Admin.'\AdminContentNotifyController@ajaxSendNotificationMultiLoaner'));
-
-# Route for config using provider sms
-Route::any('config-provider',           array('as' => 'admin.configProvider',   'uses' => Admin.'\AdminConfigProviderController@view'));
-Route::post('config-provider/store',    array('as' => 'admin.providerStore',    'uses' => Admin.'\AdminConfigProviderController@postItem'));
-Route::post('config-provider/put',      array('as' => 'admin.providerAjax',     'uses' => Admin.'\AdminConfigProviderController@postAjax'));
-
-//*thông tin reminder debt */
-Route::match(['GET','POST'],'reminder_debt',array('as' => 'admin.reminderDebtView','uses' => Admin.'\AdminReminderDebtController@view'));
-Route::get('reminder_debt/edit/{id?}', array('as' => 'admin.reminderDebtEdit','uses' => Admin.'\AdminReminderDebtController@getItem'));
-Route::post('reminder_debt/edit/{id?}', array('as' => 'admin.reminderDebtEdit','uses' => Admin.'\AdminReminderDebtController@postItem'));
-Route::post('reminder_debt/deleteBanner', array('as' => 'admin.deleteReminderDebt','uses' => Admin.'\AdminReminderDebtController@deleteBanner'));//ajax
-
-// User phone stringee call
-Route::match(['GET','POST'],'user_phone_stringee_call', array('as' => 'admin.userPhoneStringeeCallView','uses' => Admin.'\AdminUserPhoneStringeeCallController@view'));
-Route::post('user_phone_stringee_call/post/{id?}', array('as' => 'admin.userPhoneStringeeCallEdit','uses' => Admin.'\AdminUserPhoneStringeeCallController@postItem'))->where('id', '[0-9]+');
-Route::get('user_phone_stringee_call/delete',array('as' => 'admin.deleteuserPhoneStringeeCall','uses' => Admin.'\AdminUserPhoneStringeeCallController@deleteItem'));
-Route::post('user_phone_stringee_call/ajaxLoad', array('as' => 'admin.ajaxUserPhoneStringeeCall','uses' => Admin.'\AdminUserPhoneStringeeCallController@ajaxLoadForm'));
-
-/** Log Call Stringee by danghung111 */
-Route::any('log/call',array('as' => 'logCallView','uses' => Admin.'\LogCallController@view'));
-Route::get('log/call/searchStringee',array('as' => 'logCallSearchStringee','uses' => LogCall.'\LogCallController@view'));
-Route::get('log/callRecordsFile',array('as' => 'logCallCallRecordsFile','uses' => Admin.'\LogCallController@callRecordsFile'));
-Route::get('log/callRecordsFile/{id?}',array('as' => 'logCallCallRecordsFileItem','uses' => Admin.'\LogCallController@callRecordsFileItem'));
-
-Route::post('log/ajaxLogsCall',array('as' => 'ajaxLogsCall','uses' => Admin.'\LogCallController@ajaxLogsCall'));
-Route::post('log/ajaxLogsCallTime',array('as' => 'ajaxLogsCallTime','uses' => Admin.'\LogCallController@ajaxLogsCallTime'));
-Route::post('log/ajaxLogsCallAnswer',array('as' => 'ajaxLogsCallAnswer','uses' => Admin.'\LogCallController@ajaxLogsCallAnswer'));
-
-Route::group(['prefix' => 'stringee'], function () {
-    Route::get('getGroupList', array('as' => 'stringee.getGroupList','uses' => Admin.'\StringeeCenterApiController@getGroupList'));
-    Route::get('getGroupList/{groupId}', array('as' => 'stringee.getGroupListID','uses' => Admin.'\StringeeCenterApiController@getGroupList'));
-    Route::post('updateNameGroup', array('as' => 'stringee.updateNameGroup','uses' => Admin.'\StringeeCenterApiController@updateNameGroup'));
-    Route::post('createNameGroup', array('as' => 'stringee.createNameGroup','uses' => Admin.'\StringeeCenterApiController@createNameGroup'));
-    Route::post('deleteGroup', array('as' => 'stringee.deleteGroup','uses' => Admin.'\StringeeCenterApiController@deleteGroup'));
-    Route::post('ajaxChangeStatusAgent', array('as' => 'stringee.ajaxChangeStatusAgent','uses' => Admin.'\StringeeCenterApiController@ajaxChangeStatusAgent'));
-    Route::post('ajaxCreateAgent', array('as' => 'stringee.ajaxCreateAgent','uses' => Admin.'\StringeeCenterApiController@ajaxCreateAgent'));
-    Route::post('ajaxAddAgentToGroup', array('as' => 'stringee.ajaxAddAgentToGroup','uses' => Admin.'\StringeeCenterApiController@ajaxAddAgentToGroup'));
-    Route::post('deleteAgent', array('as' => 'stringee.deleteAgent','uses' => Admin.'\StringeeCenterApiController@deleteAgent'));
-    Route::post('agentDeleteInGroup', array('as' => 'stringee.agentDeleteInGroup','uses' => Admin.'\StringeeCenterApiController@agentDeleteInGroup'));
-    Route::get('popupAnswerAgent', array('as' => 'stringee.popupAnswerAgent','uses' => Admin.'\StringeeCenterApiController@popupAnswerAgent'));
-
-    Route::get('permissionStringeeCall', array('as' => 'stringee.permissionStringeeCall','uses' => Admin.'\UsersPermissionStringeeCallController@view'));
-    Route::post('permissionStringeeCall', array('as' => 'stringee.permissionStringeeCall','uses' => Admin.'\UsersPermissionStringeeCallController@doEdit'));
-});

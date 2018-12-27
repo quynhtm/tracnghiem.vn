@@ -8,17 +8,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Models\Admin\TBSession;
-use App\Http\Models\Admin\UsersPermissionStringeeCall;
-use App\Http\Models\Admin\UsersPhoneStringeeCall;
-use App\Library\AdminFunction\Curl;
-use App\Library\AdminFunction\Define;
-use App\Library\AdminFunction\FunctionLib;
-use App\Services\LoansSplit\ServiceLoanSplit;
-use App\Services\LogCall\VMAccessToken;
-use App\Services\SendMailService;
-use App\Services\VMAutoLoanSplit;
-use App\Stringee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
@@ -91,12 +80,6 @@ class AdminLoginController extends Controller
                                     }
                                 }
 
-                                $check_permission_stringee_call = UsersPermissionStringeeCall::checkOneUid($user,$permission_code);
-                                $arr_phone_stringee_agent = UsersPhoneStringeeCall::getAllNumberPhone(500);
-
-                                $check_mail = Stringee::checkNameAgentStringee(PREFIX_STRINGEE_USER, isset($user->user_email) ? $user->user_email : '');
-                                $token_stringee = app(VMAccessToken::class)->generateIccToken($check_mail);
-
                                 $data = array(
                                     'user_id' => $user->user_id,
                                     'user_project' => $user->user_project,
@@ -119,25 +102,10 @@ class AdminLoginController extends Controller
                                     'user_image' => $user->user_image,
                                     'change_pass' => $user->change_pass,
                                     'role_code' => $user->role_code,
-                                    'check_permission_stringee_call' => $check_permission_stringee_call,
-                                    'arr_phone_stringee_agent' => $arr_phone_stringee_agent,
-                                    'token_stringee' => $token_stringee,
                                 );
-
-                                //Check user login only browser
-                                $checkLogin = app(TBSession::class)->checkSessionExists($user->user_id);
-                                if($checkLogin != ''){
-                                    $error = 'Bạn đã đăng nhập trên trình duyệt '.$checkLogin;
-                                    return view('admin.AdminUser.login', ['error' => $error]);
-                                }
 
                                 Session::put('user', $data, 60 * 24);
                                 $this->_user->updateLogin($user->user_id);
-
-                                //Check user login de chia YCV
-                                if(isset($user->user_id) && $user->user_id && in_array($user->position, ServiceLoanSplit::$user_position) && ServiceLoanSplit::$usesplit){
-                                    app(ServiceLoanSplit::class)->setSessionUserLogin($user->user_id);
-                                }
 
                                 if ($url === '' || $url === 'login') {
                                     if($user->change_pass == STATUS_INT_KHONG){
@@ -186,6 +154,7 @@ class AdminLoginController extends Controller
     //ajax
     public function forgot_password()
     {
+        return true;
         $email_forgot_password = Request::get('email_forgot_password', '');
         $arrData = $data = array();
         $arrData['isOk'] = STATUS_INT_KHONG;
@@ -205,12 +174,12 @@ class AdminLoginController extends Controller
                         $dataSend['email_receive'] = $user->user_email;
                         $dataSend['name'] = $user->user_full_name;
                         $dataSend['password_new'] = $password_new;
-                        if(app(SendMailService::class)->sentEmailForgotPassword($dataSend)){
+                        /*if(app(SendMailService::class)->sentEmailForgotPassword($dataSend)){
                             $arrData['isOk'] = STATUS_INT_MOT;
                             $arrData['msg'] = 'Bạn hãy vào mail để lấy mật khẩu mới.';
                         }else{
                             $arrData['msg'] = 'Chưa gửi được mail';
-                        }
+                        }*/
                     }
                 }
             }else{

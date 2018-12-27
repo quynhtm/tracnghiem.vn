@@ -359,120 +359,18 @@ define('TRUONG_PHONG_VAN_HANH', 20);//role_id trong user
 /**************************************************************************************************************
  * định nghĩa Table vaymuon
  **************************************************************************************************************/
-define('PREFIX_STRINGEE_USER', 'vm_');
-define('PREFIX_VM', 'vm_');
-define('PREFIX_V4', 'v4_');
-define('PREFIX', '');
+define('PREFIX', 'web_');
 //define('PREFIX', PREFIX_VM);//local
 
-define('TABLE_BANNERS', PREFIX.'banners');
-define('TABLE_CONTACTS', PREFIX.'contacts');
-define('TABLE_VERSION_APP', PREFIX_VM.'version_app');
-define('TABLE_CONTRACT_DOCUMENT_ENTITY', PREFIX.'contract_document_entity');
-define('TABLE_CONTRACT_DOCUMENT_ENTITY_ATTRIBUTE_VALUE', PREFIX.'contract_document_entity_attribute_value');
-define('TABLE_CONTRACT_INFO_DISBURSED_AUTO', PREFIX.'contract_info_disbursed_auto');
-define('TABLE_CONTRACTS', PREFIX.'contracts');
-define('TABLE_BANK_INFORMATION_BORROWERS', PREFIX.'bank_information_borrowers');
-define('TABLE_BILL_PAYMENT', PREFIX.'bill_payment');
-define('TABLE_CALL_LOGS', PREFIX.'call_logs');
-define('TABLE_CAREERS', PREFIX.'careers');
-define('TABLE_CHECK_LENDING_DUPLICATE', PREFIX.'check_lending_duplicate');
-define('TABLE_CHECKOUT_LENDERS', PREFIX.'checkout_lenders');
-define('TABLE_COMMISSIONS', PREFIX.'commissions');
-define('TABLE_DEVICE_APP', PREFIX.'device_app');
-define('TABLE_DOCUMENT_ENTITY', PREFIX.'document_entity');
-define('TABLE_DOCUMENT_ENTITY_ATTRIBUTE', PREFIX.'document_entity_attribute');
-define('TABLE_DOCUMENT_ENTITY_ATTRIBUTE_VALUE', PREFIX.'document_entity_attribute_value');
-define('TABLE_DOCUMENT_TYPE', PREFIX.'document_type');
-define('TABLE_EXPERTISE', PREFIX.'expertise');
-define('TABLE_FACEBOOK', PREFIX.'facebook');
-define('TABLE_FACEBOOK_FRIENDS', PREFIX.'facebook_friends');
-define('TABLE_FRIENDS_FB360', PREFIX.'friends_fb360');
-define('TABLE_HISTORY', PREFIX.'history');
-define('TABLE_IMAGES', PREFIX.'images');
-define('TABLE_LENDER_APPORTIONS', PREFIX.'lender_apportions');
-define('TABLE_LENDER_CAREERS', PREFIX.'lender_careers');
-define('TABLE_LENDER_CONTRACTS', PREFIX.'lender_contracts');
-define('TABLE_LENDER_DISBURSE_SLIPS', PREFIX.'lender_disburse_slips');
-define('TABLE_LENDER_HISTORY', PREFIX.'lender_history');
-define('TABLE_LENDER_LOANS', PREFIX.'lender_loans');
-define('TABLE_LENDER_NOTIFICATIONS', PREFIX.'lender_notifications');
-define('TABLE_LENDERS', PREFIX.'lenders');
-define('TABLE_LENDER_TOKEN', PREFIX.'lender_token');
-define('TABLE_LITERACY', PREFIX.'literacy');
-define('TABLE_LOAN_DOCUMENT', PREFIX.'loan_document');
-define('TABLE_LOANER_BACKLISTS', PREFIX.'loaner_backlists');
-define('TABLE_LOANERS', PREFIX.'loaners');
-define('TABLE_LOANS', PREFIX.'loans');
-define('TABLE_LOANS_FREE', PREFIX.'loans_free');
-define('TABLE_LOCATIONS', PREFIX.'locations');
-define('TABLE_MATRIX', PREFIX.'matrix');
-define('TABLE_MESSAGE_SMS', PREFIX.'message_sms');
-define('TABLE_MESSAGES', PREFIX.'messages');
-define('TABLE_NOTIFICATIONS', PREFIX.'notifications');
-define('TABLE_ALEGO_PHONE_CARD', PREFIX_VM.'alego_phone_card');
-define('TABLE_GIFT_CHARGE', PREFIX_VM.'gift_charge');
-define('TABLE_HISTORY_OPTION_POINTS', PREFIX_VM.'history_option_points');
-define('TABLE_MARKETING', PREFIX_VM.'marketing');
-define('TABLE_OPTION_POINTS', PREFIX_VM.'option_points');
-define('TABLE_POINTS_CHARGE', PREFIX_VM.'point_charge');
-define('TABLE_POINTS_CHARGE_HISTORY', PREFIX_VM.'point_charge_history');
-define('TABLE_POPUP_LENDER', PREFIX_VM.'popup_lender');
-define('TABLE_PROMOTION', PREFIX_VM.'promotion');
-define('TABLE_PUSH_NOTIFICATION', PREFIX_VM.'push_notification');
-define('TABLE_REMINDER_BORROWER', PREFIX_VM.'reminder_borrower');
-define('TABLE_REMINDER_DEPT', PREFIX_VM.'reminder_dept');
-define('TABLE_SMS_FORGOT_LOG', PREFIX_VM.'sms_forgot_log');
-define('TABLE_TRANSACTION_LOANER', PREFIX_VM.'transaction_loaner');
-define('TABLE_NUMBER_CONTRACT_LENDING', PREFIX.'number_contract_lending');
-define('TABLE_OPTION_COMMISSION', PREFIX.'option_commission');
-define('TABLE_PAYMENT_METHODS', PREFIX.'payment_methods');
-define('TABLE_PHONE_COMPANY_FINANCE', PREFIX.'phone_company_finance');
-define('TABLE_PREQUALIFICATI', PREFIX.'prequalificati');
-define('TABLE_PRODUCT_DOCUMENT_TYPE', PREFIX.'product_document_type');
-define('TABLE_PRODUCT', PREFIX.'products');
-define('TABLE_PURPOSES', PREFIX.'purposes');
-define('TABLE_RECEIPT_COMMISSION', PREFIX.'receipt_commission');
-define('TABLE_RECEIPTS', PREFIX.'receipts');
-define('TABLE_RELATIONSHIPS', PREFIX.'relationships');
-define('TABLE_REPAYMENT_COMMISSION', PREFIX.'repayment_commission');
-define('TABLE_REPAYMENT_METHOD_COMMISSTION', PREFIX.'repayment_method_commisstion');
-define('TABLE_REPAYMENTS', PREFIX.'repayments');
-define('TABLE_TOKENS', PREFIX.'tokens');
-define('TABLE_SESSION', PREFIX.'session');
-define('TABLE_LOG_CHECK_BANK', PREFIX.'log_check_bank');
-define('TABLE_USERS_LOAN', PREFIX.'users_loan');
-define('TABLE_USERS_LOAN_LOGS', PREFIX.'users_loan_logs');
-define('TABLE_USERS_LOGS_STRINGEE_CALL', PREFIX.'users_logs_stringee_call');
-define('TABLE_USERS_NOTI', PREFIX.'users_noti');
-define('TABLE_USERS_PERMISSION_STRINGEE_CALL', PREFIX.'users_permission_stringee_call');
-define('TABLE_USERS_PHONE_STRINGEE_AGENT', PREFIX.'users_phone_stringee_agent');
-define('TABLE_USERS_PHONE_STRINGEE_CALL', PREFIX.'users_phone_stringee_call');
+define('TABLE_USER_ADMIN', PREFIX.'user_admin');
+define('TABLE_GROUP_USER', PREFIX.'group_user');
+define('TABLE_PERMISSION', PREFIX.'permission');
+define('TABLE_MENU_SYSTEM',PREFIX.'menu_system');
+define('TABLE_ROLE_MENU', PREFIX.'role_menu');
+define('TABLE_ROLE',PREFIX.'role');
+define('TABLE_DEFINE',PREFIX.'define');
+define('TABLE_GROUP_USER_PERMISSION', PREFIX.'group_user_permission');
 
-define('TABLE_USER_ADMIN', PREFIX_V4.'user_admin');
-define('TABLE_GROUP_USER', PREFIX_V4.'group_user');
-define('TABLE_PERMISSION', PREFIX_V4.'permission');
-define('TABLE_MENU_SYSTEM',PREFIX_V4.'menu_system');
-define('TABLE_ROLE_MENU', PREFIX_V4.'role_menu');
-define('TABLE_ROLE',PREFIX_V4.'role');
-define('TABLE_GROUP_USER_PERMISSION', PREFIX_V4.'group_user_permission');
-define('TABLE_DEFINE',PREFIX_V4.'define');
-define('TABLE_BANK_USERS',PREFIX_V4.'bank_users');//ngân hàng người dùng
-define('TABLE_COMPANY',PREFIX_V4.'company');
-define('TABLE_GUARANTOR',PREFIX_V4.'guarantor');//Nhà đảm bảo
-define('TABLE_WALLET_USERS',PREFIX_V4.'wallet_users');//ví người dùng
-define('TABLE_BILL_EXPENDITURE',PREFIX_V4.'bill_expenditure');//Phiếu thu phiếu chi
-define('TABLE_MAKETING_CAMPAIGN',PREFIX_V4.'maketing_campaign');//Chiến dịch maketing
-define('TABLE_MAKETING_COIN_POLICY',PREFIX_V4.'maketing_coin_policy');//Chính sách tích&tiêu xu
-define('TABLE_MAKETING_PROGRAM',PREFIX_V4.'maketing_program');//Chương trình maketting
-define('TABLE_CONTENT_NOTIFICATIONS',PREFIX_V4.'content_notifications');//noi dung thong bao
-define('TABLE_REPAYMENT_HISTORY',PREFIX_V4.'repayment_history');//lịch sử thu hồi nợ của VH
-define('TABLE_LENDER_LOAN_INVEST', PREFIX_V4.'lender_loan_invest');
-define('TABLE_LOANS_INFO_OTHER', PREFIX_V4.'loans_info_other');
-define('TABLE_SPLIT_LOAN_ARCHIVE', PREFIX_V4.'split_loan_archive');//các YCV chưa được chia
-define('TABLE_SPLIT_USER', PREFIX_V4.'split_user');//danh sách người VH được chia YCV trong ngày
-
-define('TABLE_CONFIG_PROVIDER', PREFIX_V4.'config_provider');
 /**************************************************************************************************************
  * định nghĩa quyền
  **************************************************************************************************************/

@@ -9,13 +9,11 @@
 namespace App\Http\Controllers;
 
 use App\Library\AdminFunction\CGlobal;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Models\Admin\MenuSystem;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use View;
-use App\Library\AdminFunction\FunctionLib;
 
 class BaseAdminController extends Controller
 {

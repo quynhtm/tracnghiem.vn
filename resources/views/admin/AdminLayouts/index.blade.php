@@ -114,7 +114,6 @@ use App\Stringee;
         </div>
         <div class="navbar-buttons navbar-header pull-right" role="navigation">
             <ul class="nav ace-nav">
-                {!! Stringee::sDropCallHeader() !!}
                 <li class="light-blue">
                     <a class="dropdown-toggle" href="#" title="Góp ý - Thắc mắc về hệ thống">
                         <i class="fa fa-clipboard fa-2x marginTop5" aria-hidden="true">
