@@ -360,6 +360,7 @@ define('TRUONG_PHONG_VAN_HANH', 20);//role_id trong user
  * định nghĩa Table vaymuon
  **************************************************************************************************************/
 define('PREFIX', 'web_');
+define('PREFIX_TRAC_NGHIEM', 'tracnghiem_');
 //define('PREFIX', PREFIX_VM);//local
 
 define('TABLE_USER_ADMIN', PREFIX.'user_admin');
@@ -371,7 +372,7 @@ define('TABLE_ROLE',PREFIX.'role');
 define('TABLE_DEFINE',PREFIX.'define');
 define('TABLE_GROUP_USER_PERMISSION', PREFIX.'group_user_permission');
 
-define('TABLE_QUESTION', PREFIX.'question');
+define('TABLE_QUESTION', PREFIX_TRAC_NGHIEM.'question');
 
 /**************************************************************************************************************
  * định nghĩa quyền

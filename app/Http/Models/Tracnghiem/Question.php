@@ -22,28 +22,31 @@ class Question extends BaseModel
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = array('define_code', 'define_name','define_color', 'define_type', 'type_item','object_id', 'define_order', 'define_status', 'define_value_min', 'define_value_max',
-        'define_note', 'created_at', 'updated_at', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update');
+    protected $fillable = array('question_name', 'question_type','question_approved', 'question_status', 'answer_1','answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6',
+        'correct_answer', 'created_at', 'updated_at', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update');
 
     public function searchByCondition($dataSearch = array(), $limit = 0, $offset = 0, $is_total = true)
     {
         try {
             $query = Question::where('id', '>', 0);
-            if (isset($dataSearch['define_name']) && $dataSearch['define_name'] != '') {
-                $query->where('define_name', 'LIKE', '%' . $dataSearch['define_name'] . '%');
+            if (isset($dataSearch['question_name']) && $dataSearch['question_name'] != '') {
+                $query->where('question_name', 'LIKE', '%' . $dataSearch['question_name'] . '%');
             }
             if (isset($dataSearch['define_code']) && $dataSearch['define_code'] != '') {
                 $query->where('define_code', $dataSearch['define_code']);
             }
-            if (isset($dataSearch['define_status']) && $dataSearch['define_status'] > -1) {
-                $query->where('define_status', $dataSearch['define_status']);
+            if (isset($dataSearch['question_approved']) && $dataSearch['question_approved'] > -1) {
+                $query->where('question_approved', $dataSearch['question_approved']);
             }
-            if (isset($dataSearch['define_type']) && $dataSearch['define_type'] > 0) {
-                $query->where('define_type', $dataSearch['define_type']);
+            if (isset($dataSearch['question_status']) && $dataSearch['question_status'] > -1) {
+                $query->where('question_status', $dataSearch['question_status']);
+            }
+            if (isset($dataSearch['question_type']) && $dataSearch['question_type'] > 0) {
+                $query->where('question_type', $dataSearch['question_type']);
             }
             $total = ($is_total) ? $query->count() : 0;
 
-            $query->orderBy('define_order', 'asc');
+            $query->orderBy('id', 'asc');
 
             $fields = (isset($dataSearch['field_get']) && trim($dataSearch['field_get']) != '') ? explode(',', trim($dataSearch['field_get'])) : array();
             if (!empty($fields)) {
@@ -67,12 +70,13 @@ class Question extends BaseModel
                 foreach ($fieldInput as $k => $v) {
                     $item->$k = $v;
                 }
+                $item->user_id_creater = app(User::class)->user_id();
+                $item->user_name_creater = app(User::class)->user_name();
+                $item->save();
+                self::removeCache($item->id, $item);
+                return $item->id;
             }
-            $item->user_id_creater = app(User::class)->user_id();
-            $item->user_name_creater = app(User::class)->user_name();
-            $item->save();
-            self::removeCache($item->id, $item);
-            return $item->id;
+            return false;
         } catch (PDOException $e) {
             throw new PDOException();
         }
@@ -83,13 +87,15 @@ class Question extends BaseModel
         try {
             $fieldInput = $this->checkFieldInTable($data);
             $item = self::getItemById($id);
-            foreach ($fieldInput as $k => $v) {
-                $item->$k = $v;
+            if (is_array($fieldInput) && count($fieldInput) > 0) {
+                foreach ($fieldInput as $k => $v) {
+                    $item->$k = $v;
+                }
+                $item->user_id_update = app(User::class)->user_id();
+                $item->user_name_update = app(User::class)->user_name();
+                $item->update();
+                self::removeCache($item->id, $item);
             }
-            $item->user_id_update = app(User::class)->user_id();
-            $item->user_name_update = app(User::class)->user_name();
-            $item->update();
-            self::removeCache($item->id, $item);
             return true;
         } catch (PDOException $e) {
             throw new PDOException();
@@ -127,10 +133,7 @@ class Question extends BaseModel
     public function removeCache($id = 0, $data = [])
     {
         if ($id > 0) {
-            Cache::forget(Memcache::CACHE_VMDEFINE_ID . $id);
-        }
-        if ($data && isset($data->define_type)) {
-
+            Cache::forget(Memcache::CACHE_QUESTION_ID . $id);
         }
     }
 }

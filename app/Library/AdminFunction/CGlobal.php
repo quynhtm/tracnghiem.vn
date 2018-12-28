@@ -53,14 +53,7 @@ class CGlobal
     static $arrLanguage = array(VIETNAM_LANGUAGE => 'vi', ENGLISH_LANGUAGE => 'en');
 
     public static $arrMenuTabTop = [
-            2 => 'Người vay',
-            3 => 'Nhà đầu tư',
-            4 => 'Nhà đảm bảo',
-            5 => 'Cty Vay mượn',
-            //6 => 'Báo cáo quản trị',
-            7 => 'Maketting',
-            //8 => 'Đối tác',
-            9 => 'Thu nợ',
+            2 => 'Trắc nghiệm',
             1 => 'Setting',
         ];
 

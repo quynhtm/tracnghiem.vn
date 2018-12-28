@@ -72,6 +72,7 @@ class VmDefine extends BaseModel
             }
             $total = ($is_total) ? $query->count() : 0;
 
+            $query->orderBy('define_status', 'asc');
             $query->orderBy('define_order', 'asc');
 
             $fields = (isset($dataSearch['field_get']) && trim($dataSearch['field_get']) != '') ? explode(',', trim($dataSearch['field_get'])) : array();
