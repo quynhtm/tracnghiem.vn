@@ -15,19 +15,19 @@ use App\Library\AdminFunction\Memcache;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class Question extends BaseModel
+class QuestionExam extends BaseModel
 {
-    protected $table = TABLE_QUESTION;
+    protected $table = TABLE_QUESTION_EXAM;
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = array('question_name', 'question_type','question_approved', 'question_status', 'answer_1','answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6',
+    protected $fillable = array('question_name', 'question_type','exam_id','answer_1','answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6',
         'correct_answer', 'created_at', 'updated_at', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update');
 
     public function searchByCondition($dataSearch = array(), $limit = 0, $offset = 0, $is_total = true)
     {
         try {
-            $query = Question::where('id', '>', 0);
+            $query = QuestionExam::where('id', '>', 0);
             if (isset($dataSearch['question_name']) && $dataSearch['question_name'] != '') {
                 $query->where('question_name', 'LIKE', '%' . $dataSearch['question_name'] . '%');
             }
@@ -36,9 +36,6 @@ class Question extends BaseModel
             }
             if (isset($dataSearch['question_approved']) && $dataSearch['question_approved'] > -1) {
                 $query->where('question_approved', $dataSearch['question_approved']);
-            }
-            if (isset($dataSearch['question_status']) && $dataSearch['question_status'] > -1) {
-                $query->where('question_status', $dataSearch['question_status']);
             }
             if (isset($dataSearch['question_type']) && $dataSearch['question_type'] > 0) {
                 $query->where('question_type', $dataSearch['question_type']);
@@ -64,7 +61,7 @@ class Question extends BaseModel
     {
         try {
             $fieldInput = $this->checkFieldInTable($data);
-            $item = new Question();
+            $item = new QuestionExam();
             if (is_array($fieldInput) && count($fieldInput) > 0) {
                 foreach ($fieldInput as $k => $v) {
                     $item->$k = $v;
@@ -103,11 +100,11 @@ class Question extends BaseModel
 
     public function getItemById($id)
     {
-        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_QUESTION_ID . $id) : false;
+        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_QUESTION_EXAM_ID . $id) : false;
         if (!$data) {
-            $data = Question::find($id);
+            $data = QuestionExam::find($id);
             if ($data) {
-                Cache::put(Memcache::CACHE_QUESTION_ID . $id, $data, CACHE_THREE_MONTH);
+                Cache::put(Memcache::CACHE_QUESTION_EXAM_ID . $id, $data, CACHE_THREE_MONTH);
             }
         }
         return $data;
@@ -132,7 +129,7 @@ class Question extends BaseModel
     public function removeCache($id = 0, $data = [])
     {
         if ($id > 0) {
-            Cache::forget(Memcache::CACHE_QUESTION_ID . $id);
+            Cache::forget(Memcache::CACHE_QUESTION_EXAM_ID . $id);
         }
     }
 }
