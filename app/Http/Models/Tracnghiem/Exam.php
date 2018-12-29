@@ -21,7 +21,7 @@ class Exam extends BaseModel
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = array('exam_name', 'question_exam_id','school_year','school_block_id','school_block_name', 'subjects_id', 'subjects_name', 'time_to_do', 'total_question',
+    protected $fillable = array('exam_name', 'question_exam_id','school_year','school_block_id','school_block_name', 'subjects_id', 'subjects_name','thematic_id', 'thematic_name', 'time_to_do', 'total_question',
         'total_point', 'created_at', 'updated_at', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update');
 
     public function searchByCondition($dataSearch = array(), $limit = 0, $offset = 0, $is_total = true)

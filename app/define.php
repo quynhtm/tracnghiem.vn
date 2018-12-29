@@ -6,12 +6,12 @@
  * Time: 2:06 PM
  */
 
-define('URL_IMAGE','https://v3.vaymuon.vn');
+define('URL_IMAGE','https://demo.vn');
 
 define('IMAGE_DIRECTORY','uploads');
-define('AUDIO_DIRECTORY','vaymuon');
+define('AUDIO_DIRECTORY','demo');
 
-define('KEY_API_REMOVE_CACHE','vaymuon_ver_4');
+define('KEY_API_REMOVE_CACHE','demo_vn');
 
 define('ES_TYPE', '_doc');
 define('LIMIT_ES_MAX', 100);
@@ -40,7 +40,6 @@ define('OPTION_POINT', 5);
 define('REQUIRE_POINT', 10);
 define('_REQUIRE', 'require');
 define('RATE_TYPE', '%/năm');
-
 
 define('VIETNAM_LANGUAGE', 1);
 define('ENGLISH_LANGUAGE', 2);
@@ -89,34 +88,13 @@ define('CACHE_THREE_MONTH', 7776000);
 define('CACHE_ONE_YEAR', 31104000);
 define('CACHE_FIVE_YEAR', 155520000);
 
-//define_type hệ thống common
-define('THU_NO_DEFINE_TYPE',1);
-define('TIEU_CHI_THAM_DINH_DEFINE_TYPE',2);
-define('LY_DO_TU_CHOI_DEFINE_TYPE',3);
-define('NGAN_HANG_DEFINE_TYPE',4);
-define('PHUONG_THUC_CHUYEN_TIEN_DEFINE_TYPE',5);
-define('PHUONG_THUC_THANH_TOAN_DEFINE_TYPE',6);
-define('NHOM_NO_DEFINE_TYPE',7);
-define('DOI_TUONG_AP_DUNG_DEFINE_TYPE',8);
-define('MAKETTING_CHINH_SACH_AP_DUNG_DEFINE_TYPE',9);
-define('THE_DIEN_THOAI_DEFINE_TYPE',10);
-define('REPAYMENT_HISTORY_HINH_THUC',11);
-define('REPAYMENT_HISTORY_NOI_DUNG_TRAO_DOI',12);
-define('USER_SALE_GROUP',13);//nhóm sale
-define('USER_POSITION',14);//chức vụ
-define('DEFINE_DEPARMENT',15);//Phòng ban
-
-define('CONG_TY_VAYMUON_ID',1);
-define('NHA_DAM_BAO_ID',1);
-
-//loại tiền sản phẩm vay
-define('CURRENCY_USD','USD');
-define('CURRENCY_VND','VND');
-
-//type duration
-define('TYPE_DURATION_NGAY','ngay');
-define('TYPE_DURATION_THANG','thang');
-
+/**************************************************************************************************************
+ * define_type hệ thống common
+ **************************************************************************************************************/
+define('TRAC_NGHIEM_KHOI_LOP',1);
+define('TRAC_NGHIEM_MON_HOC',2);
+define('TRAC_NGHIEM_CHUYEN_DE',3);
+define('TRAC_NGHIEM_CHUC_VU',4);
 
 /**************************************************************************************************************
  * Định nghĩa thư mục chứa file ảnh
@@ -134,7 +112,7 @@ define('USER_POSITION_VH2', 114);//vi tri VH2
 define('TRUONG_PHONG_VAN_HANH', 20);//role_id trong user
 
 /**************************************************************************************************************
- * định nghĩa Table vaymuon
+ * định nghĩa Table
  **************************************************************************************************************/
 define('PREFIX', 'web_');
 define('PREFIX_TRAC_NGHIEM', 'tracnghiem_');
