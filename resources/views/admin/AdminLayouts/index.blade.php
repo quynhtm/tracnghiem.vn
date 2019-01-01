@@ -172,7 +172,7 @@ use App\Stringee;
                 <li class="light-blue">
 
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">
-                        <span class="user-info" style="top: 10px!important;">
+                        <span class="user-info">
                             <small>{{viewLanguage('hello')}},</small>
                             @if(isset($user) && isset($user['user_full_name']))
                                 {{$user['user_full_name']}}
