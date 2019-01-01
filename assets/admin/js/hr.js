@@ -95,15 +95,12 @@ VM = {
                 url: $url,
                 data: data,
                 headers: {'X-CSRF-TOKEN': _token},
-                success: function (data) {
+                success: function (res) {
                     $(btnSubmit).removeAttr("disabled");
-                    if ((data.isOk == 0)) {
-                        alert(data.errors)
-                    } else {
-                        // window.location.href = data.url;
-                    }
+                    window.location.reload();
                 },
             });
+            //window.location.reload();
         }
     },
     resetItem: function (elementKey, elementValue) {

@@ -18,6 +18,8 @@ class Memcache{
     const CACHE_ROLE_ID = 'cache_role_id_';
     const CACHE_OPTION_ROLE = 'cache_option_role';
     const CACHE_ROLE_ALL = 'cache_option_all';
+    const CACHE_VMDEFINE_ID = 'cache_vmdefine_id_';
+    const CACHE_VMDEFINE_BY_TYPE = 'cache_vmdefine_by_type_';
 
     //trac nghiệm
     const CACHE_QUESTION_ID = 'cache_question_id_';

@@ -84,13 +84,13 @@ class AdminUserController extends BaseAdminController
             STATUS_INT_HAI => viewLanguage('Toàn quyền duyệt'));
 
         $this->arrDepart = [];
-        $arrGroupSale = app(VmDefine::class)->getOptionNameByType(USER_SALE_GROUP);
+        $arrGroupSale = [];
         $this->arrGroupSale = [0 => '---Chọn nhóm sale---'] + $arrGroupSale;
 
-        $arrPosition = app(VmDefine::class)->getOptionNameByType(USER_POSITION);
+        $arrPosition = app(VmDefine::class)->getOptionNameByType(TRAC_NGHIEM_CHUC_VU);
         $this->arrPosition = [0 => '---Chọn chức vụ---'] + $arrPosition;
 
-        $arrDepartment = app(VmDefine::class)->getOptionNameByType(DEFINE_DEPARMENT);
+        $arrDepartment = [];
         $this->arrDepartment = [0 => '---Chọn phòng ban---'] + $arrDepartment;
 
         $this->arrUser = app(User::class)->getOptionAllUser(false);//lấy tất cả user

@@ -108,7 +108,7 @@
                                         @if(trim($item['user_email']) != '')<div><b>E: </b>{{ $item['user_email'] }}</div>@endif
                                     </td>
                                     <td class="text-center middle">
-                                        @if($arrPosition[$item['position']] && $item['position'] > 0){{$arrPosition[$item['position']]}}@endif
+                                        @if(isset($arrPosition[$item['position']]) && $item['position'] > 0){{$arrPosition[$item['position']]}}@endif
                                     </td>
                                     <td>
                                         @if(isset($arrDepartment[$item['user_depart_id']]) && $item['user_depart_id'] > 0){{$arrDepartment[$item['user_depart_id']]}} <br/>@endif

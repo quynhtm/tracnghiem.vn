@@ -882,35 +882,3 @@ function getArrayByKeyToObject($data,$name_key = 'loaner_id'){
     return $result;
 }
 
-/**
- * Xem các trạng thái theo user_postion
- * @param $user_postion
- * @param $status_default
- * @return misc status
- */
-function getLoanStatusViewList($checkPermisRoot, $user_postion = -1, $status_default = ''){
-    if($checkPermisRoot != STATUS_SHOW){
-        if($status_default != ''){
-            if($user_postion == USER_POSITION_VH1){
-                return [STATUS_STRING_CHO_DUYET_CAP_1];
-            }
-            if($user_postion == USER_POSITION_VH2){
-                return [STATUS_STRING_CHO_KHE_UOC, STATUS_STRING_DA_DUYET, STATUS_HOAN_THANH];
-            }
-            return $status_default;
-        }
-        if($user_postion == USER_POSITION_CSKH){
-            return [STATUS_STRING_MOI, STATUS_STRING_DANG_CAP_NHAT];
-        }
-        if($user_postion == USER_POSITION_VH1){
-            return [STATUS_STRING_CHO_DUYET_CAP_1];
-        }
-        if($user_postion == USER_POSITION_VH2){
-            return [STATUS_STRING_CHO_KHE_UOC, STATUS_STRING_DA_DUYET, STATUS_HOAN_THANH];
-        }
-    }else{
-        if($status_default != ''){
-            return $status_default;
-        }
-    }
-}

@@ -53,10 +53,10 @@ class TracNghiemDefineController extends BaseAdminController
         );
 
         $this->arrUrlDefine = array(
-            TRAC_NGHIEM_KHOI_LOP => ['url'=>'tracnghiem.schoolBlock','pageTitle'=>'Quản lý khối lớp'],
-            TRAC_NGHIEM_MON_HOC =>  ['url'=>'tracnghiem.subjects','pageTitle'=>'Quản lý môn học'],
-            TRAC_NGHIEM_CHUYEN_DE =>  ['url'=>'tracnghiem.thematic','pageTitle'=>'Quản lý chuyên đề'],
-            TRAC_NGHIEM_CHUC_VU =>  ['url'=>'tracnghiem.position','pageTitle'=>'Quản lý chức vụ'],
+            TRAC_NGHIEM_KHOI_LOP => ['url' => 'tracnghiem.schoolBlock', 'pageTitle' => 'Quản lý khối lớp'],
+            TRAC_NGHIEM_MON_HOC => ['url' => 'tracnghiem.subjects', 'pageTitle' => 'Quản lý môn học'],
+            TRAC_NGHIEM_CHUYEN_DE => ['url' => 'tracnghiem.thematic', 'pageTitle' => 'Quản lý chuyên đề'],
+            TRAC_NGHIEM_CHUC_VU => ['url' => 'tracnghiem.position', 'pageTitle' => 'Quản lý chức vụ'],
         );
 
         //Out put permiss
@@ -81,16 +81,23 @@ class TracNghiemDefineController extends BaseAdminController
         ];
     }
 
-    public function schoolBlock(){
+    public function schoolBlock()
+    {
         return self::view(TRAC_NGHIEM_KHOI_LOP);//khối lớp
     }
-    public function subjects(){
+
+    public function subjects()
+    {
         return self::view(TRAC_NGHIEM_MON_HOC);//môn học
     }
-    public function thematic(){
+
+    public function thematic()
+    {
         return self::view(TRAC_NGHIEM_CHUYEN_DE);//chuyên đề
     }
-    public function position(){
+
+    public function position()
+    {
         return self::view(TRAC_NGHIEM_CHUC_VU);//chức vụ
     }
 
@@ -113,7 +120,7 @@ class TracNghiemDefineController extends BaseAdminController
         $data = app(VmDefine::class)->searchByCondition($search, $limit, $offset, true);
         $paging = $data['total'] > 0 ? Pagging::getNewPager(3, $pageNo, $data['total'], $limit, $search) : '';
 
-        $this->_outDataView($data);
+        $this->_outDataView($search);
         $optionSearchStatus = getOption($this->arrStatus, $search['define_status']);
         $optionSearchType = getOption($this->arrDefineType, $search['define_type']);
 
@@ -135,6 +142,7 @@ class TracNghiemDefineController extends BaseAdminController
         if (!$this->checkMultiPermiss([PERMISS_DEFINE_FULL, PERMISS_DEFINE_CREATE])) {
             return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
         }
+        $result = array('isIntOk' => 0);
         $id_hiden = (int)Request::get('id_hiden', 0);
         $data = $_POST;
         if ($this->_validData($data) && empty($this->error)) {
@@ -151,6 +159,7 @@ class TracNghiemDefineController extends BaseAdminController
                     app(VmDefine::class)->updateItem($_id, $_data);
                 }
             }
+            $result['isIntOk']=1;
         }
         $result['url'] = URL::route($this->arrUrlDefine[$data['define_type']]['pageTitle'], ['define_type' => $data['define_type']]);
         return Response::json($result);
@@ -177,12 +186,12 @@ class TracNghiemDefineController extends BaseAdminController
 
         $id = $_POST['id'];
         $data = (($id > 0)) ? app(VmDefine::class)->getItemById($id) : [];
-
         $this->_getDataDefault();
         $this->_outDataView($data);
         return view('tracnghiem.TracNghiemDefine.component.ajax_load_item',
             array_merge([
                 'data' => $data,
+                'define_type' => isset($data['define_type']) ? $data['define_type'] : TRAC_NGHIEM_KHOI_LOP,
             ], $this->viewPermission, $this->viewOptionData));
     }
 

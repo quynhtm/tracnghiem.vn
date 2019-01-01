@@ -12,12 +12,7 @@
     <div class="panel-body">
         <form id="formAdd" method="post">
             <input type="hidden" name="id_hiden" @if(isset($data['id']))value="{{$data['id']}}"@endif class="form-control" id="id_hiden">
-            <div class="form-group col-lg-12">
-                <label for="define_type">{{viewLanguage('Loại định nghĩa')}}</label>
-                <select class="form-control input-sm" name="define_type" id="define_type">
-                    {!! $optionDefineType !!}
-                </select>
-            </div>
+            <input name="define_type" value="{{$define_type}}" class="form-control" id="define_type" type="hidden">
             <div class="form-group col-lg-12">
                 <label for="define_name">{{viewLanguage('Tên')}} <span class="red"> (*) </span></label>
                 <input name="define_name" title="{{viewLanguage('Tên')}}" class="form-control input-required" id="define_name" type="text" @if(isset($data['define_name']))value="{{$data['define_name']}}"@endif>
@@ -42,7 +37,7 @@
             </div>
             <div class="clearfix"></div>
             <div class="form-group col-lg-12">
-                <a class="btn btn-success" id="submit" onclick="VM.addItem('form#formAdd', 'form#formAdd :input', '#submit', WEB_ROOT + '/manager/define/post/' + '{{$data["id"]}}')">
+                <a class="btn btn-success" id="submit" onclick="VM.addItem('form#formAdd', 'form#formAdd :input', '#submit', WEB_ROOT + '/manager/defineTracNghiem/post/' + '{{$data["id"]}}')">
                     <i class="fa fa-floppy-o" aria-hidden="true"></i> {{viewLanguage('Lưu')}}
                 </a>
                 <a class="btn btn-default" id="cancel" onclick="window.location.reload();">

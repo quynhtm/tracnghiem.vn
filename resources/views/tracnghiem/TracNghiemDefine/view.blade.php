@@ -34,7 +34,7 @@
                                     {!! $optionSearchStatus !!}}
                                 </select>
                             </div>
-                            <div class="form-group col-lg-4">
+                            <div class="form-group col-lg-4" style="display: none">
                                 <label for="define_type" class="control-label">{{viewLanguage('Loại định nghĩa')}}</label>
                                 <select name="define_type" id="define_type" class="form-control input-sm">
                                     {!! $optionSearchType !!}}
@@ -101,12 +101,12 @@
 
                                     <td class="text-center middle" align="center">
                                         @if($is_root || $permission_full || $permission_create)
-                                            <a class="editItem" onclick="VM.editItem('{{$item->id}}', WEB_ROOT + '/manager/define/ajaxLoad')" title="{{viewLanguage('Sửa')}}">
+                                            <a class="editItem" onclick="VM.editItem('{{$item->id}}', WEB_ROOT + '/manager/defineTracNghiem/ajaxLoad')" title="{{viewLanguage('Sửa')}}">
                                                 <i class="fa fa-edit fa-2x"></i>
                                             </a>
                                         @endif
                                         @if($is_boss)
-                                            <a href="javascript:void(0);" onclick="VM.deleteItem('{{$item->id}}', WEB_ROOT + '/manager/define/delete')" title="{{viewLanguage('Xóa')}}">
+                                            <a href="javascript:void(0);" onclick="VM.deleteItem('{{$item->id}}', WEB_ROOT + '/manager/defineTracNghiem/delete')" title="{{viewLanguage('Xóa')}}">
                                                 <i class="fa fa-trash fa-2x"></i>
                                             </a>
                                         @endif
@@ -130,12 +130,8 @@
                     <div class="panel-body">
                         <form id="formAdd" method="post">
                             <input name="id_hiden" value="0" class="form-control" id="id_hiden" type="hidden">
-                            <div class="form-group col-lg-12">
-                                <label for="define_type">{{viewLanguage('Loại định nghĩa')}}</label>
-                                <select class="form-control input-sm" name="define_type" id="define_type">
-                                    {!! $optionDefineType !!}
-                                </select>
-                            </div>
+                            <input name="define_type" value="{{$define_type}}" class="form-control" id="define_type" type="hidden">
+
                             <div class="form-group col-lg-12">
                                 <label for="define_name">{{viewLanguage('Tên')}} <span class="red"> (*) </span></label>
                                 <input name="define_name"  id="define_name" title="{{viewLanguage('Tên tình trạng')}}" class="form-control input-required"type="text">
@@ -161,7 +157,7 @@
                             <div class="clearfix"></div>
                             <div class="form-group col-lg-12">
                                 @if($is_root || $permission_full || $permission_create)
-                                <a class="btn btn-success" id="submit" onclick="VM.addItem('form#formAdd', 'form#formAdd :input', '#submit', WEB_ROOT + '/manager/define/post/0')">
+                                <a class="btn btn-success" id="submit" onclick="VM.addItem('form#formAdd', 'form#formAdd :input', '#submit', WEB_ROOT + '/manager/defineTracNghiem/post/0')">
                                     <i class="fa fa-floppy-o" aria-hidden="true"></i> {{viewLanguage('Lưu')}}
                                 </a>
                                 @endif
