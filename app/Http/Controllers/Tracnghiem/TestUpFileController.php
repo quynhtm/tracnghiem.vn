@@ -6,12 +6,12 @@
 * @Version	 : 1.0
 */
 
-namespace App\Http\Controllers\Site;
+namespace App\Http\Controllers\Tracnghiem;
 
-use App\Http\Controllers\BaseSiteController;
+use App\Http\Controllers\BaseAdminController;
 use App\Library\AdminFunction\FunctionLib;
 
-class TestController extends BaseSiteController{
+class TestUpFileController extends BaseAdminController{
 	
 	public function __construct(){
 		parent::__construct();

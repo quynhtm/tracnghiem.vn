@@ -19,4 +19,4 @@ Route::post('defineTracNghiem/ajaxLoad', array('as' => 'tracnghiem.ajaxDefine','
 
 
 //Link test
-Route::get('post/test', array('as' => 'test.post','uses' => TracNghiem.'\TestController@post'));
+Route::get('post/test', array('as' => 'test.post','uses' => TracNghiem.'\TestUpFileController@post'));
