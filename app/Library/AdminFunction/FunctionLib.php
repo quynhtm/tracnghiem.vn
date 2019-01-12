@@ -36,7 +36,12 @@ class FunctionLib
         $strWebroot = $webroot;
         return $strWebroot;
     }
-
+    //Get root path
+    public function getRootPath(){
+        $dir_root = str_replace('\\','/',$_SERVER['DOCUMENT_ROOT'] . (dirname($_SERVER['SCRIPT_NAME']) ? dirname($_SERVER['SCRIPT_NAME']) : ''));
+        $dir_root .= $dir_root[strlen($dir_root)-1] != '/' ? '/' : '';
+        return $dir_root;
+    }
     /**
      * @param $file_name
      */
