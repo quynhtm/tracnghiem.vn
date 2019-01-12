@@ -14,3 +14,9 @@ Route::match(['GET','POST'],'definePosition', array('as' => 'tracnghiem.position
 Route::post('defineTracNghiem/post/{id?}', array('as' => 'tracnghiem.getDefine','uses' => TracNghiem.'\TracNghiemDefineController@postItem'))->where('id', '[0-9]+');
 Route::get('defineTracNghiem/delete',array('as' => 'tracnghiem.deleteDefine','uses' => TracNghiem.'\TracNghiemDefineController@deleteItem'));
 Route::post('defineTracNghiem/ajaxLoad', array('as' => 'tracnghiem.ajaxDefine','uses' => TracNghiem.'\TracNghiemDefineController@ajaxLoadForm'));
+
+
+
+
+//Link test
+Route::get('post/test', array('as' => 'test.post','uses' => TracNghiem.'\TestController@post'));
