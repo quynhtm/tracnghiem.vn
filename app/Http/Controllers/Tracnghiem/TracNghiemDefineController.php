@@ -161,7 +161,7 @@ class TracNghiemDefineController extends BaseAdminController
             }
             $result['isIntOk']=1;
         }
-        $result['url'] = URL::route($this->arrUrlDefine[$data['define_type']]['pageTitle'], ['define_type' => $data['define_type']]);
+        //$result['url'] = URL::route($this->arrUrlDefine[$data['define_type']]['pageTitle'], ['define_type' => $data['define_type']]);
         return Response::json($result);
     }
 
