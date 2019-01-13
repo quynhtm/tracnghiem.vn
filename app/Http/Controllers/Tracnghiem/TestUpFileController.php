@@ -18,7 +18,7 @@ class TestUpFileController extends BaseAdminController{
 		parent::__construct();
 	}
 
-	public function post(){
+	public function post_1(){
 		$phpWord = IOFactory::load(app(FunctionLib::class)->getRootPath().'uploads/files/toan 6-chuong 1.docx');
 		$sections = $phpWord->getSections();
 		$arrItem = $color = [];
@@ -66,4 +66,50 @@ class TestUpFileController extends BaseAdminController{
 		}
 		return view('admin.news.post',[]);
 	}
+    public function post(){
+        $phpWord = IOFactory::load(app(FunctionLib::class)->getRootPath().'uploads/files/toan 6-chuong new.docx');
+        $sections = $phpWord->getSections();
+        $arrItem = [];
+        foreach($sections as $s) {
+            $els = $s->getElements();
+            foreach ($els as $elementKey => $elementValue) {
+                if($elementValue instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                    $secondSectionElement = $elementValue->getElements();
+                    $text = '';
+                    foreach($secondSectionElement as $secondSectionElementKey => $secondSectionElementValue) {
+                        if($secondSectionElementValue instanceof \PhpOffice\PhpWord\Element\Text) {
+                            //Sentence
+                            $text .= $secondSectionElementValue->getText();
+                        }
+                    }
+                    $arrItem[] = $text;
+                }
+            }
+        }
+        $result = [];
+        if(sizeof($arrItem) > 0){
+            $i = 0;
+            foreach($arrItem as $k=>$item){
+                $item = trim($item);
+                $arrX = explode('NB.', trim($item));
+                if(count($arrX) == 2){
+                    $i++;
+                    $result[$i]['CH'] = trim(str_replace('NB.', '', $item));
+                }else{
+                    //True
+                    $arrX = explode('#$.', $item);
+                    if(count($arrX) == 2){
+                        $result[$i]['TL'] =  trim(str_replace('#$.', '', $item));
+                    }
+                    //False
+                    $arrX = explode('#.', $item);
+                    if(count($arrX) == 2){
+                        $result[$i][] =  trim(str_replace('#.', '', $item));
+                    }
+                }
+            }
+            vmDebug($result);
+        }
+        return view('admin.news.post',[]);
+    }
 }
