@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Tracnghiem;
 
 use App\Http\Controllers\BaseAdminController;
+use App\Http\Models\Tracnghiem\Question;
 use App\Library\AdminFunction\FunctionLib;
 use PhpOffice\PhpWord\IOFactory;
 
@@ -89,14 +90,14 @@ class TestUpFileController extends BaseAdminController{
         $result = [];
         if(sizeof($arrItem) > 0){
             $i = 0;
-            foreach($arrItem as $k=>$item){
+			foreach($arrItem as $k=>$item){
                 $item = trim($item);
                 $arrX = explode('NB.', trim($item));
                 if(count($arrX) == 2){
                     $i++;
                     $result[$i]['CH'] = trim(str_replace('NB.', '', $item));
                 }else{
-                    //True
+					//True
                     $arrX = explode('#$.', $item);
                     if(count($arrX) == 2){
                         $result[$i]['TL'] =  trim(str_replace('#$.', '', $item));
@@ -104,12 +105,28 @@ class TestUpFileController extends BaseAdminController{
                     //False
                     $arrX = explode('#.', $item);
                     if(count($arrX) == 2){
-                        $result[$i][] =  trim(str_replace('#.', '', $item));
+                        $result[$i][$k] =  trim(str_replace('#.', '', $item));
                     }
                 }
             }
-            vmDebug($result);
+
+            foreach($result as $k => $item){
+				$tmp = [];
+				$i = 0;
+				foreach($item as $_k => $v){
+					if($_k == 'CH'){
+						$tmp['question_name'] = $item['CH'];
+					}else{
+						$i++;
+						if($_k == 'TL'){
+							$tmp['correct_answer'] = $i;
+
+						}
+						$tmp['answer_'.$i] = $v;
+					}
+				}
+				app(Question::class)->createItem($tmp);
+		    }
         }
-        return view('admin.news.post',[]);
     }
 }
