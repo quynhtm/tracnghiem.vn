@@ -151,3 +151,9 @@ define('PERMISS_QUESTION_VIEW', 'questionView');
 define('PERMISS_QUESTION_CREATE', 'questionCreate');
 define('PERMISS_QUESTION_DELETE', 'questionDelete');
 
+//permiss question
+define('PERMISS_EXAMQUESTION_FULL', 'examQuestionFull');
+define('PERMISS_EXAMQUESTION_VIEW', 'examQuestionView');
+define('PERMISS_EXAMQUESTION_CREATE', 'examQuestionCreate');
+define('PERMISS_EXAMQUESTION_DELETE', 'examQuestionDelete');
+

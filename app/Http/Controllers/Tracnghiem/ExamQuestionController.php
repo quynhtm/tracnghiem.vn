@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Tracnghiem;
 
 use App\Http\Controllers\BaseAdminController;
-use App\Http\Models\Tracnghiem\Question;
+use App\Http\Models\Tracnghiem\Exam;
 use App\Library\AdminFunction\CGlobal;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Response;
 use App\Library\AdminFunction\Pagging;
 use App\Library\AdminFunction\Upload;
 
-class QuestionController extends BaseAdminController
+class ExamQuestionController extends BaseAdminController
 {
     private $error = array();
     private $arrStatus = array();
@@ -21,7 +21,7 @@ class QuestionController extends BaseAdminController
     public function __construct()
     {
         parent::__construct();
-        CGlobal::$pageAdminTitle = 'QL câu hỏi';
+        CGlobal::$pageAdminTitle = 'QL Đề thi';
     }
 
     public function _getDataDefault()
@@ -34,9 +34,9 @@ class QuestionController extends BaseAdminController
         //out put permiss
         $this->viewPermission = [
             'is_root' => $this->is_root,
-            'permission_full' => $this->checkPermiss(PERMISS_QUESTION_FULL),
-            'permission_create' => $this->checkPermiss(PERMISS_QUESTION_CREATE),
-            'permission_delete' => $this->checkPermiss(PERMISS_QUESTION_DELETE),
+            'permission_full' => $this->checkPermiss(PERMISS_EXAMQUESTION_FULL),
+            'permission_create' => $this->checkPermiss(PERMISS_EXAMQUESTION_CREATE),
+            'permission_delete' => $this->checkPermiss(PERMISS_EXAMQUESTION_DELETE),
         ];
     }
 
@@ -51,7 +51,7 @@ class QuestionController extends BaseAdminController
     public function view()
     {
         //Check phan quyen.
-        if (!$this->checkMultiPermiss([PERMISS_QUESTION_FULL, PERMISS_QUESTION_VIEW])) {
+        if (!$this->checkMultiPermiss([PERMISS_EXAMQUESTION_FULL, PERMISS_EXAMQUESTION_VIEW])) {
             return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
         }
         $this->_getDataDefault();
@@ -67,11 +67,11 @@ class QuestionController extends BaseAdminController
         //$search['field_get'] = 'menu_name,menu_id,parent_id';//cac truong can lay
         //vmDebug($search);
 
-        $data = app(Question::class)->searchByCondition($search, $limit, $offset, true);
+        $data = app(Exam::class)->searchByCondition($search, $limit, $offset, true);
         $paging = $data['total'] > 0 ? Pagging::getNewPager(3, $pageNo, $data['total'], $limit, $search) : '';
 
         $this->_outDataView($search);
-        return view('tracnghiem.Question.view', array_merge([
+        return view('tracnghiem.ExamQuestion.view', array_merge([
             'data' => $data['data'],
             'search' => $search,
             'total' => $data['total'],
@@ -82,13 +82,13 @@ class QuestionController extends BaseAdminController
 
     public function getItem($id)
     {
-        if (!$this->checkMultiPermiss([PERMISS_QUESTION_FULL, PERMISS_QUESTION_CREATE])) {
+        if (!$this->checkMultiPermiss([PERMISS_EXAMQUESTION_FULL, PERMISS_EXAMQUESTION_CREATE])) {
             return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
         }
-        $data = (($id > 0)) ? app(Question::class)->getItemById($id) : [];
+        $data = (($id > 0)) ? app(Exam::class)->getItemById($id) : [];
         $this->_getDataDefault();
         $this->_outDataView($data);
-        return view('tracnghiem.Question.add', array_merge([
+        return view('tracnghiem.ExamQuestion.add', array_merge([
             'data' => $data,
             'id' => $id,
         ], $this->viewPermission, $this->viewOptionData));
@@ -96,7 +96,7 @@ class QuestionController extends BaseAdminController
 
     public function postItem($id)
     {
-        if (!$this->checkMultiPermiss([PERMISS_QUESTION_FULL, PERMISS_QUESTION_CREATE])) {
+        if (!$this->checkMultiPermiss([PERMISS_EXAMQUESTION_FULL, PERMISS_EXAMQUESTION_CREATE])) {
             return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
         }
         $id_hiden = (int)Request::get('id_hiden', 0);
@@ -113,19 +113,19 @@ class QuestionController extends BaseAdminController
             $id = ($id == 0) ? $id_hiden : $id;
             if ($id > 0) {
                 //cap nhat
-                if (app(Question::class)->updateItem($id, $data)) {
+                if (app(Exam::class)->updateItem($id, $data)) {
                     return Redirect::route('tracnghiem.questionView');
                 }
             } else {
                 //them moi
-                if (app(Question::class)->createItem($data)) {
+                if (app(Exam::class)->createItem($data)) {
                     return Redirect::route('tracnghiem.questionView');
                 }
             }
         }
         $this->_getDataDefault();
         $this->_outDataView($data);
-        return view('tracnghiem.Question.add', array_merge([
+        return view('tracnghiem.ExamQuestion.add', array_merge([
             'data' => $data,
             'id' => $id,
             'error' => $this->error,
@@ -136,11 +136,11 @@ class QuestionController extends BaseAdminController
     public function deleteItem()
     {
         $data = array('isIntOk' => 0);
-        if (!$this->checkMultiPermiss([PERMISS_QUESTION_FULL, PERMISS_QUESTION_DELETE])) {
+        if (!$this->checkMultiPermiss([PERMISS_EXAMQUESTION_FULL, PERMISS_EXAMQUESTION_DELETE])) {
             return Response::json($data['msg'] = 'Bạn không có quyền thao tác.');
         }
         $id = (int)Request::get('id', 0);
-        if ($id > 0 && app(Question::class)->deleteItem($id)) {
+        if ($id > 0 && app(Exam::class)->deleteItem($id)) {
             $data['isIntOk'] = 1;
         }
         return Response::json($data);

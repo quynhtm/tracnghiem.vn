@@ -6,6 +6,12 @@ Route::get('question/edit/{id?}', array('as' => 'tracnghiem.questionEdit','uses'
 Route::post('question/edit/{id?}', array('as' => 'tracnghiem.questionEdit','uses' => TracNghiem.'\QuestionController@postItem'));
 Route::post('question/deleteItem', array('as' => 'tracnghiem.deleteItem','uses' => TracNghiem.'\QuestionController@deleteItem'));//ajax
 
+//Quản lý đề thi
+Route::get('examQuestion',array('as' => 'tracnghiem.examQuestionView','uses' => TracNghiem.'\ExamQuestionController@view'));
+Route::get('examQuestion/edit/{id?}', array('as' => 'tracnghiem.examQuestionEdit','uses' => TracNghiem.'\ExamQuestionController@getItem'));
+Route::post('examQuestion/edit/{id?}', array('as' => 'tracnghiem.examQuestionEdit','uses' => TracNghiem.'\ExamQuestionController@postItem'));
+Route::post('examQuestion/deleteItem', array('as' => 'tracnghiem.deleteExamQuestion','uses' => TracNghiem.'\ExamQuestionController@deleteItem'));//ajax
+
 //Define common
 Route::match(['GET','POST'],'defineSchoolBlock', array('as' => 'tracnghiem.schoolBlock','uses' => TracNghiem.'\TracNghiemDefineController@schoolBlock'));//khối học
 Route::match(['GET','POST'],'defineSubjects', array('as' => 'tracnghiem.subjects','uses' => TracNghiem.'\TracNghiemDefineController@subjects'));//môn học

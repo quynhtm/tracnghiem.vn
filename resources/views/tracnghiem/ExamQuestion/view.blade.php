@@ -9,7 +9,7 @@
                 <i class="ace-icon fa fa-home home-icon"></i>
                 <a href="{{URL::route('admin.dashboard')}}">Trang chủ</a>
             </li>
-            <li class="active"><a href="{{URL::route('tracnghiem.questionView')}}">{{$pageAdminTitle}}</a></li>
+            <li class="active"><a href="{{URL::route('tracnghiem.examQuestionView')}}">{{$pageAdminTitle}}</a></li>
         </ul>
     </div>
 
