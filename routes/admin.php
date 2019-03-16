@@ -4,6 +4,7 @@ Route::post('forgot_password', array('as' => 'admin.forgot_password','uses' => A
 Route::get('dashboard', array('as' => 'admin.dashboard','uses' => Admin.'\AdminDashBoardController@dashboard'));
 
 //testData
+Route::get('testUser',array('as' => 'admin.testUser','uses' => Admin.'\TestDataController@testDataUser'));
 Route::get('clear',array('as' => 'admin.clear','uses' => Admin.'\TestDataController@clearCache'));
 
 /*thông tin tài khoản*/
