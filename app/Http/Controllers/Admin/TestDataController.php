@@ -51,9 +51,25 @@ class TestDataController extends BaseAdminController
                 $dataTron[] = $v;
             }
         }
+
         vmDebug($dataTron);
     }
-
+    public function tronAuto(){
+        $a = [['red'=>'red'],['red1'=>'red1'],['red2'=>'red2'],['red3'=>'red3']];
+        $resul = [];
+        for( $i= 0 ; $i <= 100 ; $i++ ){
+            $random_keys=array_rand($a,1);
+            $key_new = key($a[$random_keys]);
+            $resul[$key_new]= $a[$random_keys];
+            if(count($resul)==4){
+                break;
+            }
+        }
+        vmDebug('mang moi',false);
+        vmDebug($a,false);
+        vmDebug('mang tron',false);
+        vmDebug($resul);
+    }
     public function clearCache(){
         Artisan::call('cache:clear');die;
     }
