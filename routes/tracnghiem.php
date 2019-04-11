@@ -22,6 +22,8 @@ Route::get('defineTracNghiem/delete',array('as' => 'tracnghiem.deleteDefine','us
 Route::post('defineTracNghiem/ajaxLoad', array('as' => 'tracnghiem.ajaxDefine','uses' => TracNghiem.'\TracNghiemDefineController@ajaxLoadForm'));
 
 
+Route::get('ra-de-tu-file', array('as' => 'tronNgauNhien.getTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@getRaDeTuFile'));
+Route::post('ra-de-tu-file', array('as' => 'tronNgauNhien.postTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@postRaDeTuFile'));
 
 
 //Link test

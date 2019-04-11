@@ -134,7 +134,7 @@ class TestUpFileController extends BaseAdminController{
 		$arrText = CExtracts::extractsText($path);
 		$arrCheck = ['NB.', 'TH.', 'VD.', 'VDC.'];
 		$result = CExtracts::extractsQuestions($arrText, $arrCheck);
-		$data = CExtracts::extractsCreateOneQuestions($result);
-		FunctionLib::bug($data);
+		$dataInput = CExtracts::extractsCreateOneQuestions($result);
+		app(Question::class)->insertMultiple($dataInput);
 	}
 }
