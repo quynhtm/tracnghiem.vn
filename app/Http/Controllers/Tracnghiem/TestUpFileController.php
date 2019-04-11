@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Tracnghiem;
 
 use App\Http\Controllers\BaseAdminController;
 use App\Http\Models\Tracnghiem\Question;
+use App\Library\AdminFunction\CExtracts;
 use App\Library\AdminFunction\FunctionLib;
 use PhpOffice\PhpWord\IOFactory;
 
@@ -67,7 +68,7 @@ class TestUpFileController extends BaseAdminController{
 		}
 		return view('admin.news.post',[]);
 	}
-    public function post(){
+    public function post_2(){
         $phpWord = IOFactory::load(app(FunctionLib::class)->getRootPath().'uploads/files/toan 6-chuong new.docx');
         $sections = $phpWord->getSections();
         $arrItem = [];
@@ -109,7 +110,6 @@ class TestUpFileController extends BaseAdminController{
                     }
                 }
             }
-
             foreach($result as $k => $item){
 				$tmp = [];
 				$i = 0;
@@ -129,4 +129,12 @@ class TestUpFileController extends BaseAdminController{
 		    }
         }
     }
+	public function post(){
+		$path = app(FunctionLib::class)->getRootPath().'uploads/files/toan 6-chuong new.docx';
+		$arrText = CExtracts::extractsText($path);
+		$arrCheck = ['NB.', 'TH.', 'VD.', 'VDC.'];
+		$result = CExtracts::extractsQuestions($arrText, $arrCheck);
+		$data = CExtracts::extractsCreateOneQuestions($result);
+		FunctionLib::bug($data);
+	}
 }
