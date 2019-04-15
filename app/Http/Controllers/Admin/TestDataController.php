@@ -33,26 +33,19 @@ class TestDataController extends BaseAdminController
         $dataTron = [];
         if($data){
             foreach ($data->toArray() as $v){
-                $list_dap_an = [
-                    'answer_1'=>$v['answer_1'],
-                    'answer_2'=>$v['answer_2'],
-                    'answer_3'=>$v['answer_3'],
-                    'answer_4'=>$v['answer_4'],
-                    'answer_5'=>$v['answer_5'],
-                    'answer_6'=>$v['answer_6']];
-                $kkk = 1;
-                foreach ($list_dap_an as $key=>$da){
-                    $kk = ($key === 'answer_'.$v['correct_answer'])? 13: $kkk;
-                    $arrDapAn[$kk] = $da;
-                    $kkk ++;
+                $list_dap_an = [];
+                for( $i= 1 ; $i <= 6 ; $i++ ){
+                    $key_q = 'answer_'.$i;
+                    if(isset($v[$key_q]) && trim($v[$key_q]) != ''){
+                        $list_dap_an[$key_q] = trim($v[$key_q]);
+                    }
                 }
-                $v['dap_an'] = $list_dap_an;
-                $v['list_dap_an'] = $arrDapAn;
-                $dataTron[] = $v;
+                $v['list_answer'] = $list_dap_an;
+                $dataTron[$v['id']] = $v;
             }
         }
-
-        vmDebug($dataTron);
+        $du_lieu_da_tron = self::mixAutoQuestion($dataTron);
+        vmDebug($du_lieu_da_tron);
     }
     public function tronAuto(){
         $a = [['red'=>'red'],['red1'=>'red1'],['red2'=>'red2'],['red3'=>'red3']];
@@ -70,6 +63,71 @@ class TestDataController extends BaseAdminController
         vmDebug('mang tron',false);
         vmDebug($resul);
     }
+
+    public function mixAutoQuestion($data=[]){
+        $total = count($data);
+        $result = [];
+        if($total > 0){
+            for( $i = 1 ; $i <= $total ; $i++ ){
+                $random_keys=array_rand($data,1);
+                $question = $data[$random_keys];
+                //answer
+                $question['list_answer'] = self::mixAutoAnswer($question['list_answer']);
+                $result[$random_keys]= $question;
+                unset($data[$random_keys]);
+            }
+        }
+        return $result;
+    }
+
+    public function mixAutoAnswer($data=[]){
+        $total = count($data);
+        $result = [];
+        if($total > 0){
+            for( $i = 1 ; $i <= $total ; $i++ ){
+                $random_keys=array_rand($data,1);
+                $result[$random_keys]= $data[$random_keys];
+                unset($data[$random_keys]);
+            }
+        }
+        return $result;
+    }
+
+    public function exportContract(){
+        $contract_id = (int)Request::get('contract_id',3);
+        $type = (int)Request::get('type',1);
+        if($contract_id > 0){
+            $data1 = Contract::getContractById($contract_id);
+        }
+        $data = isset($data1['data'])?$data1['data']:array();
+        if(!$this->is_root && !in_array($this->admin_contract,$this->permission) && !in_array($this->permiss_export_pdf,$this->permission)){
+            if((int)$data['admin_id'] !== (int)$this->user['admin_id']){
+                return Redirect::route('adminContract.index');
+            }
+        }
+        if(empty($data))
+            return;
+
+        $data['contract_province_name'] = CGlobal::$aryProvince[$data['contract_province']];
+        $data['today'] = time();
+        $data['type_export'] = $type;
+        $template = ($data['contract_type']== 1)?'admin.AdminAppendix.pdfs.HDSP':'admin.AdminAppendix.pdfs.HDDV';
+        if($type == 1){
+            $output = View::make($template)->with('data',$data);
+            $filepath = "HDKD.doc";
+            @header("Cache-Control: ");// leave blank to avoid IE errors
+            @header("Pragma: ");// leave blank to avoid IE errors
+            @header("Content-type: application/octet-stream");
+            @header("Content-Disposition: attachment; filename=\"{$filepath}\"");
+            echo $output;die;
+        }elseif($type == 2){
+            $html = View::make($template)->with('data',$data)->render();
+            $signature = false;
+            $this->filename = "HDKD.pdf";
+            $this->pdfOutput($html, $this->filename, 'I', $signature);
+        }
+    }
+
     public function clearCache(){
         Artisan::call('cache:clear');die;
     }
