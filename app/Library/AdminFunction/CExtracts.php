@@ -2,7 +2,7 @@
 /*
 * @Created by: DUYNX
 * @Author	 : nguyenduypt86@gmail.com
-* @Date 	 : 08/2016
+* @Date 	 : 04/2019
 * @Version	 : 1.0
 */
 namespace App\Library\AdminFunction;
