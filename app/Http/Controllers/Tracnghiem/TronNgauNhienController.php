@@ -13,6 +13,7 @@ use App\Http\Models\Tracnghiem\Question;
 use App\Library\AdminFunction\CExtracts;
 use App\Library\AdminFunction\FunctionLib;
 use App\Library\AdminFunction\Upload;
+use Illuminate\Support\Facades\Redirect;
 
 class TronNgauNhienController extends BaseAdminController{
 	
@@ -24,13 +25,12 @@ class TronNgauNhienController extends BaseAdminController{
 	}
 	public function postRaDeTuFile(){
 		if(isset($_POST) && isset($_FILES) && sizeof($_FILES) > 0){
-			$file = app(Upload::class)->uploadFile('myFile', 'docx', 'files', 5 * 1024 * 1024,$id=0, true);
-			$path = '';
+			$file = app(Upload::class)->uploadFile('myFile', 'docx', 'files', 5 * 1024 * 1024, $id=0, true);
 			if($file != ''){
 				$path = app(FunctionLib::class)->getRootPath().'uploads/'.$file;
 				if(is_file($path)){
 					$arrText = CExtracts::extractsText($path);
-					$arrCheck = ['NB.', 'TH.', 'VD.', 'VDC.'];
+					$arrCheck = array_keys(CExtracts::$arrTypeQuestion);
 					$result = CExtracts::extractsQuestions($arrText, $arrCheck);
 					$dataInput = CExtracts::extractsCreateOneQuestions($result);
 					app(Question::class)->insertMultiple($dataInput);

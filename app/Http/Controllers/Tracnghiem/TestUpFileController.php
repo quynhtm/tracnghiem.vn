@@ -132,7 +132,7 @@ class TestUpFileController extends BaseAdminController{
 	public function post(){
 		$path = app(FunctionLib::class)->getRootPath().'uploads/files/toan 6-chuong new.docx';
 		$arrText = CExtracts::extractsText($path);
-		$arrCheck = ['NB.', 'TH.', 'VD.', 'VDC.'];
+		$arrCheck = array_keys(CExtracts::$arrTypeQuestion);
 		$result = CExtracts::extractsQuestions($arrText, $arrCheck);
 		$dataInput = CExtracts::extractsCreateOneQuestions($result);
 		app(Question::class)->insertMultiple($dataInput);
