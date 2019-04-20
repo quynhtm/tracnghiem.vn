@@ -136,17 +136,7 @@ class AdminLoginController extends Controller
     }
     public function logout(Request $request){
         if (Session::has('user')) {
-            $user =  Session::get('user');
-            //Check user logout de chia YCV
-            $user_id = isset($user['user_id']) ? $user['user_id'] : 0;
-            $user_position = isset($user['position']) ? $user['position'] : 0;
-            if($user_id && in_array($user_position, ServiceLoanSplit::$user_position) && ServiceLoanSplit::$usesplit){
-               app(ServiceLoanSplit::class)->setSessionUserLogout($user_id);
-            }
             Session::forget('user');
-            //update logout
-            $this->_user->updateLogOut($user_id);
-            app(TBSession::class)->removeUserLogin($user_id);
         }
         return Redirect::route('admin.login');
     }

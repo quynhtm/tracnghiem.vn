@@ -11,15 +11,16 @@ namespace App\Http\Models\Tracnghiem;
 use App\Http\Models\Admin\User;
 use App\Http\Models\BaseModel;
 
+use App\Library\AdminFunction\FunctionLib;
 use App\Library\AdminFunction\Memcache;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
+use PDOException;
 
 class Question extends BaseModel
 {
     protected $table = TABLE_QUESTION;
     protected $primaryKey = 'id';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = array('question_name', 'question_type','question_approved', 'question_status', 'answer_1','answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6',
         'correct_answer', 'created_at', 'updated_at', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update');
@@ -31,9 +32,6 @@ class Question extends BaseModel
             if (isset($dataSearch['question_name']) && $dataSearch['question_name'] != '') {
                 $query->where('question_name', 'LIKE', '%' . $dataSearch['question_name'] . '%');
             }
-            if (isset($dataSearch['define_code']) && $dataSearch['define_code'] != '') {
-                $query->where('define_code', $dataSearch['define_code']);
-            }
             if (isset($dataSearch['question_approved']) && $dataSearch['question_approved'] > -1) {
                 $query->where('question_approved', $dataSearch['question_approved']);
             }
@@ -43,9 +41,18 @@ class Question extends BaseModel
             if (isset($dataSearch['question_type']) && $dataSearch['question_type'] > 0) {
                 $query->where('question_type', $dataSearch['question_type']);
             }
+
+            if(isset($dataSearch['created_at_from']) && isset($dataSearch['created_at_to']) && $dataSearch['created_at_from'] !='' && $dataSearch['created_at_to'] !=''){
+                $time_create_from = FunctionLib::convertDate($dataSearch['created_at_from'].' 00:00:00');
+                $time_create_to = FunctionLib::convertDate($dataSearch['created_at_to']. ' 23:59:59');
+                if($time_create_to >= $time_create_from && $time_create_to > 0){
+                    $query->whereBetween('created_at', array($time_create_from, $time_create_to));
+                }
+            }
+
             $total = ($is_total) ? $query->count() : 0;
 
-            $query->orderBy('id', 'asc');
+            $query->orderBy('id', 'desc');
 
             $fields = (isset($dataSearch['field_get']) && trim($dataSearch['field_get']) != '') ? explode(',', trim($dataSearch['field_get'])) : array();
             if (!empty($fields)) {

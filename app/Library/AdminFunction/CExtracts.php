@@ -119,6 +119,7 @@ class CExtracts{
 
                     }
                 }
+                $tmp['created_at'] = time();
                 $listData[] = $tmp;
             }
         }
