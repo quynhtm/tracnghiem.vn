@@ -10,7 +10,8 @@ namespace App\Library\AdminFunction;
 use PhpOffice\PhpWord\IOFactory;
 
 class CExtracts{
-    static $arrTypeQuestion = ['NB.'=>1, 'TH.'=>2, 'VD.'=>3, 'VDC.'=>4];
+    static $arrTypeQuestion = ['NB.'=>STATUS_INT_MOT, 'TH.'=>STATUS_INT_HAI, 'VD.'=>STATUS_INT_BA, 'VDC.'=>STATUS_INT_BON];
+    static $arrTypeQuestionText = [STATUS_INT_MOT=>'Nhận biết', STATUS_INT_HAI=>'Thông hiểu', STATUS_INT_BA=>'Vận dụng', STATUS_INT_BON=>'Vận dụng cao'];
     static $typeQuestionDefault = 1;
     /*
      A.Tệp có định dạng: .docx

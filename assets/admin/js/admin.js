@@ -341,6 +341,8 @@ var Admin = {
                 url_ajax = 'content_notify/deleteContentNotify';
             } else if (type == 12) {
                 url_ajax = 'marketing_coin_policy/delete';
+            } else if (type == 13) {
+                url_ajax = 'questions-file/delete';
             }
             if (url_ajax != '') {
                 $.ajax({

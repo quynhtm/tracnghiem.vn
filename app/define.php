@@ -145,6 +145,7 @@ define('PERMISS_DEFINE_VIEW', 'defineView');
 define('PERMISS_DEFINE_CREATE', 'defineCreate');
 define('PERMISS_DEFINE_DELETE', 'defineDelete');
 
+
 //permiss question
 define('PERMISS_QUESTION_FULL', 'questionFull');
 define('PERMISS_QUESTION_VIEW', 'questionView');
@@ -156,4 +157,13 @@ define('PERMISS_EXAMQUESTION_FULL', 'examQuestionFull');
 define('PERMISS_EXAMQUESTION_VIEW', 'examQuestionView');
 define('PERMISS_EXAMQUESTION_CREATE', 'examQuestionCreate');
 define('PERMISS_EXAMQUESTION_DELETE', 'examQuestionDelete');
+
+
+//Upload trộn đề ngẫu nhiên
+define('PERMISS_TRONDE_NGAUNHIEN_FULL', 'tronDeNgauNhienFull');
+define('PERMISS_TRONDE_NGAUNHIEN_VIEW', 'tronDeNgauNhienView');
+define('PERMISS_TRONDE_NGAUNHIEN_CREATE', 'tronDeNgauNhienCreate');
+define('PERMISS_TRONDE_NGAUNHIEN_DELETE', 'tronDeNgauNhienDelete');
+define('PERMISS_TRONDE_NGAUNHIEN_APPROVE', 'tronDeNgauNhienApprove');
+define('PERMISS_TRONDE_NGAUNHIEN_UPLOADFILE', 'tronDeNgauNhienUploadFile');
 

@@ -87,6 +87,7 @@ use App\Stringee;
     <script src="{{URL::asset('assets/admin/js/baseUpload.js')}}"></script>
     <script src="{{URL::asset('assets/lib/jAlert/jquery.alerts.js')}}"></script>
 
+    <script src="{{URL::asset('assets/admin/js/tracnghiem.js')}}"></script>
 
     {!!CGlobal::$extraHeaderCSS!!}
     {!!CGlobal::$extraHeaderJS!!}
