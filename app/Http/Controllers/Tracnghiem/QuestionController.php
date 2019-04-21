@@ -146,14 +146,10 @@ class QuestionController extends BaseAdminController
         return Response::json($data);
     }
 
-    private function _validData($data = array())
-    {
+    private function _validData($data = array()){
         if (!empty($data)) {
-            if (isset($data['name']) && trim($data['name']) == '') {
-                $this->error[] = 'Tên banner không được bỏ trống';
-            }
-            if (isset($data['url']) && trim($data['url']) == '') {
-                $this->error[] = 'URL không được bỏ trống';
+            if (isset($data['question_name']) && trim($data['question_name']) == '') {
+                $this->error[] = 'Câu hỏi không được bỏ trống';
             }
         }
         return true;

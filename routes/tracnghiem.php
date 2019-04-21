@@ -22,8 +22,12 @@ Route::get('defineTracNghiem/delete',array('as' => 'tracnghiem.deleteDefine','us
 Route::post('defineTracNghiem/ajaxLoad', array('as' => 'tracnghiem.ajaxDefine','uses' => TracNghiem.'\TracNghiemDefineController@ajaxLoadForm'));
 
 
-Route::get('ra-de-tu-file', array('as' => 'tronNgauNhien.getTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@getRaDeTuFile'));
-Route::post('ra-de-tu-file', array('as' => 'tronNgauNhien.postTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@postRaDeTuFile'));
+Route::get('questions-file', array('as' => 'tronNgauNhien.getTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@getQuestionFile'));
+Route::post('questions-file', array('as' => 'tronNgauNhien.postTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@postQuestionFile'));
+Route::get('questions-file/edit/{id?}', array('as' => 'tronNgauNhien.suaTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@getItem'))->where('id', '[0-9]+');
+Route::post('questions-file/edit/{id?}', array('as' => 'tronNgauNhien.suaTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@postItem'))->where('id', '[0-9]+');
+Route::post('questions-file/delete', array('as' => 'tronNgauNhien.xoaTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@delete'));
+Route::post('questions-file/approve', array('as' => 'tronNgauNhien.approveTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@approve'));
 
 
 //Link test
