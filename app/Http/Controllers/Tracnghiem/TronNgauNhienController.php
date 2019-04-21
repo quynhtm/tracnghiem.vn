@@ -90,6 +90,9 @@ class TronNgauNhienController extends BaseAdminController{
 
 	}
 	public function postQuestionFile(){
+		if (!$this->checkMultiPermiss([PERMISS_TRONDE_NGAUNHIEN_FULL, PERMISS_TRONDE_NGAUNHIEN_UPLOADFILE])) {
+			return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
+		}
 		if(isset($_POST) && isset($_FILES) && sizeof($_FILES) > 0){
 			$file = app(Upload::class)->uploadFile('myFile', 'docx', 'files', 5 * 1024 * 1024, $id=0, true);
 			if($file != ''){
@@ -171,7 +174,7 @@ class TronNgauNhienController extends BaseAdminController{
 	}
 	public function delete(){
 		$data['isIntOk'] = 0;
-		if(!$this->is_root && !in_array($this->permission_delete, $this->permission)) {
+		if (!$this->checkMultiPermiss([PERMISS_TRONDE_NGAUNHIEN_FULL, PERMISS_TRONDE_NGAUNHIEN_DELETE])) {
 			return Response::json($data);
 		}
 		$id = (int)Request::get('id', 0);
@@ -185,6 +188,11 @@ class TronNgauNhienController extends BaseAdminController{
 	}
 
 	public function approve(){
+
+		if (!$this->checkMultiPermiss([PERMISS_TRONDE_NGAUNHIEN_FULL, PERMISS_TRONDE_NGAUNHIEN_APPROVE])) {
+			return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
+		}
+
 		$items = Request::get('item', array());
 		if(!empty($items)){
 			foreach($items as $id){
