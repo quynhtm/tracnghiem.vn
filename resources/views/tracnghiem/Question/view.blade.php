@@ -38,6 +38,7 @@
                                      {{viewLanguage('add')}}
                                  </a>
                             @endif
+                            <a class="btn btn-warning btn-sm" href="{{URL::route('tracnghiem.mixAutoQuestion')}}"><i class="fa fa-search"></i> {{viewLanguage('Tạo dề thi')}}</a>
                             <button class="btn btn-primary btn-sm" type="submit"><i class="fa fa-search"></i> {{viewLanguage('search')}}</button>
                         </div>
                     </form>
