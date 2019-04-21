@@ -55,8 +55,11 @@
                                 <th width="5%" class="text-center">Câu TL 2</th>
                                 <th width="5%" class="text-center">Câu TL 3</th>
                                 <th width="5%" class="text-center">Câu TL 4</th>
+                                <!--
                                 <th width="5%" class="text-center">Câu TL 5</th>
                                 <th width="5%" class="text-center">Câu TL 6</th>
+                                -->
+                                <th width="5%">Loại câu hỏi</th>
                                 <th width="5%" class="text-center">Ngày tạo</th>
                                 <th width="5%" class="text-center">Trạng thái</th>
                                 <th width="5%" class="text-center">Thao tác</th>
@@ -72,8 +75,13 @@
                                         <td class="text-center @if($item->correct_answer == STATUS_INT_HAI) text-green @endif">{{$item->answer_2}}</td>
                                         <td class="text-center @if($item->correct_answer == STATUS_INT_BA) text-green @endif">{{$item->answer_3}}</td>
                                         <td class="text-center @if($item->correct_answer == STATUS_INT_BON) text-green @endif">{{$item->answer_4}}</td>
+                                        <!--
                                         <td class="text-center @if($item->correct_answer == STATUS_INT_NAM) text-green @endif">{{$item->answer_5}}</td>
                                         <td class="text-center @if($item->correct_answer == STATUS_INT_SAU) text-green @endif">{{$item->answer_6}}</td>
+                                        -->
+                                        <td class="text-center">
+                                            {{isset($arrTypeQuestionText[$item->question_type]) ? $arrTypeQuestionText[$item->question_type] : ''}}
+                                        </td>
                                         <td class="text-center">{{date('d/m/Y', $item->created_at)}}</td>
                                         <td>
                                             {{isset($arrApprove[$item->question_approved]) ? $arrApprove[$item->question_approved] : ''}}

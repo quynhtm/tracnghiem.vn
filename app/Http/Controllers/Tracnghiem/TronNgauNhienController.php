@@ -86,6 +86,7 @@ class TronNgauNhienController extends BaseAdminController{
 			'stt' => $stt,
 			'paging' => $paging,
 			'arrApprove' => $this->arrApprove,
+			'arrTypeQuestionText' => CExtracts::$arrTypeQuestionText
 		], $this->viewPermission));
 
 	}
@@ -127,10 +128,12 @@ class TronNgauNhienController extends BaseAdminController{
 		if(isset($data->id)){
 
 			$optionApprove = getOption($this->arrApprove, isset($data['question_approved']) ? $data['question_approved'] : STATUS_INT_AM_MOT);
+			$optionType = getOption(CExtracts::$arrTypeQuestionText, isset($data['question_type']) ? $data['question_type'] : STATUS_INT_MOT);
 			return view('tracnghiem.TronNgauNhien.add', array_merge([
 				'id'=>$id,
 				'data'=>$data,
 				'optionApprove'=>$optionApprove,
+				'optionType'=>$optionType,
 			], $this->viewPermission));
 		}
 		return Redirect::route('tronNgauNhien.getTronNgauNhien')->with('status_error', viewLanguage('Không tồn câu hỏi này.'));
@@ -164,12 +167,14 @@ class TronNgauNhienController extends BaseAdminController{
 
 		$this->_getDataDefault();
 		$optionApprove = getOption($this->arrApprove, isset($data['question_approved']) ? $data['question_approved'] : STATUS_INT_AM_MOT);
+		$optionType = getOption(CExtracts::$arrTypeQuestionText, isset($data['question_type']) ? $data['question_type'] : STATUS_INT_MOT);
 
 		return view('tracnghiem.Question.add', array_merge([
 			'data' => $data,
 			'id' => $id,
 			'error' => $this->error,
 			'optionApprove'=>$optionApprove,
+			'optionType'=>$optionType,
 		], $this->viewPermission));
 	}
 	public function delete(){

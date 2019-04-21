@@ -72,8 +72,15 @@
                                 <textarea id="answer_6" name="answer_6" class="form-control input-sm" cols="30" rows="2">@if(isset($data['answer_6'])){{$data['answer_6']}}@endif</textarea>
                             </div>
                         </div>
-
                         <div class="clearfix"></div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="name" class="control-label">{{viewLanguage('Loại câu hỏi')}}</label>
+                                <select name="question_type" id="question_type" class="form-control input-sm">
+                                    {!! $optionType !!}}
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-sm-6">
                             <div class="form-group">
                                 <label for="name" class="control-label">{{viewLanguage('Duyệt')}}</label>
