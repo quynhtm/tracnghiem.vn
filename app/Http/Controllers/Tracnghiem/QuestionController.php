@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tracnghiem;
 
 use App\Http\Controllers\BaseAdminController;
 use App\Http\Models\Tracnghiem\Question;
+use App\Library\AdminFunction\CExtracts;
 use App\Library\AdminFunction\CGlobal;
 use App\Services\TracNghiemService;
 use Illuminate\Support\Facades\Config;
@@ -20,6 +21,7 @@ class QuestionController extends BaseAdminController
     private $arrStatus = array();
     private $viewOptionData = array();
     private $viewPermission = array();//check quyen
+    private $arrApprove = array();
 
     public $commonService;
     public function __construct()
@@ -32,6 +34,7 @@ class QuestionController extends BaseAdminController
 
     public function _getDataDefault()
     {
+        $this->arrApprove = Question::$arrApprove;
         $this->arrStatus = array(
             STATUS_BLOCK => viewLanguage('status_choose'),//--chọn trạng thái
             STATUS_SHOW => viewLanguage('status_show'),//Hiển thị
@@ -48,9 +51,11 @@ class QuestionController extends BaseAdminController
 
     public function _outDataView($data)
     {
-        $optionStatus = getOption($this->arrStatus, isset($data['status']) ? $data['status'] : STATUS_SHOW);
+        $optionApprove = getOption($this->arrApprove, isset($data['question_approved']) ? $data['question_approved'] : STATUS_SHOW);
+        $optionStatus = getOption($this->arrStatus, isset($data['question_status']) ? $data['question_status'] : STATUS_SHOW);
         return $this->viewOptionData = [
             'optionStatus' => $optionStatus,
+            'optionApprove' => $optionApprove,
             'pageAdminTitle' => CGlobal::$pageAdminTitle,
         ];
     }
@@ -68,8 +73,9 @@ class QuestionController extends BaseAdminController
         $offset = ($pageNo - 1) * $limit;
         $search = $data = array();
 
-        $search['name'] = addslashes(Request::get('name', ''));
-        $search['status'] = (int)Request::get('status', -1);
+        $search['question_name'] = addslashes(Request::get('question_name', ''));
+        $search['question_status'] = (int)Request::get('question_status', -1);
+        $search['question_approved'] = (int)Request::get('question_approved', -1);
         //$search['field_get'] = 'menu_name,menu_id,parent_id';//cac truong can lay
         //vmDebug($search);
 
@@ -83,6 +89,8 @@ class QuestionController extends BaseAdminController
             'total' => $data['total'],
             'stt' => ($pageNo - 1) * $limit,
             'paging' => $paging,
+            'arrApprove' => $this->arrApprove,
+            'arrTypeQuestionText' => CExtracts::$arrTypeQuestionText
         ], $this->viewPermission, $this->viewOptionData));
     }
 

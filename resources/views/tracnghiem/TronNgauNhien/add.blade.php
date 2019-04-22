@@ -91,7 +91,7 @@
                         </div>
                         <div class="clearfix"></div>
                         <div class="form-group col-sm-12 text-left">
-                            <a class="btn btn-warning" href="{{URL::route('tronNgauNhien.getTronNgauNhien')}}"><i class="fa fa-reply"></i> {{viewLanguage('back')}}</a>
+                            <a class="btn btn-warning" href="{{URL::route('tracnghiem.questionView')}}"><i class="fa fa-reply"></i> {{viewLanguage('back')}}</a>
                             @if($is_root || $permission_full || $permission_create)
                                 <button  class="btn btn-primary"><i class="fa fa-floppy-o"></i> {{viewLanguage('save')}}</button>
                             @endif

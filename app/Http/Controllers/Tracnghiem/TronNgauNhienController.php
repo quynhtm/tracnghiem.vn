@@ -60,14 +60,10 @@ class TronNgauNhienController extends BaseAdminController{
 		if (!$this->checkMultiPermiss([PERMISS_TRONDE_NGAUNHIEN_FULL, PERMISS_TRONDE_NGAUNHIEN_VIEW])) {
 			return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
 		}
-
-
 		$dataSearch['question_name'] = Request::get('question_name', '');
 		$dataSearch['question_type'] = Request::get('question_type', STATUS_DEFAULT);
 		$dataSearch['created_at_from'] = Request::get('created_at_from', date('d-m-Y', time()));
 		$dataSearch['created_at_to'] = Request::get('created_at_to', date('d-m-Y', time()));
-
-
 		$page_no = Request::get('page_no', 1);
 		$limit = CGlobal::number_show_1000;
 		$offset = $stt = ($page_no - 1) * $limit;
@@ -78,7 +74,6 @@ class TronNgauNhienController extends BaseAdminController{
 		$paging = $total > 0 ? Pagging::getNewPager(3, $page_no, $total, $limit, $dataSearch) : '';
 
 		$this->_getDataDefault();
-
 		return view('tracnghiem.TronNgauNhien.TronTuFile', array_merge([
 			'data' => $data,
 			'dataSearch' => $dataSearch,
@@ -126,7 +121,6 @@ class TronNgauNhienController extends BaseAdminController{
 			$data = app(Question::class)->getItemById($id);
 		}
 		if(isset($data->id)){
-
 			$optionApprove = getOption($this->arrApprove, isset($data['question_approved']) ? $data['question_approved'] : STATUS_INT_AM_MOT);
 			$optionType = getOption(CExtracts::$arrTypeQuestionText, isset($data['question_type']) ? $data['question_type'] : STATUS_INT_MOT);
 			return view('tracnghiem.TronNgauNhien.add', array_merge([
@@ -136,7 +130,7 @@ class TronNgauNhienController extends BaseAdminController{
 				'optionType'=>$optionType,
 			], $this->viewPermission));
 		}
-		return Redirect::route('tronNgauNhien.getTronNgauNhien')->with('status_error', viewLanguage('Không tồn câu hỏi này.'));
+		return Redirect::route('tracnghiem.questionView')->with('status_error', viewLanguage('Không tồn câu hỏi này.'));
 	}
 	public function postItem($id=0){
 		if (!$this->checkMultiPermiss([PERMISS_TRONDE_NGAUNHIEN_FULL, PERMISS_TRONDE_NGAUNHIEN_CREATE])) {
@@ -156,11 +150,11 @@ class TronNgauNhienController extends BaseAdminController{
 			$id = ($id == 0) ? $id_hiden : $id;
 			if ($id > 0) {
 				if (app(Question::class)->updateItem($id, $data)) {
-					return Redirect::route('tronNgauNhien.getTronNgauNhien');
+					return Redirect::route('tracnghiem.questionView');
 				}
 			} else {
 				if (app(Question::class)->createItem($data)) {
-					return Redirect::route('tronNgauNhien.getTronNgauNhien');
+					return Redirect::route('tracnghiem.questionView');
 				}
 			}
 		}
@@ -204,9 +198,9 @@ class TronNgauNhienController extends BaseAdminController{
 				$data['question_approved'] = STATUS_INT_MOT;
 				app(Question::class)->updateItem($id, $data);
 			}
-			return Redirect::route('tronNgauNhien.getTronNgauNhien')->with('status', 'Cập nhật thành công!');
+			return Redirect::route('tracnghiem.questionView')->with('status', 'Cập nhật thành công!');
 		}else{
-			return Redirect::route('tronNgauNhien.getTronNgauNhien')->with('status_error', 'Cập nhật thất bại!');
+			return Redirect::route('tracnghiem.questionView')->with('status_error', 'Cập nhật thất bại!');
 		}
 	}
 

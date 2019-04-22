@@ -71,10 +71,10 @@
                                     <tr>
                                         <td class="text-center">{{$stt + $k + 1}} <br/> <input type="checkbox" class="check" name="item[]" value="{{$item->id}}"></td>
                                         <td>{{$item->question_name}}</td>
-                                        <td class="text-center @if($item->correct_answer == STATUS_INT_MOT) text-green @endif">{{$item->answer_1}}</td>
-                                        <td class="text-center @if($item->correct_answer == STATUS_INT_HAI) text-green @endif">{{$item->answer_2}}</td>
-                                        <td class="text-center @if($item->correct_answer == STATUS_INT_BA) text-green @endif">{{$item->answer_3}}</td>
-                                        <td class="text-center @if($item->correct_answer == STATUS_INT_BON) text-green @endif">{{$item->answer_4}}</td>
+                                        <td class="text-center @if($item->correct_answer == STATUS_INT_MOT) text-red @endif">{{$item->answer_1}}</td>
+                                        <td class="text-center @if($item->correct_answer == STATUS_INT_HAI) text-red @endif">{{$item->answer_2}}</td>
+                                        <td class="text-center @if($item->correct_answer == STATUS_INT_BA) text-red @endif">{{$item->answer_3}}</td>
+                                        <td class="text-center @if($item->correct_answer == STATUS_INT_BON) text-red @endif">{{$item->answer_4}}</td>
                                         <!--
                                         <td class="text-center @if($item->correct_answer == STATUS_INT_NAM) text-green @endif">{{$item->answer_5}}</td>
                                         <td class="text-center @if($item->correct_answer == STATUS_INT_SAU) text-green @endif">{{$item->answer_6}}</td>

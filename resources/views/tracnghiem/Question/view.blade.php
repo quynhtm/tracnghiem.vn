@@ -17,82 +17,100 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="panel panel-info">
-                    <form method="Post" action="" role="form">
+                    <form method="get" action="" role="form">
                         {{ csrf_field() }}
                         <div class="panel-body">
                             <div class="form-group col-lg-3">
-                                <label for="name"><i>{{viewLanguage('Tên banner')}}</i></label>
-                                <input type="text" class="form-control input-sm" id="name" name="name" placeholder="Tên banner" @if(isset($search['name']))value="{{$search['name']}}"@endif>
+                                <label for="name"><i>{{viewLanguage('Tên câu hỏi')}}</i></label>
+                                <input type="text" class="form-control input-sm" id="question_name" name="question_name" placeholder="Tên câu hỏi" @if(isset($search['question_name']))value="{{$search['question_name']}}"@endif>
                             </div>
                             <div class="form-group col-lg-3">
-                                <label for="status" class="control-label">{{viewLanguage('Trạng thái')}}</label>
-                                <select name="status" id="status" class="form-control input-sm">
+                                <label for="status" class="control-label">{{viewLanguage('Ẩn/hiện')}}</label>
+                                <select name="question_status" id="question_status" class="form-control input-sm">
                                     {!! $optionStatus !!}}
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label for="status" class="control-label">{{viewLanguage('Trạng thái duyệt')}}</label>
+                                <select name="question_approved" id="question_approved" class="form-control input-sm">
+                                    {!! $optionApprove !!}}
                                 </select>
                             </div>
                         </div>
                         <div class="panel-footer text-right">
-                            @if($is_root || $permission_full || $permission_create)
-                                 <a class="btn btn-danger btn-sm" href="{{URL::route('tracnghiem.questionEdit',array('id' => setStrVar(0)))}}">
-                                    <i class="ace-icon fa fa-plus-circle"></i>
-                                     {{viewLanguage('add')}}
-                                 </a>
+                            <div class="pull-left">
+                                <a class="btn btn-sm btn-warning btnApproveQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Chọn câu hỏi trộn đề</a>
+                                <a class="btn btn-sm btn-success btnApproveQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Trộn đề</a>
+                            </div>
+                            @if(($is_root || $permission_full || $permission_approve))
+                                <a class="btn btn-sm btn-warning btnApproveQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Gửi chờ duyệt</a>
                             @endif
                             <a class="btn btn-warning btn-sm" href="{{URL::route('tracnghiem.mixAutoQuestion')}}"><i class="fa fa-search"></i> {{viewLanguage('Tạo dề thi')}}</a>
                             <button class="btn btn-primary btn-sm" type="submit"><i class="fa fa-search"></i> {{viewLanguage('search')}}</button>
                         </div>
                     </form>
                 </div>
-                @if(sizeof($data) > 0)
-                    <div class="span clearfix"> @if($total >0) Có tổng số <b>{{$total}}</b> item @endif </div>
-                    <br>
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead class="thin-border-bottom">
-                            <tr class="">
-                                <th width="5%" class="text-center">{{viewLanguage('STT')}}</th>
-                                <th width="20%">{{viewLanguage('Tên banner')}}</th>
-                                <th width="20%">{{viewLanguage('Hình ảnh')}}</th>
-                                <th width="20%">{{viewLanguage('Url')}}</th>
-                                <th width="10%" class="text-center">{{viewLanguage('Trạng thái')}}</th>
-                                <th width="15%" class="text-center">{{viewLanguage('Thao tác')}}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach ($data as $key => $item)
-                                <tr>
-                                    <td class="text-center middle">{{ $stt+$key+1 }}</td>
-                                    <td>{{ $item['name'] }}</td>
-                                    @if($item['image'] != '')
-                                        <td><img src="{{asset(env('APP_PATH_UPLOAD_MIDLE').$item["image"])}}" alt="hình ảnh" width="40px"></td>
-                                    @else
-                                        <td>Chưa có ảnh</td>
-                                    @endif
-                                    <td>{{ $item['url'] }}</td>
-                                    <td class="text-center middle">
-                                        @if($item['status'] == STATUS_SHOW)
-                                            <a href="javascript:void(0);" title="Hiện"><i class="fa fa-check fa-2x"></i></a>
-                                        @else
-                                            <a href="javascript:void(0);" style="color: red" title="Ẩn"><i class="fa fa-close fa-2x"></i></a>
-                                        @endif
-                                    </td>
+                @if(isset($data) && sizeof($data) > 0)
+                    <div class="col-md-12">
 
-                                    <td class="text-center middle">
-                                        @if($is_root || $permission_full || $permission_create)
-                                            <a href="{{URL::route('tracnghiem.questionEdit',array('id' => setStrVar($item['id'])))}}" title="Sửa item"><i class="fa fa-edit fa-2x"></i></a>&nbsp;&nbsp;&nbsp;
-                                        @endif
-                                        @if($is_root || $permission_full || $permission_delete)
-                                            <a href="javascript:void(0);" onclick="Admin.deleteItem({{$item['id']}},5)" title="Xóa Item"><i class="fa fa-trash fa-2x"></i></a>
-                                        @endif
-                                        <span class="img_loading" id="img_loading_{{$item['menu_id']}}"></span>
-                                    </td>
+                        <br/>
+                        <div class="span pull-left"> @if($total >0) Có tổng số <b>{{$total}}</b> tài khoản  @endif </div>
+
+                        <div class="clearfix"></div><br/>
+
+                        {{Form::open(array('method' => 'POST', 'role'=>'form', 'class' =>'frmApproveQuestionList','files' => false, 'url'=>URL::route('tronNgauNhien.approveTronNgauNhien')))}}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="tableApproveQuestion">
+                                <thead class="thin-border-bottom">
+                                <tr class="">
+                                    <th width="3%" class="text-center">STT <br/> <input type="checkbox" id="checkAll"></th>
+                                    <th width="30%">Câu hỏi</th>
+                                    <th width="10%" class="text-center">Câu TL 1</th>
+                                    <th width="10%" class="text-center">Câu TL 2</th>
+                                    <th width="10%" class="text-center">Câu TL 3</th>
+                                    <th width="10%" class="text-center">Câu TL 4</th>
+                                    <th width="5%">Loại câu hỏi</th>
+
+                                    <th width="5%" class="text-center">Trạng thái</th>
+                                    <th width="7%" class="text-center">Thao tác</th>
                                 </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="text-right">
-                        {!! $paging !!}
+                                </thead>
+                                <tbody>
+                                @if(isset($data) && sizeof($data) > 0)
+                                    @foreach($data as $k=>$item)
+                                        <tr>
+                                            <td class="text-center">{{$stt + $k + 1}} <br/> <input type="checkbox" class="check" name="item[]" value="{{$item->id}}"></td>
+                                            <td>{{$item->question_name}}</td>
+                                            <td class="text-center @if($item->correct_answer == STATUS_INT_MOT) text-red @endif">{{$item->answer_1}}</td>
+                                            <td class="text-center @if($item->correct_answer == STATUS_INT_HAI) text-red @endif">{{$item->answer_2}}</td>
+                                            <td class="text-center @if($item->correct_answer == STATUS_INT_BA) text-red @endif">{{$item->answer_3}}</td>
+                                            <td class="text-center @if($item->correct_answer == STATUS_INT_BON) text-red @endif">{{$item->answer_4}}</td>
+
+                                            <td class="text-center">
+                                                {{isset($arrTypeQuestionText[$item->question_type]) ? $arrTypeQuestionText[$item->question_type] : ''}}
+                                            </td>
+                                            <td class="text-center">
+                                                {{isset($arrApprove[$item->question_approved]) ? $arrApprove[$item->question_approved] : ''}}
+                                            </td>
+                                            <td class="text-center">
+                                                @if($is_root || $permission_full || $permission_create)
+                                                    <a href="{{URL::route('tronNgauNhien.suaTronNgauNhien',array('id' => $item['id']))}}" onclick="" title="Sửa"><i class="fa fa-edit fa-2x"></i></a>
+                                                @endif
+                                                @if(($is_root || $permission_full || $permission_delete) && $item->question_approved != STATUS_INT_HAI)
+                                                    <a href="javascript:void(0);" onclick="Admin.deleteItem({{$item['id']}},13)" title="Xóa"><i class="fa fa-trash fa-2x"></i></a>
+                                                @endif
+                                                <br/>{{$item->created_at}}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                                </tbody>
+                            </table>
+                        </div>
+                        {{ Form::close() }}
+                        <div class="text-right">
+                            {!! $paging !!}
+                        </div>
                     </div>
                 @else
                     <div class="alert">

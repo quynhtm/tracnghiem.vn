@@ -21,6 +21,12 @@ class Question extends BaseModel
     protected $table = TABLE_QUESTION;
     protected $primaryKey = 'id';
     public $timestamps = false;
+    public static $arrApprove = array(
+			STATUS_INT_AM_MOT => '--Chọn duyệt--',
+			STATUS_INT_KHONG => 'Chưa duyệt',
+			STATUS_INT_MOT =>'Chờ duyệt',
+			STATUS_INT_HAI => 'Đã duyệt'
+		);
 
     protected $fillable = array('question_name', 'question_type','question_approved', 'question_status', 'answer_1','answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6',
         'correct_answer', 'created_at', 'updated_at', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update');
