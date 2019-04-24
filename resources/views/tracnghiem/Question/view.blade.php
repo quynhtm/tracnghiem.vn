@@ -39,8 +39,8 @@
                         </div>
                         <div class="panel-footer text-right">
                             <div class="pull-left">
-                                <a class="btn btn-sm btn-warning btnApproveQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Chọn câu hỏi trộn đề</a>
-                                <a class="btn btn-sm btn-success btnApproveQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Trộn đề</a>
+                                <a class="btn btn-sm btn-warning btnChoseQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Chọn câu hỏi trộn đề</a>
+                                <a class="btn btn-sm btn-success"  href="{{URL::route('tracnghiem.mixQuestionsView')}}"title="Gửi chờ duyệt">Trộn đề</a>
                             </div>
                             @if(($is_root || $permission_full || $permission_approve))
                                 <a class="btn btn-sm btn-warning btnApproveQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Gửi chờ duyệt</a>
@@ -54,7 +54,7 @@
                     <div class="col-md-12">
 
                         <br/>
-                        <div class="span pull-left"> @if($total >0) Có tổng số <b>{{$total}}</b> tài khoản  @endif </div>
+                        <div class="span pull-left"> @if($total >0) Có tổng số <b>{{$total}}</b> câu hỏi  @endif </div>
 
                         <div class="clearfix"></div><br/>
 
@@ -79,7 +79,7 @@
                                 @if(isset($data) && sizeof($data) > 0)
                                     @foreach($data as $k=>$item)
                                         <tr>
-                                            <td class="text-center">{{$stt + $k + 1}} <br/> <input type="checkbox" class="check" name="item[]" value="{{$item->id}}"></td>
+                                            <td class="text-center">{{$stt + $k + 1}} <br/> <input type="checkbox" class="check" name="checkItems[]" value="{{$item->id}}"></td>
                                             <td>{{$item->question_name}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_MOT) text-red @endif">{{$item->answer_1}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_HAI) text-red @endif">{{$item->answer_2}}</td>

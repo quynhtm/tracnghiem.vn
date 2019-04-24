@@ -14,6 +14,10 @@ Route::get('examQuestion/edit/{id?}', array('as' => 'tracnghiem.examQuestionEdit
 Route::post('examQuestion/edit/{id?}', array('as' => 'tracnghiem.examQuestionEdit','uses' => TracNghiem.'\ExamQuestionController@postItem'));
 Route::post('examQuestion/deleteItem', array('as' => 'tracnghiem.deleteExamQuestion','uses' => TracNghiem.'\ExamQuestionController@deleteItem'));//ajax
 
+//trộn đề
+Route::get('mixQuestions',array('as' => 'tracnghiem.mixQuestionsView','uses' => TracNghiem.'\MixQuestionController@view'));
+Route::post('mixQuestions/choseQuestion', array('as' => 'tracnghiem.choseQuestion','uses' => TracNghiem.'\MixQuestionController@choseQuestion'));
+
 //Define common
 Route::match(['GET','POST'],'defineSchoolBlock', array('as' => 'tracnghiem.schoolBlock','uses' => TracNghiem.'\TracNghiemDefineController@schoolBlock'));//khối học
 Route::match(['GET','POST'],'defineSubjects', array('as' => 'tracnghiem.subjects','uses' => TracNghiem.'\TracNghiemDefineController@subjects'));//môn học
@@ -30,6 +34,8 @@ Route::get('questions-file/edit/{id?}', array('as' => 'tronNgauNhien.suaTronNgau
 Route::post('questions-file/edit/{id?}', array('as' => 'tronNgauNhien.suaTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@postItem'))->where('id', '[0-9]+');
 Route::post('questions-file/delete', array('as' => 'tronNgauNhien.xoaTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@delete'));
 Route::post('questions-file/approve', array('as' => 'tronNgauNhien.approveTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@approve'));
+
+
 
 
 //Link test

@@ -47,6 +47,9 @@ class Question extends BaseModel
             if (isset($dataSearch['question_type']) && $dataSearch['question_type'] > 0) {
                 $query->where('question_type', $dataSearch['question_type']);
             }
+            if (isset($dataSearch['question_id']) && !empty($dataSearch['question_id'])) {
+                $query->whereIn('id', $dataSearch['question_id']);
+            }
 
             if(isset($dataSearch['created_at_from']) && isset($dataSearch['created_at_to']) && $dataSearch['created_at_from'] !='' && $dataSearch['created_at_to'] !=''){
                 $time_create_from = FunctionLib::convertDate($dataSearch['created_at_from'].' 00:00:00');
