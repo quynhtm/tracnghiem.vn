@@ -6,8 +6,6 @@ Route::get('question/edit/{id?}', array('as' => 'tracnghiem.questionEdit','uses'
 Route::post('question/edit/{id?}', array('as' => 'tracnghiem.questionEdit','uses' => TracNghiem.'\QuestionController@postItem'));
 Route::post('question/deleteItem', array('as' => 'tracnghiem.deleteItem','uses' => TracNghiem.'\QuestionController@deleteItem'));//ajax
 
-Route::get('question/mixAutoQuestion', array('as' => 'tracnghiem.mixAutoQuestion','uses' => TracNghiem.'\QuestionController@mixAutoQuestion'));
-
 //Quản lý đề thi
 Route::get('examQuestion',array('as' => 'tracnghiem.examQuestionView','uses' => TracNghiem.'\ExamQuestionController@view'));
 Route::get('examQuestion/edit/{id?}', array('as' => 'tracnghiem.examQuestionEdit','uses' => TracNghiem.'\ExamQuestionController@getItem'));
@@ -17,6 +15,7 @@ Route::post('examQuestion/deleteItem', array('as' => 'tracnghiem.deleteExamQuest
 //trộn đề
 Route::get('mixQuestions',array('as' => 'tracnghiem.mixQuestionsView','uses' => TracNghiem.'\MixQuestionController@view'));
 Route::post('mixQuestions/choseQuestion', array('as' => 'tracnghiem.choseQuestion','uses' => TracNghiem.'\MixQuestionController@choseQuestion'));
+Route::get('mixQuestions/mixAutoQuestion', array('as' => 'tracnghiem.mixAutoQuestion','uses' => TracNghiem.'\MixQuestionController@mixAutoQuestion'));
 
 //Define common
 Route::match(['GET','POST'],'defineSchoolBlock', array('as' => 'tracnghiem.schoolBlock','uses' => TracNghiem.'\TracNghiemDefineController@schoolBlock'));//khối học

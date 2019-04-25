@@ -85,7 +85,7 @@ class MixQuestionController extends BaseAdminController
         $paging = $data['total'] > 0 ? Pagging::getNewPager(3, $pageNo, $data['total'], $limit, $search) : '';
 
         $this->_outDataView($search);
-        return view('tracnghiem.Question.view', array_merge([
+        return view('tracnghiem.MixQuestion.view', array_merge([
             'data' => $data['data'],
             'search' => $search,
             'total' => $data['total'],
@@ -122,7 +122,7 @@ class MixQuestionController extends BaseAdminController
         $list_dap_an = [1=>'A',2=>'B',3=>'C',4=>'D',];
         //form_exam_question
         if(!empty($du_lieu_da_tron)){
-            $output =  view('tracnghiem.Question.form_exam_question',['questions'=>$du_lieu_da_tron,
+            $output =  view('tracnghiem.MixQuestion.form_exam_question',['questions'=>$du_lieu_da_tron,
                 'list_dap_an'=>$list_dap_an,
             ]);
             $filepath = "de_thi_1.doc";
