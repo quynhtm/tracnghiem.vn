@@ -21,17 +21,17 @@ class CGlobal
     public static $extraFooterCSS = '';
     public static $extraFooterJS = '';
     public static $extraMeta = '';
-    public static $pageAdminTitle = 'Quản trị vaymuon.vn';
-    public static $pageAdminTitleEdit = 'Quản trị vaymuon.vn';
+    public static $pageAdminTitle = 'Quản trị câu hỏi trắc nghiệm';
+    public static $pageAdminTitleEdit = 'Quản trị câu hỏi trắc nghiệm';
     public static $pageShopTitle = '';
 
-    const project_name = 'vaymuon.vn';
+    const project_name = 'tracnghiem.vn';
     const code_shop_share = '';
-    const web_name = 'Quản trị vaymuon.vn';
-    const web_title_dashboard = 'CHÀO MỪNG BẠN ĐẾN VỚI HỆ THỐNG QUẢN TRỊ VAYMUON.VN';
-    const web_keywords = 'Quản trị vaymuon.vn';
-    const web_description = 'Quản trị vaymuon.vn';
-    public static $pageTitle = 'Quản trị vaymuon.vn';
+    const web_name = 'Quản trị câu hỏi trắc nghiệm';
+    const web_title_dashboard = 'CHÀO MỪNG BẠN ĐẾN VỚI HỆ THỐNG QUẢN TRỊ CÂU HỎI TRẮC NGHIỆM';
+    const web_keywords = 'Quản trị câu hỏi trắc nghiệm';
+    const web_description = 'Quản trị câu hỏi trắc nghiệm';
+    public static $pageTitle = 'Quản trị câu hỏi trắc nghiệm';
 
     const phoneSupport = '';
 
@@ -53,9 +53,9 @@ class CGlobal
     static $arrLanguage = array(VIETNAM_LANGUAGE => 'vi', ENGLISH_LANGUAGE => 'en');
 
     public static $arrMenuTabTop = [
-            2 => 'Trắc nghiệm',
-            1 => 'Setting',
-        ];
+        2 => 'Trắc nghiệm',
+        1 => 'Setting',
+    ];
 
     public static $sex_option = [
         '' => 'Chưa cập nhật',
