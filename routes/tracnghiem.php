@@ -40,3 +40,6 @@ Route::post('questions-file/approve', array('as' => 'tronNgauNhien.approveTronNg
 
 //Link test
 Route::get('post/test', array('as' => 'test.post','uses' => TracNghiem.'\TestUpFileController@post'));
+
+
+
