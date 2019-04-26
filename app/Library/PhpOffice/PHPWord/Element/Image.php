@@ -491,7 +491,9 @@ class Image extends AbstractElement
                 if ($imageContent !== false) {
                     file_put_contents($tempFilename, $imageContent);
                     $imageData = getimagesize($tempFilename);
-                    unlink($tempFilename);
+                    if(is_file($tempFilename)){
+                        unlink($tempFilename);
+                    }
                 }
             }
             $zip->close();
