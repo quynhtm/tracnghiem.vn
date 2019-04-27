@@ -97,7 +97,7 @@ class CExtracts{
         }
         return $result;
     }
-    public static function extractsCreateOneQuestions($data=array()){
+    public static function extractsCreateOneQuestions($data=array(), $dataSearch=array()){
         $listData = array();
         if(!empty($data)){
             foreach($data as $k => $item){
@@ -120,7 +120,10 @@ class CExtracts{
 
                     }
                 }
-                $tmp['created_at'] = time();
+                $tmp['created_at'] = date('Y-m-d H:i:s', time());
+                $tmp['question_school_block'] = isset($dataSearch['question_school_block']) ? $dataSearch['question_school_block'] : 0;
+                $tmp['question_subject'] = isset($dataSearch['question_subject']) ? $dataSearch['question_subject'] : 0;
+                $tmp['question_thematic'] = isset($dataSearch['question_thematic']) ? $dataSearch['question_thematic'] : 0;
                 $listData[] = $tmp;
             }
         }

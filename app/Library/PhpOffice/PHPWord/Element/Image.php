@@ -414,7 +414,8 @@ class Image extends AbstractElement
             $imageData = @getimagesize($this->source);
         }
         if (!is_array($imageData)) {
-            throw new InvalidImageException(sprintf('Invalid image: %s', $this->source));
+            //throw new InvalidImageException(sprintf('Invalid image: %s', $this->source));
+            return false;
         }
         list($actualWidth, $actualHeight, $imageType) = $imageData;
 

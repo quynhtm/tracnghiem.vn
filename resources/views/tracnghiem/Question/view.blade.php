@@ -36,6 +36,24 @@
                                     {!! $optionApprove !!}}
                                 </select>
                             </div>
+                            <div class="form-group col-lg-3">
+                                <label for="status" class="control-label">{{viewLanguage('Khối học')}}</label>
+                                <select name="question_school_block" id="question_school_block" class="form-control input-sm">
+                                    {!! $optionBlock !!}}
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label for="status" class="control-label">{{viewLanguage('Môn học')}}</label>
+                                <select name="question_subject" id="question_subject" class="form-control input-sm">
+                                    {!! $optionSubs !!}}
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label for="status" class="control-label">{{viewLanguage('Chuyên đề')}}</label>
+                                <select name="question_thematic" id="question_thematic" class="form-control input-sm">
+                                    {!! $optionThematic !!}}
+                                </select>
+                            </div>
                         </div>
                         <div class="panel-footer text-right">
                             <div class="pull-left">
@@ -43,7 +61,7 @@
                                 <a class="btn btn-sm btn-success"  href="{{URL::route('tracnghiem.mixQuestionsView')}}"title="Gửi chờ duyệt">Trộn đề</a>
                             </div>
                             @if(($is_root || $permission_full || $permission_approve))
-                                <a class="btn btn-sm btn-warning btnApproveQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Gửi chờ duyệt</a>
+                                <a class="btn btn-sm btn-warning btnApproveQuestionRoot" href="javascript:void(0);"title="Gửi duyệt">Gửi duyệt</a>
                             @endif
                             <a class="btn btn-warning btn-sm" href="{{URL::route('tracnghiem.mixAutoQuestion')}}"><i class="fa fa-search"></i> {{viewLanguage('Tạo dề thi')}}</a>
                             <button class="btn btn-primary btn-sm" type="submit"><i class="fa fa-search"></i> {{viewLanguage('search')}}</button>
@@ -58,9 +76,9 @@
 
                         <div class="clearfix"></div><br/>
 
-                        {{Form::open(array('method' => 'POST', 'role'=>'form', 'class' =>'frmApproveQuestionList','files' => false, 'url'=>URL::route('tronNgauNhien.approveTronNgauNhien')))}}
+                        {{Form::open(array('method' => 'POST', 'role'=>'form', 'class' =>'frmApproveQuestionListRoot','files' => false, 'url'=>URL::route('tronNgauNhien.approveTronNgauNhienRoot')))}}
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="tableApproveQuestion">
+                            <table class="table table-bordered table-hover" id="tableApproveQuestionRoot">
                                 <thead class="thin-border-bottom">
                                 <tr class="">
                                     <th width="3%" class="text-center">STT <br/> <input type="checkbox" id="checkAll"></th>
@@ -69,8 +87,10 @@
                                     <th width="10%" class="text-center">Câu TL 2</th>
                                     <th width="10%" class="text-center">Câu TL 3</th>
                                     <th width="10%" class="text-center">Câu TL 4</th>
-                                    <th width="5%">Loại câu hỏi</th>
 
+                                    <td width="15%">Thông tin khác</td>
+
+                                    <th width="5%">Loại câu hỏi</th>
                                     <th width="5%" class="text-center">Trạng thái</th>
                                     <th width="7%" class="text-center">Thao tác</th>
                                 </tr>
@@ -79,17 +99,24 @@
                                 @if(isset($data) && sizeof($data) > 0)
                                     @foreach($data as $k=>$item)
                                         <tr>
-                                            <td class="text-center">{{$stt + $k + 1}} <br/> <input type="checkbox" class="check" name="checkItems[]" value="{{$item->id}}"></td>
+                                            <td class="text-center">{{$stt + $k + 1}} <br/> <input type="checkbox" class="check" name="item[]" value="{{$item->id}}"></td>
                                             <td>{{$item->question_name}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_MOT) text-red @endif">{{$item->answer_1}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_HAI) text-red @endif">{{$item->answer_2}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_BA) text-red @endif">{{$item->answer_3}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_BON) text-red @endif">{{$item->answer_4}}</td>
 
+                                            <td>
+                                                <b>Khối học:</b> {{ isset($arrBlock[$item->question_school_block]) ? $arrBlock[$item->question_school_block] : ''}} <br/>
+                                                <b>Môn học:</b> {{ isset($arrSubs[$item->question_subject]) ? $arrSubs[$item->question_subject] : ''}} <br/>
+                                                <b>Chuyên đề:</b> {{ isset($arrThematic[$item->question_thematic]) ? $arrThematic[$item->question_thematic] : ''}}
+                                            </td>
+
                                             <td class="text-center">
                                                 {{isset($arrTypeQuestionText[$item->question_type]) ? $arrTypeQuestionText[$item->question_type] : ''}}
                                             </td>
-                                            <td class="text-center">
+
+                                            <td class="text-center @if($item->question_approved == STATUS_INT_HAI) bg-green text-white @endif">
                                                 {{isset($arrApprove[$item->question_approved]) ? $arrApprove[$item->question_approved] : ''}}
                                             </td>
                                             <td class="text-center">
@@ -107,6 +134,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        <input type="hidden" class="valAprove" name="valAprove" value="0">
                         {{ Form::close() }}
                         <div class="text-right">
                             {!! $paging !!}
@@ -117,6 +145,29 @@
                         Không có dữ liệu
                     </div>
                 @endif
+            </div>
+        </div>
+    </div>
+</div>
+<div id="sys-popup-approve" class="content-popup-show fade" style="display:none">
+    <div class="modal-dialog modal-dialog-comment">
+        <div class="modal-content">
+            <div class="modal-title-classic">Duyệt câu hỏi <span class="btn-close" data-dismiss="modal">X</span></div>
+            <div class="content-popup-body">
+                <div class="classic-popup-subtitle">Trạng thái</div>
+                <form id="frmRApprove" method="POST" class="frmForm" name="frmApprove" action="">
+                    <div class="classic-popup-input">
+                        <div>
+                            <select name="approve" class="approve" class="form-control input-sm">
+                                {!! $optionApprove !!}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="action-popup-button">
+                        <div class="btn btn-primary btn-ext" id="btnApprove" href="javascript:void(0)">Duyệt</div>
+                    </div>
+                    {!! csrf_field() !!}
+                </form>
             </div>
         </div>
     </div>

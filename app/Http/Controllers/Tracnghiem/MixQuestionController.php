@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tracnghiem;
 
 use App\Http\Controllers\BaseAdminController;
+use App\Http\Models\Admin\VmDefine;
 use App\Http\Models\Tracnghiem\Question;
 use App\Library\AdminFunction\CExtracts;
 use App\Library\AdminFunction\CGlobal;
@@ -55,10 +56,31 @@ class MixQuestionController extends BaseAdminController
     {
         $optionApprove = getOption($this->arrApprove, isset($data['question_approved']) ? $data['question_approved'] : STATUS_SHOW);
         $optionStatus = getOption($this->arrStatus, isset($data['question_status']) ? $data['question_status'] : STATUS_SHOW);
+
+
+        $arrBlock = app(VmDefine::class)->getArrByType(TRAC_NGHIEM_KHOI_LOP);
+        $optionBlock = getOption($arrBlock, isset($data['question_school_block']) ? $data['question_school_block'] : STATUS_DEFAULT);
+
+        $arrSubs = app(VmDefine::class)->getArrByType(TRAC_NGHIEM_MON_HOC);
+        $optionSubs = getOption($arrSubs, isset($data['question_subject']) ? $data['question_subject'] : STATUS_DEFAULT);
+
+
+        $arrThematic= app(VmDefine::class)->getArrByType(TRAC_NGHIEM_CHUYEN_DE);
+        $optionThematic = getOption($arrThematic, isset($data['question_thematic']) ? $data['question_thematic'] : STATUS_DEFAULT);
+
+
         return $this->viewOptionData = [
             'optionStatus' => $optionStatus,
             'optionApprove' => $optionApprove,
             'pageAdminTitle' => CGlobal::$pageAdminTitle,
+
+            'optionBlock' => $optionBlock,
+            'optionSubs' => $optionSubs,
+            'optionThematic' => $optionThematic,
+
+            'arrBlock' => $arrBlock,
+            'arrSubs' => $arrSubs,
+            'arrThematic' => $arrThematic,
         ];
     }
     public function view()
@@ -76,10 +98,12 @@ class MixQuestionController extends BaseAdminController
         $offset = ($pageNo - 1) * $limit;
         $search = $data = array();
 
-        $search['question_name'] = addslashes(Request::get('question_name', ''));
-        $search['question_status'] = (int)Request::get('question_status', -1);
-        $search['question_approved'] = (int)Request::get('question_approved', -1);
-        $search['question_id'] = $arrChose;
+        $search['mix_name'] = addslashes(Request::get('mix_name', ''));
+        $search['mix_num'] = (int)(Request::get('mix_num', 0));
+        $search['mix_year'] = Request::get('mix_year', date('Y'));
+        $search['question_school_block'] = (int)Request::get('question_school_block', -1);
+        $search['question_subject'] = (int)Request::get('question_subject', -1);
+        $search['question_thematic'] = (int)Request::get('question_thematic', -1);
 
         $data = app(Question::class)->searchByCondition($search, $limit, $offset, true);
         $paging = $data['total'] > 0 ? Pagging::getNewPager(3, $pageNo, $data['total'], $limit, $search) : '';

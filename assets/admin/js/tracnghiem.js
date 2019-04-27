@@ -4,6 +4,7 @@ $(document).ready(function () {
 
     TracNghiem.btnChoseQuestion();
     TracNghiem.btnApproveQuestion();
+    TracNghiem.btnApproveQuestionRoot();
 
 });
 TracNghiem = {
@@ -52,11 +53,36 @@ TracNghiem = {
             }else{
                 jConfirm('Bạn muốn gửi duyệt [OK]:Đồng ý [Cancel]:Bỏ qua?)', 'Xác nhận', function(r) {
                     if(r){
-                        $('form.frmApproveQuestionList').submit();
+                        $('.frmApproveQuestionList').submit();
                         return true;
                     }
                 });
             }
         });
     },
+    btnApproveQuestionRoot:function(){
+
+        $('.btnApproveQuestionRoot').click(function(){
+            var total = $("table#tableApproveQuestionRoot tbody input.check:checked" ).length;
+            if(total==0){
+                alert('Vui lòng chọn ít nhất câu hỏi để gửi duyệt!');
+                return false;
+            }else{
+                $('#sys-popup-approve').modal('show');
+                $('#btnApprove').click(function(){
+                    $('.frmApproveQuestionListRoot').submit();
+                    return true;
+                });
+            }
+        });
+
+        $('#sys-popup-approve .approve').change(function(){
+            var approve = $(this).val();
+            $('.frmApproveQuestionListRoot .valAprove').val(approve);
+        });
+
+        //F5
+        var approve = $(this).val();
+        $('.frmApproveQuestionListRoot .valAprove').val(approve);
+    }
 }

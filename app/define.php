@@ -165,5 +165,6 @@ define('PERMISS_TRONDE_NGAUNHIEN_VIEW', 'tronDeNgauNhienView');
 define('PERMISS_TRONDE_NGAUNHIEN_CREATE', 'tronDeNgauNhienCreate');
 define('PERMISS_TRONDE_NGAUNHIEN_DELETE', 'tronDeNgauNhienDelete');
 define('PERMISS_TRONDE_NGAUNHIEN_APPROVE', 'tronDeNgauNhienApprove');
+define('PERMISS_TRONDE_NGAUNHIEN_APPROVE_ROOT', 'tronDeNgauNhienApproveRoot');
 define('PERMISS_TRONDE_NGAUNHIEN_UPLOADFILE', 'tronDeNgauNhienUploadFile');
 

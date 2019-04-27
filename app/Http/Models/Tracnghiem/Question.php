@@ -20,7 +20,7 @@ class Question extends BaseModel
 {
     protected $table = TABLE_QUESTION;
     protected $primaryKey = 'id';
-    public $timestamps = false;
+    public $timestamps = true;
     public static $arrApprove = array(
 			STATUS_INT_AM_MOT => '--Chọn duyệt--',
 			STATUS_INT_KHONG => 'Chưa duyệt',
@@ -29,7 +29,7 @@ class Question extends BaseModel
 		);
 
     protected $fillable = array('question_name', 'question_type','question_approved', 'question_status', 'answer_1','answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6',
-        'correct_answer', 'created_at', 'updated_at', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update');
+        'correct_answer', 'created_at', 'updated_at', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update', 'question_school_block', 'question_subject', 'question_thematic');
 
     public function searchByCondition($dataSearch = array(), $limit = 0, $offset = 0, $is_total = true)
     {
@@ -51,11 +51,22 @@ class Question extends BaseModel
                 $query->whereIn('id', $dataSearch['question_id']);
             }
 
+            if (isset($dataSearch['question_school_block']) && $dataSearch['question_school_block'] > 0) {
+                $query->where('question_school_block', $dataSearch['question_school_block']);
+            }
+            if (isset($dataSearch['question_subject']) && $dataSearch['question_subject'] > 0) {
+                $query->where('question_subject', $dataSearch['question_subject']);
+            }
+            if (isset($dataSearch['question_thematic']) && $dataSearch['question_thematic'] > 0) {
+                $query->where('question_thematic', $dataSearch['question_thematic']);
+            }
+
             if(isset($dataSearch['created_at_from']) && isset($dataSearch['created_at_to']) && $dataSearch['created_at_from'] !='' && $dataSearch['created_at_to'] !=''){
                 $time_create_from = FunctionLib::convertDate($dataSearch['created_at_from'].' 00:00:00');
                 $time_create_to = FunctionLib::convertDate($dataSearch['created_at_to']. ' 23:59:59');
                 if($time_create_to >= $time_create_from && $time_create_to > 0){
-                    $query->whereBetween('created_at', array($time_create_from, $time_create_to));
+                    $query->where('created_at', '>=', date('Y-m-d', $time_create_from).' 00:00:00');
+                    $query->where('created_at', '<=', date('Y-m-d', $time_create_from).' 23:59:59');
                 }
             }
 

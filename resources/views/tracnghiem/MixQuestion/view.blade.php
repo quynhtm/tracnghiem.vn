@@ -21,19 +21,33 @@
                         {{ csrf_field() }}
                         <div class="panel-body">
                             <div class="form-group col-lg-3">
-                                <label for="name"><i>{{viewLanguage('Tên câu hỏi')}}</i></label>
-                                <input type="text" class="form-control input-sm" id="question_name" name="question_name" placeholder="Tên câu hỏi" @if(isset($search['question_name']))value="{{$search['question_name']}}"@endif>
+                                <label for="name"><i>{{viewLanguage('Tên đề thi')}}</i></label>
+                                <input type="text" class="form-control input-sm" id="mix_name" name="mix_name" placeholder="Tên đề thi" @if(isset($search['mix_name']))value="{{$search['mix_name']}}"@endif>
+                            </div>
+                            <div class="form-group col-lg-2">
+                                <label for="name"><i>{{viewLanguage('Số lượng đề xuất ra')}}</i></label>
+                                <input type="text" class="form-control input-sm" id="mix_num" name="mix_num" placeholder="Số lượng đề xuất ra" @if(isset($search['mix_num']))value="{{$search['mix_num']}}"@endif>
+                            </div>
+                            <div class="form-group col-lg-2">
+                                <label for="name"><i>{{viewLanguage('Năm học')}}</i></label>
+                                <input type="text" class="form-control input-sm" id="mix_year" name="mix_year" placeholder="Năm học" @if(isset($search['mix_year']))value="{{$search['mix_year']}}"@endif>
                             </div>
                             <div class="form-group col-lg-3">
-                                <label for="status" class="control-label">{{viewLanguage('Ẩn/hiện')}}</label>
-                                <select name="question_status" id="question_status" class="form-control input-sm">
-                                    {!! $optionStatus !!}}
+                                <label for="status" class="control-label">{{viewLanguage('Khối học')}}</label>
+                                <select name="question_school_block" id="question_school_block" class="form-control input-sm">
+                                    {!! $optionBlock !!}}
                                 </select>
                             </div>
                             <div class="form-group col-lg-3">
-                                <label for="status" class="control-label">{{viewLanguage('Trạng thái duyệt')}}</label>
-                                <select name="question_approved" id="question_approved" class="form-control input-sm">
-                                    {!! $optionApprove !!}}
+                                <label for="status" class="control-label">{{viewLanguage('Môn học')}}</label>
+                                <select name="question_subject" id="question_subject" class="form-control input-sm">
+                                    {!! $optionSubs !!}}
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label for="status" class="control-label">{{viewLanguage('Chuyên đề')}}</label>
+                                <select name="question_thematic" id="question_thematic" class="form-control input-sm">
+                                    {!! $optionThematic !!}}
                                 </select>
                             </div>
                         </div>
@@ -63,6 +77,9 @@
                                     <th width="12%" class="text-center">Câu TL 2</th>
                                     <th width="12%" class="text-center">Câu TL 3</th>
                                     <th width="12%" class="text-center">Câu TL 4</th>
+
+                                    <td width="15%">Thông tin khác</td>
+
                                     <th width="5%">Loại</th>
 
                                     <th width="5%" class="text-center">Trạng thái</th>
@@ -78,6 +95,12 @@
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_HAI) text-red @endif">{{$item->answer_2}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_BA) text-red @endif">{{$item->answer_3}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_BON) text-red @endif">{{$item->answer_4}}</td>
+
+                                            <td>
+                                                <b>Khối học:</b> {{ isset($arrBlock[$item->question_school_block]) ? $arrBlock[$item->question_school_block] : ''}} <br/>
+                                                <b>Môn học:</b> {{ isset($arrSubs[$item->question_subject]) ? $arrSubs[$item->question_subject] : ''}} <br/>
+                                                <b>Chuyên đề:</b> {{ isset($arrThematic[$item->question_thematic]) ? $arrThematic[$item->question_thematic] : ''}}
+                                            </td>
 
                                             <td class="text-center">
                                                 {{isset($arrTypeQuestionText[$item->question_type]) ? $arrTypeQuestionText[$item->question_type] : ''}}

@@ -211,4 +211,15 @@ class VmDefine extends BaseModel
             Cache::forget(Memcache::CACHE_VMDEFINE_BY_TYPE . $data->define_type);
         }
     }
+
+    public function getArrByType($define_type){
+        $data = $this->getDataByType($define_type);
+        $result = [];
+        if($data->count() > 0){
+            foreach($data as $item){
+                $result[$item->id] = $item->define_name;
+            }
+        }
+        return $result;
+    }
 }

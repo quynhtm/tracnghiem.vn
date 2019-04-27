@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Tracnghiem;
 
 use App\Http\Controllers\BaseAdminController;
+use App\Http\Models\Admin\VmDefine;
 use App\Http\Models\Tracnghiem\Question;
 use App\Library\AdminFunction\CExtracts;
 use App\Library\AdminFunction\CGlobal;
@@ -33,12 +34,7 @@ class TronNgauNhienController extends BaseAdminController{
 
 	public function _getDataDefault(){
 
-		$this->arrApprove = array(
-			STATUS_INT_AM_MOT => viewLanguage('--Chọn duyệt--'),
-			STATUS_INT_KHONG => viewLanguage('Chưa duyệt'),
-			STATUS_INT_MOT => viewLanguage('Chờ duyệt'),
-			STATUS_INT_HAI => viewLanguage('Đã duyệt')
-		);
+		$this->arrApprove = Question::$arrApprove;
 
 		if(!$this->is_root){
 			unset($this->arrApprove[STATUS_INT_HAI]);
@@ -52,6 +48,30 @@ class TronNgauNhienController extends BaseAdminController{
 			'permission_delete' => $this->checkPermiss(PERMISS_TRONDE_NGAUNHIEN_DELETE),
 			'permission_approve' => $this->checkPermiss(PERMISS_TRONDE_NGAUNHIEN_APPROVE),
 			'permission_uploadfile' => $this->checkPermiss(PERMISS_TRONDE_NGAUNHIEN_UPLOADFILE),
+		];
+	}
+
+	public function _outDataView($data){
+
+
+		$arrBlock = app(VmDefine::class)->getArrByType(TRAC_NGHIEM_KHOI_LOP);
+		$optionBlock = getOption($arrBlock, isset($data['question_school_block']) ? $data['question_school_block'] : STATUS_DEFAULT);
+
+		$arrSubs = app(VmDefine::class)->getArrByType(TRAC_NGHIEM_MON_HOC);
+		$optionSubs = getOption($arrSubs, isset($data['question_subject']) ? $data['question_subject'] : STATUS_DEFAULT);
+
+
+		$arrThematic= app(VmDefine::class)->getArrByType(TRAC_NGHIEM_CHUYEN_DE);
+		$optionThematic = getOption($arrThematic, isset($data['question_thematic']) ? $data['question_thematic'] : STATUS_DEFAULT);
+
+		return $this->viewOptionData = [
+			'optionBlock' => $optionBlock,
+			'optionSubs' => $optionSubs,
+			'optionThematic' => $optionThematic,
+
+			'arrBlock' => $arrBlock,
+			'arrSubs' => $arrSubs,
+			'arrThematic' => $arrThematic,
 		];
 	}
 
@@ -74,6 +94,7 @@ class TronNgauNhienController extends BaseAdminController{
 		$paging = $total > 0 ? Pagging::getNewPager(3, $page_no, $total, $limit, $dataSearch) : '';
 
 		$this->_getDataDefault();
+		$this->_outDataView($dataSearch);
 		return view('tracnghiem.TronNgauNhien.TronTuFile', array_merge([
 			'data' => $data,
 			'dataSearch' => $dataSearch,
@@ -82,7 +103,7 @@ class TronNgauNhienController extends BaseAdminController{
 			'paging' => $paging,
 			'arrApprove' => $this->arrApprove,
 			'arrTypeQuestionText' => CExtracts::$arrTypeQuestionText
-		], $this->viewPermission));
+		], $this->viewPermission, $this->viewOptionData));
 
 	}
 	public function postQuestionFile(){
@@ -91,13 +112,18 @@ class TronNgauNhienController extends BaseAdminController{
 		}
 		if(isset($_POST) && isset($_FILES) && sizeof($_FILES) > 0){
 			$file = app(Upload::class)->uploadFile('myFile', 'docx', 'files', 5 * 1024 * 1024, $id=0, true);
+
+			$dataSearch['question_school_block'] = (int)Request::get('question_school_block', 0);
+			$dataSearch['question_subject'] = (int)Request::get('question_subject', 0);
+			$dataSearch['question_thematic'] = (int)Request::get('question_thematic', 0);
+
 			if($file != ''){
 				$path = app(FunctionLib::class)->getRootPath().'uploads/'.$file;
 				if(is_file($path)){
 					$arrText = CExtracts::extractsText($path);
 					$arrCheck = array_keys(CExtracts::$arrTypeQuestion);
 					$result = CExtracts::extractsQuestions($arrText, $arrCheck);
-					$dataInput = CExtracts::extractsCreateOneQuestions($result);
+					$dataInput = CExtracts::extractsCreateOneQuestions($result, $dataSearch);
 					app(Question::class)->insertMultiple($dataInput);
 					return Redirect::route('tronNgauNhien.getTronNgauNhien');
 				}else{
@@ -197,6 +223,26 @@ class TronNgauNhienController extends BaseAdminController{
 			foreach($items as $id){
 				$data['question_approved'] = STATUS_INT_MOT;
 				app(Question::class)->updateItem($id, $data);
+			}
+			return Redirect::route('tracnghiem.questionView')->with('status', 'Cập nhật thành công!');
+		}else{
+			return Redirect::route('tracnghiem.questionView')->with('status_error', 'Cập nhật thất bại!');
+		}
+	}
+	public function approveRoot(){
+		if (!$this->checkMultiPermiss([PERMISS_TRONDE_NGAUNHIEN_FULL, PERMISS_TRONDE_NGAUNHIEN_APPROVE_ROOT])) {
+			return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
+		}
+
+		$items = Request::get('item', array());
+		$valAprove = (int)Request::get('valAprove', -1);
+
+		if(!empty($items)){
+			foreach($items as $id) {
+				if (isset(Question::$arrApprove[$valAprove])){
+					$data['question_approved'] = $valAprove;
+					app(Question::class)->updateItem($id, $data);
+				}
 			}
 			return Redirect::route('tracnghiem.questionView')->with('status', 'Cập nhật thành công!');
 		}else{

@@ -33,6 +33,7 @@ Route::get('questions-file/edit/{id?}', array('as' => 'tronNgauNhien.suaTronNgau
 Route::post('questions-file/edit/{id?}', array('as' => 'tronNgauNhien.suaTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@postItem'))->where('id', '[0-9]+');
 Route::post('questions-file/delete', array('as' => 'tronNgauNhien.xoaTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@delete'));
 Route::post('questions-file/approve', array('as' => 'tronNgauNhien.approveTronNgauNhien','uses' => TracNghiem.'\TronNgauNhienController@approve'));
+Route::post('questions-file/approve-root', array('as' => 'tronNgauNhien.approveTronNgauNhienRoot','uses' => TracNghiem.'\TronNgauNhienController@approveRoot'));
 
 
 

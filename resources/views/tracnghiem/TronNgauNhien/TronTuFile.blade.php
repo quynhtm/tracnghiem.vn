@@ -24,12 +24,34 @@
                     </div>
                     <div class="panel-body">
                         <form id="formAdd" method="post" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <input type="file" name="myFile">
+                            <div class="form-group col-lg-2">
+                                <label for="status" class="control-label">{{viewLanguage('Tệp đính kèm')}}</label>
+                                <input type="file" name="myFile" class="form-control input-sm">
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label for="status" class="control-label">{{viewLanguage('Khối học')}}</label>
+                                <select name="question_school_block" id="question_school_block" class="form-control input-sm">
+                                    {!! $optionBlock !!}}
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label for="status" class="control-label">{{viewLanguage('Môn học')}}</label>
+                                <select name="question_subject" id="question_subject" class="form-control input-sm">
+                                    {!! $optionSubs !!}}
+                                </select>
+                            </div>
+                            <div class="form-group col-lg-3">
+                                <label for="status" class="control-label">{{viewLanguage('Chuyên đề')}}</label>
+                                <select name="question_thematic" id="question_thematic" class="form-control input-sm">
+                                    {!! $optionThematic !!}}
+                                </select>
                             </div>
                             <div class="clearfix"></div>
                             {!! csrf_field() !!}
-                            <button type="submit" name="btnUpload" class="btn btn-warning btn-sm" value="">Upload</button>
+                            <div class="form-group col-lg-3">
+                                <button type="submit" name="btnUpload" class="btn btn-warning btn-sm" value="">Upload</button>
+                            </div>
+
                         </form>
                     </div>
                 </div>
@@ -38,7 +60,7 @@
                 <div class="col-md-12">
 
                     <br/>
-                    <div class="span pull-left"> @if($total >0) Có tổng số <b>{{$total}}</b> tài khoản  @endif </div>
+                    <div class="span pull-left"> @if($total >0) Có tổng số <b>{{$total}}</b> câu hỏi  @endif </div>
                     @if(($is_root || $permission_full || $permission_approve))
                         <a class="btn btn-sm btn-warning pull-right btnApproveQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Gửi chờ duyệt</a>
                     @endif
@@ -59,6 +81,8 @@
                                 <th width="5%" class="text-center">Câu TL 5</th>
                                 <th width="5%" class="text-center">Câu TL 6</th>
                                 -->
+                                <td width="15%">Thông tin khác</td>
+
                                 <th width="5%">Loại câu hỏi</th>
                                 <th width="5%" class="text-center">Ngày tạo</th>
                                 <th width="5%" class="text-center">Trạng thái</th>
@@ -79,10 +103,16 @@
                                         <td class="text-center @if($item->correct_answer == STATUS_INT_NAM) text-green @endif">{{$item->answer_5}}</td>
                                         <td class="text-center @if($item->correct_answer == STATUS_INT_SAU) text-green @endif">{{$item->answer_6}}</td>
                                         -->
+                                        <td>
+                                            <b>Khối học:</b> {{ isset($arrBlock[$item->question_school_block]) ? $arrBlock[$item->question_school_block] : ''}} <br/>
+                                            <b>Môn học:</b> {{ isset($arrSubs[$item->question_subject]) ? $arrSubs[$item->question_subject] : ''}} <br/>
+                                            <b>Chuyên đề:</b> {{ isset($arrThematic[$item->question_thematic]) ? $arrThematic[$item->question_thematic] : ''}}
+                                        </td>
+
                                         <td class="text-center">
                                             {{isset($arrTypeQuestionText[$item->question_type]) ? $arrTypeQuestionText[$item->question_type] : ''}}
                                         </td>
-                                        <td class="text-center">{{date('d/m/Y', $item->created_at)}}</td>
+                                        <td class="text-center">{{$item->created_at}}</td>
                                         <td>
                                             {{isset($arrApprove[$item->question_approved]) ? $arrApprove[$item->question_approved] : ''}}
                                         </td>
