@@ -26,6 +26,10 @@ class MixQuestionController extends BaseAdminController
     private $viewPermission = array();//check quyen
     private $arrApprove = array();
 
+    private $khoi_lop = array();
+    private $mon_hoc = array();
+    private $chuyen_de = array();
+
     public $commonService;
     public function __construct()
     {
@@ -57,30 +61,27 @@ class MixQuestionController extends BaseAdminController
         $optionApprove = getOption($this->arrApprove, isset($data['question_approved']) ? $data['question_approved'] : STATUS_SHOW);
         $optionStatus = getOption($this->arrStatus, isset($data['question_status']) ? $data['question_status'] : STATUS_SHOW);
 
+        $this->khoi_lop = app(VmDefine::class)->getArrByType(TRAC_NGHIEM_KHOI_LOP);
+        $optionKhoiHoc = getOption($this->khoi_lop, isset($data['question_school_block']) ? $data['question_school_block'] : STATUS_DEFAULT);
 
-        $arrBlock = app(VmDefine::class)->getArrByType(TRAC_NGHIEM_KHOI_LOP);
-        $optionBlock = getOption($arrBlock, isset($data['question_school_block']) ? $data['question_school_block'] : STATUS_DEFAULT);
+        $this->mon_hoc = app(VmDefine::class)->getArrByType(TRAC_NGHIEM_MON_HOC);
+        $optionMonHoc = getOption($this->mon_hoc, isset($data['question_subject']) ? $data['question_subject'] : STATUS_DEFAULT);
 
-        $arrSubs = app(VmDefine::class)->getArrByType(TRAC_NGHIEM_MON_HOC);
-        $optionSubs = getOption($arrSubs, isset($data['question_subject']) ? $data['question_subject'] : STATUS_DEFAULT);
-
-
-        $arrThematic= app(VmDefine::class)->getArrByType(TRAC_NGHIEM_CHUYEN_DE);
-        $optionThematic = getOption($arrThematic, isset($data['question_thematic']) ? $data['question_thematic'] : STATUS_DEFAULT);
-
+        $this->chuyen_de= app(VmDefine::class)->getArrByType(TRAC_NGHIEM_CHUYEN_DE);
+        $optionChuyenDe = getOption($this->chuyen_de, isset($data['question_thematic']) ? $data['question_thematic'] : STATUS_DEFAULT);
 
         return $this->viewOptionData = [
             'optionStatus' => $optionStatus,
             'optionApprove' => $optionApprove,
             'pageAdminTitle' => CGlobal::$pageAdminTitle,
 
-            'optionBlock' => $optionBlock,
-            'optionSubs' => $optionSubs,
-            'optionThematic' => $optionThematic,
+            'optionKhoiHoc' => $optionKhoiHoc,
+            'optionMonHoc' => $optionMonHoc,
+            'optionChuyenDe' => $optionChuyenDe,
 
-            'arrBlock' => $arrBlock,
-            'arrSubs' => $arrSubs,
-            'arrThematic' => $arrThematic,
+            'arrBlock' => $this->khoi_lop,
+            'arrSubs' => $this->mon_hoc,
+            'arrThematic' => $this->chuyen_de,
         ];
     }
     public function view()
@@ -104,15 +105,18 @@ class MixQuestionController extends BaseAdminController
         $search['question_school_block'] = (int)Request::get('question_school_block', -1);
         $search['question_subject'] = (int)Request::get('question_subject', -1);
         $search['question_thematic'] = (int)Request::get('question_thematic', -1);
+        $search['question_id'] = $arrChose;
 
-        $data = app(Question::class)->searchByCondition($search, $limit, $offset, true);
-        $paging = $data['total'] > 0 ? Pagging::getNewPager(3, $pageNo, $data['total'], $limit, $search) : '';
+        $data = ($arrChose)?app(Question::class)->searchByCondition($search, $limit, $offset, true):[];
+        $total = isset($data['total'])?$data['total']: 0;
+        $result = isset($data['data'])?$data['data']: [];
+        $paging = $total > 0 ? Pagging::getNewPager(3, $pageNo, $total, $limit, $search) : '';
 
         $this->_outDataView($search);
         return view('tracnghiem.MixQuestion.view', array_merge([
-            'data' => $data['data'],
+            'data' => $result,
             'search' => $search,
-            'total' => $data['total'],
+            'total' => $total,
             'stt' => ($pageNo - 1) * $limit,
             'paging' => $paging,
             'arrApprove' => $this->arrApprove,
@@ -125,29 +129,58 @@ class MixQuestionController extends BaseAdminController
         if (!$this->checkMultiPermiss([PERMISS_QUESTION_FULL, PERMISS_QUESTION_CREATE])) {
             return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
         }
+        $dataId = Request::get('checkItems', array());
+        $dataExam['exam_name'] = $ten_de_thi =  Request::get('exam_name', '');
+        $dataExam['school_year'] = $nam_hoc =Request::get('school_year', '');
+        $number_exam = Request::get('number_exam', 0);
 
-        $arrField = ['id','question_name','answer_1','answer_2','answer_3','answer_4','answer_5','answer_6','correct_answer'];
-        $data = Question::where('id','>',0)->get($arrField);
-        $dataTron = [];
-        if($data){
-            foreach ($data->toArray() as $v){
-                $list_dap_an = [];
-                for( $i= 1 ; $i <= 6 ; $i++ ){
-                    $key_q = 'answer_'.$i;
-                    if(isset($v[$key_q]) && trim($v[$key_q]) != ''){
-                        $list_dap_an[$key_q] = trim($v[$key_q]);
+        $school_block_id = Request::get('school_block_id', 0);
+        $dataExam['school_block_id'] = $school_block_id;
+        $dataExam['school_block_name'] = $ten_khoi_lop = isset($this->khoi_lop[$school_block_id])?$this->khoi_lop[$school_block_id]:'';
+
+        $subjects_id = Request::get('subjects_id', 0);
+        $dataExam['subjects_id'] = $subjects_id;
+        $dataExam['subjects_name'] = $ten_mon_hoc = isset($this->mon_hoc[$subjects_id])?$this->mon_hoc[$subjects_id]:'';
+
+        $thematic_id = Request::get('thematic_id', 0);
+        $dataExam['thematic_id'] = $thematic_id;
+        $dataExam['thematic_name'] = $ten_chuyen_de = isset($this->chuyen_de[$thematic_id])?$this->chuyen_de[$thematic_id]:'';
+
+        if(!empty($dataId)){
+            $arrField = ['id','question_name','answer_1','answer_2','answer_3','answer_4','answer_5','answer_6','correct_answer'];
+            $data = Question::where('id','>',0)->whereIn('id',$dataId)->get($arrField);
+            $dataTron = [];
+            if($data){
+                foreach ($data->toArray() as $v){
+                    $list_dap_an = [];
+                    for( $i= 1 ; $i <= 6 ; $i++ ){
+                        $key_q = 'answer_'.$i;
+                        if(isset($v[$key_q]) && trim($v[$key_q]) != ''){
+                            $list_dap_an[$key_q] = trim($v[$key_q]);
+                        }
                     }
+                    $v['list_answer'] = $list_dap_an;
+                    $dataTron[$v['id']] = $v;
                 }
-                $v['list_answer'] = $list_dap_an;
-                $dataTron[$v['id']] = $v;
             }
         }
+
+        if(empty($dataTron))
+            return;
+        vmDebug($dataTron);
+
         $du_lieu_da_tron = $this->commonService->mixAutoQuestion($dataTron);
         $list_dap_an = [1=>'A',2=>'B',3=>'C',4=>'D',];
         //form_exam_question
         if(!empty($du_lieu_da_tron)){
-            $output =  view('tracnghiem.MixQuestion.form_exam_question',['questions'=>$du_lieu_da_tron,
+            $output =  view('tracnghiem.MixQuestion.form_exam_question',[
+                'questions'=>$du_lieu_da_tron,
                 'list_dap_an'=>$list_dap_an,
+                'ten_de_thi'=>$ten_de_thi,
+                'nam_hoc'=>$nam_hoc,
+                'ten_khoi_lop'=>$ten_khoi_lop,
+                'ten_mon_hoc'=>$ten_mon_hoc,
+                'ten_chuyen_de'=>$ten_chuyen_de,
             ]);
             $filepath = "de_thi_1.doc";
             @header("Cache-Control: ");// leave blank to avoid IE errors
@@ -177,6 +210,7 @@ class MixQuestionController extends BaseAdminController
         }
         $data = array('isIntOk' => 0);
         $dataId = Request::get('dataId', array());
+
         if(!empty($dataId)){
             $arrChose = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_QUESTION_CHOSE_MIX_EXAM) : [];
             foreach($dataId as $id){

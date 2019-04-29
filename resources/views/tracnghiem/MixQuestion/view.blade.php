@@ -22,38 +22,38 @@
                         <div class="panel-body">
                             <div class="form-group col-lg-3">
                                 <label for="name"><i>{{viewLanguage('Tên đề thi')}}</i></label>
-                                <input type="text" class="form-control input-sm" id="mix_name" name="mix_name" placeholder="Tên đề thi" @if(isset($search['mix_name']))value="{{$search['mix_name']}}"@endif>
+                                <input type="text" class="form-control input-sm" id="exam_name" name="exam_name" placeholder="Tên đề thi" @if(isset($search['exam_name']))value="{{$search['exam_name']}}"@endif>
                             </div>
                             <div class="form-group col-lg-2">
                                 <label for="name"><i>{{viewLanguage('Số lượng đề xuất ra')}}</i></label>
-                                <input type="text" class="form-control input-sm" id="mix_num" name="mix_num" placeholder="Số lượng đề xuất ra" @if(isset($search['mix_num']))value="{{$search['mix_num']}}"@endif>
+                                <input type="text" class="form-control input-sm" id="number_exam" name="number_exam" placeholder="Số lượng đề xuất ra" @if(isset($search['number_exam']))value="{{$search['number_exam']}}"@endif>
                             </div>
                             <div class="form-group col-lg-2">
                                 <label for="name"><i>{{viewLanguage('Năm học')}}</i></label>
-                                <input type="text" class="form-control input-sm" id="mix_year" name="mix_year" placeholder="Năm học" @if(isset($search['mix_year']))value="{{$search['mix_year']}}"@endif>
+                                <input type="text" class="form-control input-sm" id="school_year" name="school_year" placeholder="Năm học" @if(isset($search['school_year']))value="{{$search['school_year']}}"@endif>
                             </div>
                             <div class="form-group col-lg-3">
                                 <label for="status" class="control-label">{{viewLanguage('Khối học')}}</label>
-                                <select name="question_school_block" id="question_school_block" class="form-control input-sm">
-                                    {!! $optionBlock !!}}
+                                <select name="school_block_id" id="school_block_id" class="form-control input-sm">
+                                    {!! $optionKhoiHoc !!}}
                                 </select>
                             </div>
                             <div class="form-group col-lg-3">
                                 <label for="status" class="control-label">{{viewLanguage('Môn học')}}</label>
-                                <select name="question_subject" id="question_subject" class="form-control input-sm">
-                                    {!! $optionSubs !!}}
+                                <select name="subjects_id" id="subjects_id" class="form-control input-sm">
+                                    {!! $optionMonHoc !!}}
                                 </select>
                             </div>
                             <div class="form-group col-lg-3">
                                 <label for="status" class="control-label">{{viewLanguage('Chuyên đề')}}</label>
-                                <select name="question_thematic" id="question_thematic" class="form-control input-sm">
-                                    {!! $optionThematic !!}}
+                                <select name="thematic_id" id="thematic_id" class="form-control input-sm">
+                                    {!! $optionChuyenDe !!}}
                                 </select>
                             </div>
                         </div>
                         <div class="panel-footer text-right">
                             @if(($is_root || $permission_full || $permission_approve))
-                                <a class="btn btn-warning btn-sm" href="{{URL::route('tracnghiem.mixAutoQuestion')}}"><i class="fa fa-search"></i> {{viewLanguage('Tạo dề thi')}}</a>
+                                <a class="btn btn-warning btn-sm btnMixQuestionExam" href="javascript:void(0);"><i class="fa fa-search"></i> {{viewLanguage('Tạo dề thi')}}</a>
                             @endif
                         </div>
                     </form>
@@ -66,12 +66,12 @@
 
                         <div class="clearfix"></div><br/>
 
-                        {{Form::open(array('method' => 'POST', 'role'=>'form', 'class' =>'frmApproveQuestionList','files' => false, 'url'=>URL::route('tronNgauNhien.approveTronNgauNhien')))}}
+                        {{Form::open(array('method' => 'POST', 'role'=>'form', 'class' =>'frmApproveQuestionList','files' => false, 'url'=>URL::route('tracnghiem.mixAutoQuestion')))}}
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover" id="tableApproveQuestion">
                                 <thead class="thin-border-bottom">
                                 <tr class="">
-                                    <th width="3%" class="text-center">STT <br/> <input type="checkbox" id="checkAll"></th>
+                                    <th width="3%" class="text-center">STT <br/> <input type="checkbox" id="checkAll" checked></th>
                                     <th width="30%">Câu hỏi</th>
                                     <th width="12%" class="text-center">Câu TL 1</th>
                                     <th width="12%" class="text-center">Câu TL 2</th>
@@ -89,7 +89,7 @@
                                 @if(isset($data) && sizeof($data) > 0)
                                     @foreach($data as $k=>$item)
                                         <tr>
-                                            <td class="text-center">{{$stt + $k + 1}} <br/> <input type="checkbox" class="check" name="checkItems[]" value="{{$item->id}}"></td>
+                                            <td class="text-center">{{$stt + $k + 1}} <br/> <input type="checkbox" class="check" name="checkItems[]" value="{{$item->id}}" checked></td>
                                             <td>{{$item->question_name}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_MOT) text-red @endif">{{$item->answer_1}}</td>
                                             <td class="text-center @if($item->correct_answer == STATUS_INT_HAI) text-red @endif">{{$item->answer_2}}</td>

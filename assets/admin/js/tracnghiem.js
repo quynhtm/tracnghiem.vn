@@ -3,6 +3,8 @@ $(document).ready(function () {
     Admin.setLang();
 
     TracNghiem.btnChoseQuestion();
+    TracNghiem.btnMixQuestionExam();
+
     TracNghiem.btnApproveQuestion();
     TracNghiem.btnApproveQuestionRoot();
 
@@ -10,16 +12,16 @@ $(document).ready(function () {
 TracNghiem = {
     btnChoseQuestion:function(){
         $('.btnChoseQuestion').click(function(){
-            var total = $("table#tableApproveQuestion tbody input.check:checked" ).length;
+            var total = $("table#tableApproveQuestionRoot tbody input.check:checked" ).length;
             if(total==0){
-                jAlert('Vui lòng chọn ít nhất 1 câu hỏi để trộn đè!', 'Thông báo');
+                jAlert('Vui lòng chọn ít nhất 1 câu hỏi để trộn đề!', 'Thông báo');
                 return false;
             }else{
                 jConfirm('Bạn muốn chọn trộn đề [OK]:Đồng ý [Cancel]:Bỏ qua?)', 'Xác nhận', function(r) {
                     if(r){
                         var dataId = [];
                         var i = 0;
-                        $("input[name*='checkItems']").each(function () {
+                        $("input[name*='item']").each(function () {
                             if ($(this).is(":checked")) {
                                 dataId[i] = $(this).val();
                                 i++;
@@ -39,6 +41,22 @@ TracNghiem = {
                                 }
                             },
                         });
+                    }
+                });
+            }
+        });
+    },
+    btnMixQuestionExam:function(){
+        $('.btnMixQuestionExam').click(function(){
+            var total = $("table#tableApproveQuestion tbody input.check:checked" ).length;
+            if(total==0){
+                jAlert('Vui lòng chọn ít nhất câu hỏi để trộn đề!', 'Thông báo');
+                return false;
+            }else{
+                jConfirm('Bạn muốn gửi trộn đề [OK]:Đồng ý [Cancel]:Bỏ qua?)', 'Xác nhận', function(r) {
+                    if(r){
+                        $('.frmApproveQuestionList').submit();
+                        return true;
                     }
                 });
             }

@@ -15,7 +15,7 @@ Route::post('examQuestion/deleteItem', array('as' => 'tracnghiem.deleteExamQuest
 //trộn đề
 Route::get('mixQuestions',array('as' => 'tracnghiem.mixQuestionsView','uses' => TracNghiem.'\MixQuestionController@view'));
 Route::post('mixQuestions/choseQuestion', array('as' => 'tracnghiem.choseQuestion','uses' => TracNghiem.'\MixQuestionController@choseQuestion'));
-Route::get('mixQuestions/mixAutoQuestion', array('as' => 'tracnghiem.mixAutoQuestion','uses' => TracNghiem.'\MixQuestionController@mixAutoQuestion'));
+Route::post('mixQuestions/mixAutoQuestion', array('as' => 'tracnghiem.mixAutoQuestion','uses' => TracNghiem.'\MixQuestionController@mixAutoQuestion'));
 
 //Define common
 Route::match(['GET','POST'],'defineSchoolBlock', array('as' => 'tracnghiem.schoolBlock','uses' => TracNghiem.'\TracNghiemDefineController@schoolBlock'));//khối học
