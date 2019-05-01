@@ -98,13 +98,22 @@
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group">
+                            <label for="name" class="control-label">Chức vụ<span class="red"> (*) </span></label>
+                            <select name="position" id="position" class="form-control input-sm">
+                                {!! $optionPosition !!}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: none">
+                    <div class="col-sm-4">
+                        <div class="form-group">
                             <label for="name" class="control-label">Quyền với YCV</label>
                             <select name="auto_loan" id="auto_loan" class="form-control input-sm">
                                 {!! $optionAutoLoan !!}
                             </select>
                         </div>
                     </div>
-
                     <div class="col-sm-4">
                         <div class="form-group">
                             <label for="name" class="control-label">Thuộc phòng ban</label>
@@ -113,14 +122,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label for="name" class="control-label">Chức vụ<span class="red"> (*) </span></label>
-                            <select name="position" id="position" class="form-control input-sm">
-                                {!! $optionPosition !!}
-                            </select>
-                        </div>
-                    </div>
+
                     <div class="col-sm-4">
                         <div class="form-group">
                             <label for="name" class="control-label">Người quản lý trực tiếp</label>
@@ -162,7 +164,7 @@
                             </select>
                         </div>
                     </div>
-
+                    </div>
                 </div>
                 <div class="clearfix"></div>
                 <div class="form-group col-sm-12 text-left">

@@ -93,6 +93,15 @@
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group">
+                            <label for="name" class="control-label">Chức vụ</label>
+                            <select name="position" id="position" class="form-control input-sm" disabled>
+                                {!! $optionPosition !!}
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: none">
+                    <div class="col-sm-4">
+                        <div class="form-group">
                             <label for="name" class="control-label">Quyền với YCV</label>
                             <select name="auto_loan" id="auto_loan" class="form-control input-sm" disabled>
                                 {!! $optionAutoLoan !!}
@@ -108,14 +117,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="form-group">
-                            <label for="name" class="control-label">Chức vụ</label>
-                            <select name="position" id="position" class="form-control input-sm" disabled>
-                                {!! $optionPosition !!}
-                            </select>
-                        </div>
-                    </div>
+
                     <div class="col-sm-4">
                         <div class="form-group">
                             <label for="name" class="control-label">Người quản lý trực tiếp</label>
@@ -150,6 +152,7 @@
                             <label for="name" class="control-label">Nhận YCV của QL</label>
                             <input type="text" id="receive_loan" name="receive_loan"  class="form-control input-sm" value="@if(isset($arrIsReceiveLoan[$data['is_receive_loan']])){{$arrIsReceiveLoan[$data['is_receive_loan']]}}@endif" readonly>
                         </div>
+                    </div>
                     </div>
 
                 </div>
