@@ -28,7 +28,11 @@
     <br>
     @if(!empty($list_answer_true))
         @foreach($list_answer_true as $number => $answer)
-            Câu {{$number}}: <b>{{$answer}}</b><br>
+            Câu {{$number}}: <b>{{$answer}}</b>
+            @if($number < 10)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            @else &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            @endif
+            @if($number%5 == 0)<br>@endif
         @endforeach
     @endif
 </div>
