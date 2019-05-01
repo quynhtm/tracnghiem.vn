@@ -65,8 +65,6 @@ class ExamQuestionController extends BaseAdminController
 
         $search['name'] = addslashes(Request::get('name', ''));
         $search['exam_id'] = (int)Request::get('exam_id', '');
-        //$search['field_get'] = 'menu_name,menu_id,parent_id';//cac truong can lay
-        //vmDebug($search);
 
         $data = app(Exam::class)->searchByCondition($search, $limit, $offset, true);
         $paging = $data['total'] > 0 ? Pagging::getNewPager(3, $pageNo, $data['total'], $limit, $search) : '';
