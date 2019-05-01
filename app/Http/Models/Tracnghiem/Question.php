@@ -51,6 +51,10 @@ class Question extends BaseModel
                 $query->whereIn('id', $dataSearch['question_id']);
             }
 
+            if (isset($dataSearch['list_question_id']) && !empty($dataSearch['list_question_id'])) {
+                $query->whereIn('id', explode(',',$dataSearch['list_question_id']));
+            }
+
             if (isset($dataSearch['question_school_block']) && $dataSearch['question_school_block'] > 0) {
                 $query->where('question_school_block', $dataSearch['question_school_block']);
             }

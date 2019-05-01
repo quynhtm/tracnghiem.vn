@@ -80,6 +80,8 @@
                                     </td>
                                     <td class="text-center">
                                         <a href="javascript:void(0);">Tải về</a>
+                                        <br>
+                                        <a href="{{URL::route('tracnghiem.questionView',['list_question_id'=>$item->list_question_id])}}">DS câu hỏi</a>
                                     </td>
                                 </tr>
                             @endforeach

@@ -101,6 +101,7 @@ class QuestionController extends BaseAdminController
         $search['question_school_block'] = (int)Request::get('question_school_block', -1);
         $search['question_subject'] = (int)Request::get('question_subject', -1);
         $search['question_thematic'] = (int)Request::get('question_thematic', -1);
+        $search['list_question_id'] = Request::get('list_question_id', '');
 
         //$search['field_get'] = 'menu_name,menu_id,parent_id';//cac truong can lay
         //vmDebug($search);
@@ -170,55 +171,6 @@ class QuestionController extends BaseAdminController
             'id' => $id,
             'error' => $this->error,
         ], $this->viewPermission, $this->viewOptionData));
-    }
-
-    public function mixAutoQuestion()
-    {
-        if (!$this->checkMultiPermiss([PERMISS_QUESTION_FULL, PERMISS_QUESTION_CREATE])) {
-            return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
-        }
-
-        $arrField = ['id','question_name','answer_1','answer_2','answer_3','answer_4','answer_5','answer_6','correct_answer'];
-        $data = Question::where('id','>',0)->get($arrField);
-        $dataTron = [];
-        if($data){
-            foreach ($data->toArray() as $v){
-                $list_dap_an = [];
-                for( $i= 1 ; $i <= 6 ; $i++ ){
-                    $key_q = 'answer_'.$i;
-                    if(isset($v[$key_q]) && trim($v[$key_q]) != ''){
-                        $list_dap_an[$key_q] = trim($v[$key_q]);
-                    }
-                }
-                $v['list_answer'] = $list_dap_an;
-                $dataTron[$v['id']] = $v;
-            }
-        }
-        $du_lieu_da_tron = $this->commonService->mixAutoQuestion($dataTron);
-        $list_dap_an = [1=>'A',2=>'B',3=>'C',4=>'D',];
-        //form_exam_question
-        if(!empty($du_lieu_da_tron)){
-            $output =  view('tracnghiem.Question.form_exam_question',['questions'=>$du_lieu_da_tron,
-                'list_dap_an'=>$list_dap_an,
-            ]);
-            $filepath = "de_thi_1.doc";
-            @header("Cache-Control: ");// leave blank to avoid IE errors
-            @header("Pragma: ");// leave blank to avoid IE errors
-            @header("Content-type: application/octet-stream");
-            @header("Content-Disposition: attachment; filename=\"{$filepath}\"");
-            $dir = 'uploads/images/';
-            $path_folder_upload = env('IS_LIVE') ? env('APP_PATH_UPLOAD') . env('APP_PATH_UPLOAD_MIDDLE',$dir) : Config::get('config.DIR_ROOT') .env('APP_PATH_UPLOAD_MIDDLE',$dir);
-            if (!is_dir($path_folder_upload)) {
-                @mkdir($path_folder_upload, 0777, true);
-                chmod($path_folder_upload, 0777);
-            }
-            ob_start();
-            echo $output;
-            $output_so_far = ob_get_contents();
-            ob_clean();
-            file_put_contents($path_folder_upload.$filepath, $output_so_far);
-            echo $output;  die;
-        }
     }
 
     //ajax
