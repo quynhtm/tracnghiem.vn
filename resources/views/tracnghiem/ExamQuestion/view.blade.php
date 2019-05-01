@@ -50,7 +50,7 @@
                             <thead class="thin-border-bottom">
                             <tr class="">
                                 <th width="5%" class="text-center">{{viewLanguage('STT')}}</th>
-                                <th width="15%">{{viewLanguage('Tên đề thi')}}</th>
+                                <th width="15%">{{viewLanguage('Tên đề thi\ Mã đề')}}</th>
                                 <th width="10%"  class="text-center">{{viewLanguage('Năm học')}}</th>
                                 <th width="8%"  class="text-center">{{viewLanguage('Số phút')}}</th>
 
@@ -66,7 +66,10 @@
                             @foreach ($data as $key => $item)
                                 <tr>
                                     <td class="text-center middle">{{ $stt+$key+1 }}</td>
-                                    <td>{{$item->exam_name}}</td>
+                                    <td>
+                                        {{$item->exam_name}}<br>
+                                        <b>Mã đề {{$item->id}}</b>
+                                    </td>
                                     <td class="text-center">{{$item->school_year}}</td>
                                     <td class="text-center">{{$item->time_to_do}}</td>
 

@@ -173,24 +173,46 @@ class MixQuestionController extends BaseAdminController
 
         if(empty($dataTron))
             return;
-
-        $du_lieu_da_tron = $this->commonService->mixAutoQuestion($dataTron);
-        $list_dap_an = [1=>'A',2=>'B',3=>'C',4=>'D',];
-        $total_question = count($du_lieu_da_tron);
-        $dataExam['total_question'] = $total_question;
-        $dataExam['data_question'] = json_encode($du_lieu_da_tron);
-        $dataExam['list_question_id'] = join(',',array_keys($du_lieu_da_tron));
-
         $dataExam['user_id_creater'] = app(User::class)->user_id();
         $dataExam['user_name_creater'] = app(User::class)->user_name();
         $dataExam['created_at'] = getCurrentDateTime();
+        $list_cau_tra_loi = [1=>'A',2=>'B',3=>'C',4=>'D',];
 
         for ($i = 1; $i <= $number_exam; $i++) {
+            $du_lieu_da_tron = $this->commonService->mixAutoQuestion($dataTron);
+            //list đáp án
+            $list_answer_true = [];
+            $number = 1;
+            foreach ($du_lieu_da_tron as $k=>$val_ques){
+                $number_answer = 1;
+                foreach($val_ques['list_answer'] as $key_answer => $answer){
+                    if(isset($list_cau_tra_loi[$number_answer]) && $key_answer == 'answer_'.$val_ques['correct_answer']){
+                        $list_answer_true[$number] = $list_cau_tra_loi[$number_answer];
+                        break;
+                    }
+                    $number_answer++;
+                }
+                $number++;
+            }
+
+            $total_question = count($du_lieu_da_tron);
+            $dataExam['total_question'] = $total_question;
+            $dataExam['data_question'] = json_encode($du_lieu_da_tron);
+            $dataExam['list_question_id'] = join(',',array_keys($du_lieu_da_tron));
+
             $id_de_thi = app(Exam::class)->createItem($dataExam);
             if (!empty($du_lieu_da_tron) && $id_de_thi > 0) {
+                $folder = 'uploads/DeThi/';
+                $ma_dethi = 'MaDe_' . $id_de_thi . '/';
+                $dir = $folder . $ma_dethi;
+                if (!is_dir($dir)) {
+                    @mkdir($dir, 0777, true);
+                    chmod($dir, 0777);
+                }
+
                 $output = view('tracnghiem.MixQuestion.form_exam_question', [
                     'questions' => $du_lieu_da_tron,
-                    'list_dap_an' => $list_dap_an,
+                    'list_cau_tra_loi' => $list_cau_tra_loi,
                     'total_question' => $total_question,
                     'time_to_do' => $time_to_do,
                     'ten_de_thi' => $ten_de_thi,
@@ -205,13 +227,27 @@ class MixQuestionController extends BaseAdminController
                 //@header("Pragma: ");// leave blank to avoid IE errors
                 //@header("Content-type: application/octet-stream");
                 //@header("Content-Disposition: attachment; filename=\"{$filepath}\"");
-                $folder = 'uploads/DeThi/';
-                $ma_dethi = 'MaDe_' . $id_de_thi . '/';
-                $dir = $folder . $ma_dethi;
-                if (!is_dir($dir)) {
-                    @mkdir($dir, 0777, true);
-                    chmod($dir, 0777);
-                }
+                ob_start();
+                echo $output;
+                $output_so_far = ob_get_contents();
+                ob_clean();
+                file_put_contents($dir . $filepath, $output_so_far);
+                echo $output;
+
+                //dap án
+                $output = view('tracnghiem.MixQuestion.dapan_exam_question', [
+                    'list_answer_true' => $list_answer_true,
+                    'list_cau_tra_loi' => $list_cau_tra_loi,
+                    'total_question' => $total_question,
+                    'time_to_do' => $time_to_do,
+                    'ten_de_thi' => $ten_de_thi,
+                    'nam_hoc' => $nam_hoc,
+                    'ten_khoi_lop' => $ten_khoi_lop,
+                    'ten_mon_hoc' => $ten_mon_hoc,
+                    'ten_chuyen_de' => $ten_chuyen_de,
+                    'id_de_thi' => $id_de_thi,
+                ]);
+                $filepath = "DapAn_DeThi_" . $id_de_thi . ".doc";
                 ob_start();
                 echo $output;
                 $output_so_far = ob_get_contents();

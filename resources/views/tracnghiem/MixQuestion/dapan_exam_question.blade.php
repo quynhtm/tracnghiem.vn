@@ -24,20 +24,11 @@
             </td>
         </tr>
     </table>
-    <p style="width: 100%; text-align: center">Họ và tên thí sinh:......................................................................................................Lớp:...............<br><b>______________________________________________________________________________</b></p>
+    <h2 style="width: 100%; text-align: center">Đáp án của Mã đề {{$id_de_thi}}</h2>
     <br>
-    @if(!empty($questions))
-        <?php $number = 1;?>
-        @foreach($questions as $key => $ques)
-            <b>Câu {{$number}}: </b>{{$ques['question_name']}}
-            <?php $number_answer = 1;?>
-                @foreach($ques['list_answer'] as $kk => $answer)
-                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <span class="col-lg-6"><b>{{$list_cau_tra_loi[$number_answer]}}: </b>{{$answer}}</span>
-                    <?php $number_answer++;?>
-                @endforeach
-            <br/><br/>
-            <?php $number++;?>
+    @if(!empty($list_answer_true))
+        @foreach($list_answer_true as $number => $answer)
+            Câu {{$number}}: <b>{{$answer}}</b><br>
         @endforeach
     @endif
 </div>
