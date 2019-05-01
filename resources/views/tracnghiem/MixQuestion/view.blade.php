@@ -21,21 +21,22 @@
                     {{ csrf_field() }}
                     <div class="panel-body">
                         <div class="form-group col-lg-3">
-                            <label for="name"><i>{{viewLanguage('Tên đề thi')}}</i></label>
+                            <label for="name"><i>{{viewLanguage('Tên đề thi')}}</i><span class="red"> (*) </span></label>
                             <input type="text" class="form-control input-sm" id="exam_name" name="exam_name" placeholder="Tên đề thi" @if(isset($search['exam_name']))value="{{$search['exam_name']}}"@endif>
                         </div>
                         <div class="form-group col-lg-2">
-                            <label for="name"><i>{{viewLanguage('Số lượng đề xuất ra')}}</i></label>
+                            <label for="name"><i>{{viewLanguage('Số lượng đề xuất ra')}}</i><span class="red"> (*) </span></label>
                             <input type="text" class="form-control input-sm" id="number_exam" name="number_exam" placeholder="Số lượng đề xuất ra" @if(isset($search['number_exam']))value="{{$search['number_exam']}}" @else value="1" @endif>
                         </div>
                         <div class="form-group col-lg-2">
-                            <label for="name"><i>{{viewLanguage('Thời gian làm bài (phút)')}}</i></label>
+                            <label for="name"><i>{{viewLanguage('Thời gian làm bài (phút)')}}</i><span class="red"> (*) </span></label>
                             <input type="text" class="form-control input-sm" id="time_to_do" name="time_to_do" placeholder="'Thời gian làm bài (phút)" @if(isset($search['time_to_do']))value="{{$search['time_to_do']}}" @else value="30"@endif>
                         </div>
                         <div class="form-group col-lg-2">
-                            <label for="name"><i>{{viewLanguage('Năm học')}}</i></label>
+                            <label for="name"><i>{{viewLanguage('Năm học')}}</i><span class="red"> (*) </span></label>
                             <input type="text" class="form-control input-sm" id="school_year" name="school_year" placeholder="Năm học" @if(isset($search['school_year']))value="{{$search['school_year']}}"@endif>
                         </div>
+                        <div class="clearfix"></div>
                         <div class="form-group col-lg-3">
                             <label for="status" class="control-label">{{viewLanguage('Khối học')}}</label>
                             <select name="school_block_id" id="school_block_id" class="form-control input-sm">

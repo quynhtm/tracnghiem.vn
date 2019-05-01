@@ -24,17 +24,17 @@
             </td>
         </tr>
     </table>
-    <p style="width: 100%; text-align: center">Họ và tên thí sinh:......................................................................................................Lớp:...............</p>
-    <p style="width: 100%; text-align: center"><b>______________________________________________________________________________</b></p>
-
+    <p style="width: 100%; text-align: center">Họ và tên thí sinh:......................................................................................................Lớp:...............<br><b>______________________________________________________________________________</b></p>
+    <br>
     @if(!empty($questions))
         <?php $number = 1;?>
         @foreach($questions as $key => $ques)
             <b>Câu {{$number}}: </b>{{$ques['question_name']}}
             <?php $number_answer = 1;?>
                 @foreach($ques['list_answer'] as $kk => $answer)
-                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{$list_dap_an[$number_answer]}}: </b>{{$answer}}
-                <?php $number_answer++;?>
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span class="col-lg-6"><b>{{$list_dap_an[$number_answer]}}: </b>{{$answer}}</span>
+                    <?php $number_answer++;?>
                 @endforeach
             <br/><br/>
             <?php $number++;?>

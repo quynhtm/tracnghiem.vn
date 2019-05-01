@@ -101,9 +101,11 @@ class MixQuestionController extends BaseAdminController
         $offset = ($pageNo - 1) * $limit;
         $search = $data = array();
 
-        $search['exam_name'] = addslashes(Request::get('exam_name', ''));
+        $search['exam_name'] = addslashes(Request::get('exam_name', 'Đề thi test'));
         $search['number_exam'] = (int)(Request::get('number_exam', 1));
-        $search['school_year'] = Request::get('school_year', date('Y'));
+        $search['time_to_do'] = (int)(Request::get('time_to_do', 30));
+        $year_now = date('Y');
+        $search['school_year'] = Request::get('school_year', (($year_now-1).'-'.$year_now));
         $search['school_block_id'] = (int)Request::get('school_block_id', -1);
         $search['subjects_id'] = (int)Request::get('subjects_id', -1);
         $search['thematic_id'] = (int)Request::get('thematic_id', -1);
@@ -214,7 +216,7 @@ class MixQuestionController extends BaseAdminController
             $output_so_far = ob_get_contents();
             ob_clean();
             file_put_contents($dir.$filepath, $output_so_far);
-            echo $output; die();
+            echo $output;
         }
     }
 
