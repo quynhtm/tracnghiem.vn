@@ -115,14 +115,14 @@ use App\Stringee;
         </div>
         <div class="navbar-buttons navbar-header pull-right" role="navigation">
             <ul class="nav ace-nav">
-                <li class="light-blue">
+                <li class="light-blue" style="display: none">
                     <a class="dropdown-toggle" href="#" title="Góp ý - Thắc mắc về hệ thống">
                         <i class="fa fa-clipboard fa-2x marginTop5" aria-hidden="true">
 
                         </i>
                     </a>
                 </li>
-                <li class="light-blue">
+                <li class="light-blue" style="display: none">
                     <a class="dropdown-toggle" href="#">
                         <i class="fa fa-envelope-o fa-2x marginTop5" aria-hidden="true">
                             @if(isset($newMailInbox) && $newMailInbox > 0)<span class="msg_notify">{{$newMailInbox}}</span>@endif
@@ -152,21 +152,12 @@ use App\Stringee;
                         @endif
                     </a>
                     <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close" style="display: none">
-                        @if(isset($languageSite) && $languageSite == ENGLISH_LANGUAGE)
-                            <li>
-                                <a href="{{URL::route('admin.dashboard',array('lang'=>VIETNAM_LANGUAGE))}}">
-                                    <img src="{{Config::get('config.WEB_ROOT')}}assets/admin/img/icon/vi.png"/>
-                                    Viet Nam
-                                </a>
-                            </li>
-                        @else
-                            <li>
-                                <a href="{{URL::route('admin.dashboard',array('lang'=>ENGLISH_LANGUAGE))}}">
-                                    <img src="{{Config::get('config.WEB_ROOT')}}assets/admin/img/icon/en.png"/>
-                                    English
-                                </a>
-                            </li>
-                        @endif
+                        <li>
+                            <a href="{{URL::route('admin.dashboard',array('lang'=>VIETNAM_LANGUAGE))}}">
+                                <img src="{{Config::get('config.WEB_ROOT')}}assets/admin/img/icon/vi.png"/>
+                                Viet Nam
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 @if(isset($user) && isset($user['user_id']))
@@ -209,7 +200,7 @@ use App\Stringee;
     <div id="sidebar" class="sidebar sidebar-fixed sidebar-scroll responsive">
         <div class="sidebar-shortcuts" id="sidebar-shortcuts">
             <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
-                <a href="{{URL::route('admin.dashboard')}}" title="CMS Admin"><img width="100%" src="{{Config::get('config.WEB_ROOT')}}assets/frontend/img/logoCustomer.png" alt="CMS Admin"/></a>
+                <a href="{{URL::route('admin.dashboard')}}" title="CMS Admin"><img width="100%" src="{{Config::get('config.WEB_ROOT')}}assets/frontend/img/logo.jpg" alt="CMS Admin"/></a>
             </div>
             <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
                 <span class="btn btn-success"></span>

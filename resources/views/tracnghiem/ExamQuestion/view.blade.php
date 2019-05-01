@@ -21,15 +21,15 @@
                         {{ csrf_field() }}
                         <div class="panel-body">
                             <div class="form-group col-lg-3">
-                                <label for="name"><i>{{viewLanguage('Tên banner')}}</i></label>
-                                <input type="text" class="form-control input-sm" id="name" name="name" placeholder="Tên banner" @if(isset($search['name']))value="{{$search['name']}}"@endif>
+                                <label for="name"><i>{{viewLanguage('Mã đề thi')}}</i></label>
+                                <input type="text" class="form-control input-sm" id="exam_id" name="exam_id" placeholder="Mã đề thi" @if(isset($search['exam_id']))value="{{$search['exam_id']}}"@endif>
                             </div>
+
                             <div class="form-group col-lg-3">
-                                <label for="status" class="control-label">{{viewLanguage('Trạng thái')}}</label>
-                                <select name="status" id="status" class="form-control input-sm">
-                                    {!! $optionStatus !!}}
-                                </select>
+                                <label for="name"><i>{{viewLanguage('Tên đề thi')}}</i></label>
+                                <input type="text" class="form-control input-sm" id="exam_name" name="exam_name" placeholder="Tên đề thi" @if(isset($search['exam_name']))value="{{$search['exam_name']}}"@endif>
                             </div>
+
                         </div>
                         <div class="panel-footer text-right">
                             @if($is_root || $permission_full || $permission_create)
@@ -82,7 +82,12 @@
                                         <i>{{$item->created_at}}</i>
                                     </td>
                                     <td class="text-center">
-                                        <a href="javascript:void(0);">Tải về</a>
+                                        @if($is_root || $permission_full || $permission_dowload_exam)
+                                            <a href="{{URL::route('tracnghiem.dowloadFileExam',['exam_id'=>$item->id,'type_file'=>1])}}">Tải đề thi</a>
+                                        @endif
+                                        @if($is_root || $permission_full || $permission_dowload_answer)
+                                            <br><a href="{{URL::route('tracnghiem.dowloadFileExam',['exam_id'=>$item->id,'type_file'=>2])}}">Tải đáp án</a>
+                                        @endif
                                         <br>
                                         <a href="{{URL::route('tracnghiem.questionView',['list_question_id'=>$item->list_question_id])}}">DS câu hỏi</a>
                                     </td>

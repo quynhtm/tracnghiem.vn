@@ -151,12 +151,14 @@ define('PERMISS_QUESTION_FULL', 'questionFull');
 define('PERMISS_QUESTION_VIEW', 'questionView');
 define('PERMISS_QUESTION_CREATE', 'questionCreate');
 define('PERMISS_QUESTION_DELETE', 'questionDelete');
+define('PERMISS_QUESTION_TRON_DE', 'questionTronDe');
 
 //permiss question
 define('PERMISS_EXAMQUESTION_FULL', 'examQuestionFull');
 define('PERMISS_EXAMQUESTION_VIEW', 'examQuestionView');
 define('PERMISS_EXAMQUESTION_CREATE', 'examQuestionCreate');
-define('PERMISS_EXAMQUESTION_DELETE', 'examQuestionDelete');
+define('PERMISS_EXAMQUESTION_DOWLOAD_EXAM', 'examQuestionDowloadExam');
+define('PERMISS_EXAMQUESTION_DOWLOAD_ANSWER', 'examQuestionDowloadAnswer');
 
 
 //Upload trộn đề ngẫu nhiên

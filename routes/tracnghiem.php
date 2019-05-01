@@ -8,9 +8,7 @@ Route::post('question/deleteItem', array('as' => 'tracnghiem.deleteItem','uses' 
 
 //Quản lý đề thi
 Route::get('examQuestion',array('as' => 'tracnghiem.examQuestionView','uses' => TracNghiem.'\ExamQuestionController@view'));
-Route::get('examQuestion/edit/{id?}', array('as' => 'tracnghiem.examQuestionEdit','uses' => TracNghiem.'\ExamQuestionController@getItem'));
-Route::post('examQuestion/edit/{id?}', array('as' => 'tracnghiem.examQuestionEdit','uses' => TracNghiem.'\ExamQuestionController@postItem'));
-Route::post('examQuestion/deleteItem', array('as' => 'tracnghiem.deleteExamQuestion','uses' => TracNghiem.'\ExamQuestionController@deleteItem'));//ajax
+Route::get('examQuestion/dowloadFileExam', array('as' => 'tracnghiem.dowloadFileExam','uses' => TracNghiem.'\ExamQuestionController@dowloadFileExam'));//ajax
 
 //trộn đề
 Route::get('mixQuestions',array('as' => 'tracnghiem.mixQuestionsView','uses' => TracNghiem.'\MixQuestionController@view'));

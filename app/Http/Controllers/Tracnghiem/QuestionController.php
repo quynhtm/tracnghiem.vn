@@ -47,6 +47,7 @@ class QuestionController extends BaseAdminController
             'permission_full' => $this->checkPermiss(PERMISS_QUESTION_FULL),
             'permission_create' => $this->checkPermiss(PERMISS_QUESTION_CREATE),
             'permission_delete' => $this->checkPermiss(PERMISS_QUESTION_DELETE),
+            'permission_tron_de' => $this->checkPermiss(PERMISS_QUESTION_TRON_DE),
         ];
     }
 
@@ -102,6 +103,7 @@ class QuestionController extends BaseAdminController
         $search['question_subject'] = (int)Request::get('question_subject', -1);
         $search['question_thematic'] = (int)Request::get('question_thematic', -1);
         $search['list_question_id'] = Request::get('list_question_id', '');
+        $search['user_id_creater'] = ($this->is_root)? 0: $this->user_id;
 
         //$search['field_get'] = 'menu_name,menu_id,parent_id';//cac truong can lay
         //vmDebug($search);

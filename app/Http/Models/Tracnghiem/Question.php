@@ -38,6 +38,9 @@ class Question extends BaseModel
             if (isset($dataSearch['question_name']) && $dataSearch['question_name'] != '') {
                 $query->where('question_name', 'LIKE', '%' . $dataSearch['question_name'] . '%');
             }
+            if (isset($dataSearch['user_id_creater']) && $dataSearch['user_id_creater'] > 0) {
+                $query->where('user_id_creater', $dataSearch['user_id_creater']);
+            }
             if (isset($dataSearch['question_approved']) && $dataSearch['question_approved'] > -1) {
                 $query->where('question_approved', $dataSearch['question_approved']);
             }

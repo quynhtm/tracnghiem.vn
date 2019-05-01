@@ -36,7 +36,8 @@ class ExamQuestionController extends BaseAdminController
             'is_root' => $this->is_root,
             'permission_full' => $this->checkPermiss(PERMISS_EXAMQUESTION_FULL),
             'permission_create' => $this->checkPermiss(PERMISS_EXAMQUESTION_CREATE),
-            'permission_delete' => $this->checkPermiss(PERMISS_EXAMQUESTION_DELETE),
+            'permission_dowload_exam' => $this->checkPermiss(PERMISS_EXAMQUESTION_DOWLOAD_EXAM),
+            'permission_dowload_answer' => $this->checkPermiss(PERMISS_EXAMQUESTION_DOWLOAD_ANSWER),
         ];
     }
 
@@ -63,7 +64,7 @@ class ExamQuestionController extends BaseAdminController
         $search = $data = array();
 
         $search['name'] = addslashes(Request::get('name', ''));
-        $search['status'] = (int)Request::get('status', -1);
+        $search['exam_id'] = (int)Request::get('exam_id', '');
         //$search['field_get'] = 'menu_name,menu_id,parent_id';//cac truong can lay
         //vmDebug($search);
 
@@ -80,82 +81,26 @@ class ExamQuestionController extends BaseAdminController
         ], $this->viewPermission, $this->viewOptionData));
     }
 
-    public function getItem($id)
-    {
-        if (!$this->checkMultiPermiss([PERMISS_EXAMQUESTION_FULL, PERMISS_EXAMQUESTION_CREATE])) {
-            return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
-        }
-        $data = (($id > 0)) ? app(Exam::class)->getItemById($id) : [];
-        $this->_getDataDefault();
-        $this->_outDataView($data);
-        return view('tracnghiem.ExamQuestion.add', array_merge([
-            'data' => $data,
-            'id' => $id,
-        ], $this->viewPermission, $this->viewOptionData));
-    }
-
-    public function postItem($id)
-    {
-        if (!$this->checkMultiPermiss([PERMISS_EXAMQUESTION_FULL, PERMISS_EXAMQUESTION_CREATE])) {
-            return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
-        }
-        $id_hiden = (int)Request::get('id_hiden', 0);
-        $data = $_POST;
-        if(isset($_FILES['image']) && count($_FILES['image'])>0 && $_FILES['image']['name'] != '') {
-            $folder = 'banner';
-            $_max_file_size = 10 * 1024 * 1024;
-            $_file_ext = 'jpg,jpeg,png,gif';
-            $pathFileUpload = app(Upload::class)->uploadFile('image', $_file_ext, $folder, $_max_file_size);
-            $data['image'] = trim($pathFileUpload) != ''? $pathFileUpload: '';
-        }
-
-        if ($this->_validData($data) && empty($this->error)) {
-            $id = ($id == 0) ? $id_hiden : $id;
-            if ($id > 0) {
-                //cap nhat
-                if (app(Exam::class)->updateItem($id, $data)) {
-                    return Redirect::route('tracnghiem.questionView');
-                }
-            } else {
-                //them moi
-                if (app(Exam::class)->createItem($data)) {
-                    return Redirect::route('tracnghiem.questionView');
-                }
-            }
-        }
-        $this->_getDataDefault();
-        $this->_outDataView($data);
-        return view('tracnghiem.ExamQuestion.add', array_merge([
-            'data' => $data,
-            'id' => $id,
-            'error' => $this->error,
-        ], $this->viewPermission, $this->viewOptionData));
-    }
-
     //ajax
-    public function deleteItem()
+    public function dowloadFileExam()
     {
         $data = array('isIntOk' => 0);
-        if (!$this->checkMultiPermiss([PERMISS_EXAMQUESTION_FULL, PERMISS_EXAMQUESTION_DELETE])) {
+        if (!$this->checkMultiPermiss([PERMISS_EXAMQUESTION_FULL, PERMISS_EXAMQUESTION_DOWLOAD_EXAM,PERMISS_EXAMQUESTION_DOWLOAD_ANSWER])) {
             return Response::json($data['msg'] = 'Bạn không có quyền thao tác.');
         }
-        $id = (int)Request::get('id', 0);
-        if ($id > 0 && app(Exam::class)->deleteItem($id)) {
-            $data['isIntOk'] = 1;
+        $id_de_thi = (int)Request::get('exam_id', 0);
+        $type = (int)Request::get('type_file', 1);
+        if($id_de_thi > 0){
+            $folder = 'uploads/DeThi/';
+            $ma_dethi = 'MaDe_' . $id_de_thi . '/';
+            $dir = $folder . $ma_dethi;
+            $filepath = ($type == 1)? "DeThi_" . $id_de_thi . ".doc": "DapAn_DeThi_" . $id_de_thi . ".doc";
+            $file_url = env('APP_URL').$dir.$filepath;
+            @header('Content-Type: application/octet-stream');
+            @header("Content-Transfer-Encoding: Binary");
+            @header("Content-Disposition: attachment; filename=\"{$file_url}\"");
+            readfile($file_url);die();
         }
-        return Response::json($data);
-    }
-
-    private function _validData($data = array())
-    {
-        if (!empty($data)) {
-            if (isset($data['name']) && trim($data['name']) == '') {
-                $this->error[] = 'Tên banner không được bỏ trống';
-            }
-            if (isset($data['url']) && trim($data['url']) == '') {
-                $this->error[] = 'URL không được bỏ trống';
-            }
-        }
-        return true;
+        die('Dowload thành công');
     }
 }

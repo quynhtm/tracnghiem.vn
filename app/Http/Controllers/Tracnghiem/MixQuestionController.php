@@ -54,6 +54,7 @@ class MixQuestionController extends BaseAdminController
             'permission_full' => $this->checkPermiss(PERMISS_QUESTION_FULL),
             'permission_create' => $this->checkPermiss(PERMISS_QUESTION_CREATE),
             'permission_delete' => $this->checkPermiss(PERMISS_QUESTION_DELETE),
+            'permission_tron_de' => $this->checkPermiss(PERMISS_QUESTION_TRON_DE),
         ];
     }
 

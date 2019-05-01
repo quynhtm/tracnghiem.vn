@@ -56,10 +56,12 @@
                             </div>
                         </div>
                         <div class="panel-footer text-right">
+                            @if(($is_root || $permission_full || $permission_tron_de))
                             <div class="pull-left">
                                 <a class="btn btn-sm btn-warning btnChoseQuestion" href="javascript:void(0);"title="Gửi chờ duyệt">Chọn câu hỏi trộn đề</a>
                                 <a class="btn btn-sm btn-success"  href="{{URL::route('tracnghiem.mixQuestionsView')}}"title="Gửi chờ duyệt">Trộn đề</a>
                             </div>
+                            @endif
                             @if(($is_root || $permission_full || $permission_approve))
                                 <a class="btn btn-sm btn-warning btnApproveQuestionRoot" href="javascript:void(0);"title="Gửi duyệt">Gửi duyệt</a>
                             @endif

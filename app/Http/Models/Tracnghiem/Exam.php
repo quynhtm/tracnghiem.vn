@@ -37,8 +37,8 @@ class Exam extends BaseModel
             if (isset($dataSearch['question_approved']) && $dataSearch['question_approved'] > -1) {
                 $query->where('question_approved', $dataSearch['question_approved']);
             }
-            if (isset($dataSearch['question_type']) && $dataSearch['question_type'] > 0) {
-                $query->where('question_type', $dataSearch['question_type']);
+            if (isset($dataSearch['exam_id']) && $dataSearch['exam_id'] > 0) {
+                $query->where('id', $dataSearch['exam_id']);
             }
             $total = ($is_total) ? $query->count() : 0;
 

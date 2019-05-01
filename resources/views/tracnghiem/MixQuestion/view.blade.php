@@ -57,7 +57,7 @@
                         </div>
                     </div>
                     <div class="panel-footer text-right">
-                        @if(($is_root || $permission_full || $permission_approve))
+                        @if(($is_root || $permission_full || $permission_tron_de))
                             <a class="btn btn-warning btn-sm btnMixQuestionExam" href="javascript:void(0);"><i class="fa fa-search"></i> {{viewLanguage('Tạo dề thi')}}</a>
                         @endif
                     </div>
