@@ -43,7 +43,7 @@
                     </form>
                 </div>
                 @if(sizeof($data) > 0)
-                    <div class="span clearfix"> @if($total >0) Có tổng số <b>{{$total}}</b> item @endif </div>
+                    <div class="span clearfix"> @if($total >0) Có tổng số <b>{{$total}}</b> đề thi @endif </div>
                     <br>
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover">
