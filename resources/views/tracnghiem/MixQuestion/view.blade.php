@@ -29,7 +29,7 @@
                             <input type="text" class="form-control input-sm" id="number_exam" name="number_exam" placeholder="Số lượng đề xuất ra" @if(isset($search['number_exam']))value="{{$search['number_exam']}}" @else value="1" @endif>
                         </div>
                         <div class="form-group col-lg-2">
-                            <label for="name"><i>{{viewLanguage('Thời gian làm bài (phút)')}}</i><span class="red"> (*) </span></label>
+                            <label for="name"><i>{{viewLanguage('Thời gian làm (phút)')}}</i><span class="red"> (*) </span></label>
                             <input type="text" class="form-control input-sm" id="time_to_do" name="time_to_do" placeholder="'Thời gian làm bài (phút)" @if(isset($search['time_to_do']))value="{{$search['time_to_do']}}" @else value="30"@endif>
                         </div>
                         <div class="form-group col-lg-2">

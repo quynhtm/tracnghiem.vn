@@ -37,7 +37,6 @@ class MixQuestionController extends BaseAdminController
     {
         parent::__construct();
         CGlobal::$pageAdminTitle = 'Trộn câu hỏi';
-
         $this->commonService = new TracNghiemService();
     }
 
@@ -92,7 +91,7 @@ class MixQuestionController extends BaseAdminController
         if (!$this->checkMultiPermiss([PERMISS_QUESTION_FULL, PERMISS_QUESTION_VIEW])) {
             return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
         }
-        $arrChose = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_QUESTION_CHOSE_MIX_EXAM) : [];
+        $arrChose = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_QUESTION_CHOSE_MIX_EXAM.$this->user_id) : [];
         $this->_getDataDefault();
 
         $pageNo = (int)Request::get('page_no', 1);
@@ -135,10 +134,11 @@ class MixQuestionController extends BaseAdminController
         }
         $this->_outDataView();
         $dataId = Request::get('checkItems', array());
-        $dataExam['exam_name'] = $ten_de_thi = Request::get('exam_name', '');
-        $dataExam['school_year'] = $nam_hoc = Request::get('school_year', '');
+        $dataExam['exam_name'] = $ten_de_thi = Request::get('exam_name', 'Đề thi test');
+        $year_now = date('Y');
+        $dataExam['school_year'] = $nam_hoc = Request::get('school_year', (($year_now-1).'-'.$year_now));
         $dataExam['time_to_do'] = $time_to_do = Request::get('time_to_do', 30);
-        $number_exam = Request::get('number_exam', 1);
+        $number_exam = (int)abs(Request::get('number_exam', 1));
 
         $school_block_id = Request::get('school_block_id', 0);
         $dataExam['school_block_id'] = $school_block_id;
@@ -179,50 +179,54 @@ class MixQuestionController extends BaseAdminController
         $total_question = count($du_lieu_da_tron);
         $dataExam['total_question'] = $total_question;
         $dataExam['data_question'] = json_encode($du_lieu_da_tron);
+        $dataExam['list_question_id'] = join(',',array_keys($du_lieu_da_tron));
 
         $dataExam['user_id_creater'] = app(User::class)->user_id();
         $dataExam['user_name_creater'] = app(User::class)->user_name();
         $dataExam['created_at'] = getCurrentDateTime();
-        $id_de_thi = app(Exam::class)->createItem($dataExam);
 
-        //form_exam_question
-        if(!empty($du_lieu_da_tron) && $id_de_thi > 0){
-            $output =  view('tracnghiem.MixQuestion.form_exam_question',[
-                'questions'=>$du_lieu_da_tron,
-                'list_dap_an'=>$list_dap_an,
-                'total_question'=>$total_question,
-                'time_to_do'=>$time_to_do,
-                'ten_de_thi'=>$ten_de_thi,
-                'nam_hoc'=>$nam_hoc,
-                'ten_khoi_lop'=>$ten_khoi_lop,
-                'ten_mon_hoc'=>$ten_mon_hoc,
-                'ten_chuyen_de'=>$ten_chuyen_de,
-                'id_de_thi'=>$id_de_thi,
-            ]);
-            $filepath = "de_thi_".$id_de_thi.".doc";
-            @header("Cache-Control: ");// leave blank to avoid IE errors
-            @header("Pragma: ");// leave blank to avoid IE errors
-            @header("Content-type: application/octet-stream");
-            @header("Content-Disposition: attachment; filename=\"{$filepath}\"");
-            $folder = 'uploads/dethi/';
-            $ma_dethi = 'MaDe_'.$id_de_thi.'/';
-            $dir = $folder.$ma_dethi;
-            if (!is_dir($dir)) {
-                @mkdir($dir, 0777, true);
-                chmod($dir, 0777);
+        for ($i = 1; $i <= $number_exam; $i++) {
+            $id_de_thi = app(Exam::class)->createItem($dataExam);
+            if (!empty($du_lieu_da_tron) && $id_de_thi > 0) {
+                $output = view('tracnghiem.MixQuestion.form_exam_question', [
+                    'questions' => $du_lieu_da_tron,
+                    'list_dap_an' => $list_dap_an,
+                    'total_question' => $total_question,
+                    'time_to_do' => $time_to_do,
+                    'ten_de_thi' => $ten_de_thi,
+                    'nam_hoc' => $nam_hoc,
+                    'ten_khoi_lop' => $ten_khoi_lop,
+                    'ten_mon_hoc' => $ten_mon_hoc,
+                    'ten_chuyen_de' => $ten_chuyen_de,
+                    'id_de_thi' => $id_de_thi,
+                ]);
+                $filepath = "DeThi_" . $id_de_thi . ".doc";
+                //@header("Cache-Control: ");// leave blank to avoid IE errors
+                //@header("Pragma: ");// leave blank to avoid IE errors
+                //@header("Content-type: application/octet-stream");
+                //@header("Content-Disposition: attachment; filename=\"{$filepath}\"");
+                $folder = 'uploads/DeThi/';
+                $ma_dethi = 'MaDe_' . $id_de_thi . '/';
+                $dir = $folder . $ma_dethi;
+                if (!is_dir($dir)) {
+                    @mkdir($dir, 0777, true);
+                    chmod($dir, 0777);
+                }
+                ob_start();
+                echo $output;
+                $output_so_far = ob_get_contents();
+                ob_clean();
+                file_put_contents($dir . $filepath, $output_so_far);
+                echo $output;
             }
-            ob_start();
-            echo $output;
-            $output_so_far = ob_get_contents();
-            ob_clean();
-            file_put_contents($dir.$filepath, $output_so_far);
-            echo $output;
         }
+
+        Cache::forget(Memcache::CACHE_QUESTION_CHOSE_MIX_EXAM.$this->user_id);
+        return Redirect::route('tracnghiem.examQuestionView');
     }
 
     //chọn câu hỏi
     public function choseQuestion(){
-
         if (!$this->checkMultiPermiss([PERMISS_QUESTION_FULL])) {
             return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
         }
@@ -230,11 +234,11 @@ class MixQuestionController extends BaseAdminController
         $dataId = Request::get('dataId', array());
 
         if(!empty($dataId)){
-            $arrChose = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_QUESTION_CHOSE_MIX_EXAM) : [];
+            $arrChose = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_QUESTION_CHOSE_MIX_EXAM.$this->user_id) : [];
             foreach($dataId as $id){
                 $arrChose[$id] = $id;
             }
-            Cache::put(Memcache::CACHE_QUESTION_CHOSE_MIX_EXAM, $arrChose, CACHE_THREE_MONTH);
+            Cache::put(Memcache::CACHE_QUESTION_CHOSE_MIX_EXAM.$this->user_id, $arrChose, CACHE_THREE_MONTH);
             $data['isIntOk'] = 1;
        }
         return Response::json($data);

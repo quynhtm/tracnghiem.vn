@@ -50,40 +50,36 @@
                             <thead class="thin-border-bottom">
                             <tr class="">
                                 <th width="5%" class="text-center">{{viewLanguage('STT')}}</th>
-                                <th width="20%">{{viewLanguage('Tên banner')}}</th>
-                                <th width="20%">{{viewLanguage('Hình ảnh')}}</th>
-                                <th width="20%">{{viewLanguage('Url')}}</th>
-                                <th width="10%" class="text-center">{{viewLanguage('Trạng thái')}}</th>
-                                <th width="15%" class="text-center">{{viewLanguage('Thao tác')}}</th>
+                                <th width="15%">{{viewLanguage('Tên đề thi')}}</th>
+                                <th width="10%"  class="text-center">{{viewLanguage('Năm học')}}</th>
+                                <th width="8%"  class="text-center">{{viewLanguage('Số phút')}}</th>
+
+                                <th width="14%">{{viewLanguage('Môn học')}}</th>
+                                <th width="14%">{{viewLanguage('Khối học')}}</th>
+                                <th width="14%">{{viewLanguage('Chuyên đề học')}}</th>
+
+                                <th width="10%" class="text-center">{{viewLanguage('Thông tin khác')}}</th>
+                                <th width="10%" class="text-center">{{viewLanguage('Thao tác')}}</th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach ($data as $key => $item)
                                 <tr>
                                     <td class="text-center middle">{{ $stt+$key+1 }}</td>
-                                    <td>{{ $item['name'] }}</td>
-                                    @if($item['image'] != '')
-                                        <td><img src="{{asset(env('APP_PATH_UPLOAD_MIDLE').$item["image"])}}" alt="hình ảnh" width="40px"></td>
-                                    @else
-                                        <td>Chưa có ảnh</td>
-                                    @endif
-                                    <td>{{ $item['url'] }}</td>
-                                    <td class="text-center middle">
-                                        @if($item['status'] == STATUS_SHOW)
-                                            <a href="javascript:void(0);" title="Hiện"><i class="fa fa-check fa-2x"></i></a>
-                                        @else
-                                            <a href="javascript:void(0);" style="color: red" title="Ẩn"><i class="fa fa-close fa-2x"></i></a>
-                                        @endif
-                                    </td>
+                                    <td>{{$item->exam_name}}</td>
+                                    <td class="text-center">{{$item->school_year}}</td>
+                                    <td class="text-center">{{$item->time_to_do}}</td>
 
-                                    <td class="text-center middle">
-                                        @if($is_root || $permission_full || $permission_create)
-                                            <a href="{{URL::route('tracnghiem.questionEdit',array('id' => setStrVar($item['id'])))}}" title="Sửa item"><i class="fa fa-edit fa-2x"></i></a>&nbsp;&nbsp;&nbsp;
-                                        @endif
-                                        @if($is_root || $permission_full || $permission_delete)
-                                            <a href="javascript:void(0);" onclick="Admin.deleteItem({{$item['id']}},5)" title="Xóa Item"><i class="fa fa-trash fa-2x"></i></a>
-                                        @endif
-                                        <span class="img_loading" id="img_loading_{{$item['menu_id']}}"></span>
+                                    <td>{{$item->subjects_name}}</td>
+                                    <td>{{$item->school_block_name}}</td>
+                                    <td>{{$item->thematic_name}}</td>
+
+                                    <td class="text-center">
+                                        {{$item->user_name_creater}}<br>
+                                        <i>{{$item->created_at}}</i>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="javascript:void(0);">Tải về</a>
                                     </td>
                                 </tr>
                             @endforeach

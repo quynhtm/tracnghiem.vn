@@ -25,6 +25,6 @@ class Memcache{
     const CACHE_QUESTION_ID = 'cache_question_id_';
     const CACHE_QUESTION_EXAM_ID = 'cache_question_exam_id_';
 
-    const CACHE_QUESTION_CHOSE_MIX_EXAM = 'cache_question_chose_mix_exam';
+    const CACHE_QUESTION_CHOSE_MIX_EXAM = 'cache_question_chose_mix_exam_';
 
 }
