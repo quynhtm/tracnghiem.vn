@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Tracnghiem;
 
 use App\Http\Controllers\BaseAdminController;
+use App\Http\Models\Admin\User;
 use App\Http\Models\Admin\VmDefine;
+use App\Http\Models\Tracnghiem\Exam;
 use App\Http\Models\Tracnghiem\Question;
 use App\Library\AdminFunction\CExtracts;
 use App\Library\AdminFunction\CGlobal;
@@ -56,7 +58,7 @@ class MixQuestionController extends BaseAdminController
         ];
     }
 
-    public function _outDataView($data)
+    public function _outDataView($data=[])
     {
         $optionApprove = getOption($this->arrApprove, isset($data['question_approved']) ? $data['question_approved'] : STATUS_SHOW);
         $optionStatus = getOption($this->arrStatus, isset($data['question_status']) ? $data['question_status'] : STATUS_SHOW);
@@ -99,12 +101,12 @@ class MixQuestionController extends BaseAdminController
         $offset = ($pageNo - 1) * $limit;
         $search = $data = array();
 
-        $search['mix_name'] = addslashes(Request::get('mix_name', ''));
-        $search['mix_num'] = (int)(Request::get('mix_num', 0));
-        $search['mix_year'] = Request::get('mix_year', date('Y'));
-        $search['question_school_block'] = (int)Request::get('question_school_block', -1);
-        $search['question_subject'] = (int)Request::get('question_subject', -1);
-        $search['question_thematic'] = (int)Request::get('question_thematic', -1);
+        $search['exam_name'] = addslashes(Request::get('exam_name', ''));
+        $search['number_exam'] = (int)(Request::get('number_exam', 1));
+        $search['school_year'] = Request::get('school_year', date('Y'));
+        $search['school_block_id'] = (int)Request::get('school_block_id', -1);
+        $search['subjects_id'] = (int)Request::get('subjects_id', -1);
+        $search['thematic_id'] = (int)Request::get('thematic_id', -1);
         $search['question_id'] = $arrChose;
 
         $data = ($arrChose)?app(Question::class)->searchByCondition($search, $limit, $offset, true):[];
@@ -129,10 +131,12 @@ class MixQuestionController extends BaseAdminController
         if (!$this->checkMultiPermiss([PERMISS_QUESTION_FULL, PERMISS_QUESTION_CREATE])) {
             return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
         }
+        $this->_outDataView();
         $dataId = Request::get('checkItems', array());
-        $dataExam['exam_name'] = $ten_de_thi =  Request::get('exam_name', '');
-        $dataExam['school_year'] = $nam_hoc =Request::get('school_year', '');
-        $number_exam = Request::get('number_exam', 0);
+        $dataExam['exam_name'] = $ten_de_thi = Request::get('exam_name', '');
+        $dataExam['school_year'] = $nam_hoc = Request::get('school_year', '');
+        $dataExam['time_to_do'] = $time_to_do = Request::get('time_to_do', 30);
+        $number_exam = Request::get('number_exam', 1);
 
         $school_block_id = Request::get('school_block_id', 0);
         $dataExam['school_block_id'] = $school_block_id;
@@ -167,38 +171,50 @@ class MixQuestionController extends BaseAdminController
 
         if(empty($dataTron))
             return;
-        vmDebug($dataTron);
 
         $du_lieu_da_tron = $this->commonService->mixAutoQuestion($dataTron);
         $list_dap_an = [1=>'A',2=>'B',3=>'C',4=>'D',];
+        $total_question = count($du_lieu_da_tron);
+        $dataExam['total_question'] = $total_question;
+        $dataExam['data_question'] = json_encode($du_lieu_da_tron);
+
+        $dataExam['user_id_creater'] = app(User::class)->user_id();
+        $dataExam['user_name_creater'] = app(User::class)->user_name();
+        $dataExam['created_at'] = getCurrentDateTime();
+        $id_de_thi = app(Exam::class)->createItem($dataExam);
+
         //form_exam_question
-        if(!empty($du_lieu_da_tron)){
+        if(!empty($du_lieu_da_tron) && $id_de_thi > 0){
             $output =  view('tracnghiem.MixQuestion.form_exam_question',[
                 'questions'=>$du_lieu_da_tron,
                 'list_dap_an'=>$list_dap_an,
+                'total_question'=>$total_question,
+                'time_to_do'=>$time_to_do,
                 'ten_de_thi'=>$ten_de_thi,
                 'nam_hoc'=>$nam_hoc,
                 'ten_khoi_lop'=>$ten_khoi_lop,
                 'ten_mon_hoc'=>$ten_mon_hoc,
                 'ten_chuyen_de'=>$ten_chuyen_de,
+                'id_de_thi'=>$id_de_thi,
             ]);
-            $filepath = "de_thi_1.doc";
+            $filepath = "de_thi_".$id_de_thi.".doc";
             @header("Cache-Control: ");// leave blank to avoid IE errors
             @header("Pragma: ");// leave blank to avoid IE errors
             @header("Content-type: application/octet-stream");
             @header("Content-Disposition: attachment; filename=\"{$filepath}\"");
-            $dir = 'uploads/images/';
-            $path_folder_upload = env('IS_LIVE') ? env('APP_PATH_UPLOAD') . env('APP_PATH_UPLOAD_MIDDLE',$dir) : Config::get('config.DIR_ROOT') .env('APP_PATH_UPLOAD_MIDDLE',$dir);
-            if (!is_dir($path_folder_upload)) {
-                @mkdir($path_folder_upload, 0777, true);
-                chmod($path_folder_upload, 0777);
+            $folder = 'uploads/dethi/';
+            $ma_dethi = 'MaDe_'.$id_de_thi.'/';
+            $dir = $folder.$ma_dethi;
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0777, true);
+                chmod($dir, 0777);
             }
             ob_start();
             echo $output;
             $output_so_far = ob_get_contents();
             ob_clean();
-            file_put_contents($path_folder_upload.$filepath, $output_so_far);
-            echo $output;  die;
+            file_put_contents($dir.$filepath, $output_so_far);
+            echo $output; die();
         }
     }
 

@@ -68,6 +68,7 @@ class Exam extends BaseModel
                 }
                 $item->user_id_creater = app(User::class)->user_id();
                 $item->user_name_creater = app(User::class)->user_name();
+                $item->created_at = getCurrentDateTime();
                 $item->save();
                 self::removeCache($item->id, $item);
                 return $item->id;
@@ -89,6 +90,7 @@ class Exam extends BaseModel
                 }
                 $item->user_id_update = app(User::class)->user_id();
                 $item->user_name_update = app(User::class)->user_name();
+                $item->updated_at = getCurrentDateTime();
                 $item->update();
                 self::removeCache($item->id, $item);
             }
