@@ -263,10 +263,13 @@ class TronNgauNhienController extends BaseAdminController{
 		return true;
 	}
 
+	//Demo zip
+
 	private function zipFiles(){
-		//$data['directory'] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/DeThi/MaDe_10";
-		$data['file'] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/file cau hoi mau.docx";
-		$a = app(CZips::class)->zipClss($data, $name='/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/Archive.zip');
+		$data['directory'][] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/DeThi/MaDe_10";
+		$data['directory'][] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/DeThi/MaDe_11";
+		$data['file'] = '/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/file_cau_hoi_mau1.docx';
+		$a = app(CZips::class)->zipPclZip($data, $name='/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/Archive.zip');
 		vmDebug($a);
 	}
 }

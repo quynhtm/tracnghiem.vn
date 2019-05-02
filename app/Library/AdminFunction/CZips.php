@@ -32,8 +32,18 @@ class CZips{
     public function zipClss($data, $name='Archive.zip'){
         $zip = new Zip();
         $zip->zip_start($name);
-        if(isset($data['directory']) && is_dir($data['directory'])){
-            $zip->zip_add($data['directory']);
+        if(isset($data['directory'])){
+            if(is_array($data['directory']) && !empty($data['directory'])){
+                foreach($data['directory'] as $item){
+                    if(is_dir($item)){
+                        $zip->zip_add($item);
+                    }
+                }
+            }else{
+                if(is_dir($data['directory'])){
+                    $zip->zip_add($data['directory']);
+                }
+            }
         }
         if(isset($data['arrFile']) && !empty($data['arrFile'])){
             $zip->zip_add($data['arrFile']);
@@ -47,8 +57,18 @@ class CZips{
     public function zipPclZip($data, $name='Archive.zip'){
         $zip = new Zip();
         $zip->zip_start($name);
-        if(isset($data['directory']) && is_dir($data['directory'])){
-            $zip->zip_add($data['directory']);
+        if(isset($data['directory'])){
+            if(is_array($data['directory']) && !empty($data['directory'])){
+                foreach($data['directory'] as $item){
+                    if(is_dir($item)){
+                        $zip->zip_add($item);
+                    }
+                }
+            }else{
+                if(is_dir($data['directory'])){
+                    $zip->zip_add($data['directory']);
+                }
+            }
         }
         if(isset($data['arrFile']) && !empty($data['arrFile'])){
             $zip->zip_add($data['arrFile']);
