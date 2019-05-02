@@ -13,6 +13,7 @@ use App\Http\Models\Admin\VmDefine;
 use App\Http\Models\Tracnghiem\Question;
 use App\Library\AdminFunction\CExtracts;
 use App\Library\AdminFunction\CGlobal;
+use App\Library\AdminFunction\CZips;
 use App\Library\AdminFunction\FunctionLib;
 use App\Library\AdminFunction\Pagging;
 use App\Library\AdminFunction\Upload;
@@ -76,6 +77,8 @@ class TronNgauNhienController extends BaseAdminController{
 	}
 
 	public function getQuestionFile(){
+
+		return $this->zipFiles();
 
 		if (!$this->checkMultiPermiss([PERMISS_TRONDE_NGAUNHIEN_FULL, PERMISS_TRONDE_NGAUNHIEN_VIEW])) {
 			return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
@@ -260,5 +263,12 @@ class TronNgauNhienController extends BaseAdminController{
 			}
 		}
 		return true;
+	}
+
+	private function zipFiles(){
+		//$data['directory'] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/DeThi/MaDe_10";
+		$data['file'] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/file cau hoi mau.docx";
+		$a = app(CZips::class)->zipClss($data, $name='/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/Archive.zip');
+		vmDebug($a);
 	}
 }
