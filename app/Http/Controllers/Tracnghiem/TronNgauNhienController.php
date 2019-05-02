@@ -78,8 +78,6 @@ class TronNgauNhienController extends BaseAdminController{
 
 	public function getQuestionFile(){
 
-		return $this->zipFiles();
-
 		if (!$this->checkMultiPermiss([PERMISS_TRONDE_NGAUNHIEN_FULL, PERMISS_TRONDE_NGAUNHIEN_VIEW])) {
 			return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
 		}
