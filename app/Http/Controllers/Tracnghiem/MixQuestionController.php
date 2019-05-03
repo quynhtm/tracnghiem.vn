@@ -206,6 +206,10 @@ class MixQuestionController extends BaseAdminController
                 $folder = 'uploads/DeThi/';
                 $ma_dethi = 'MaDe_' . $id_de_thi . '/';
                 $dir = $folder . $ma_dethi;
+
+                $dataExamUpdate['dir_file'] = $dir;
+                app(Exam::class)->updateItem($id_de_thi,$dataExamUpdate);
+
                 if (!is_dir($dir)) {
                     @mkdir($dir, 0777, true);
                     chmod($dir, 0777);
@@ -224,10 +228,6 @@ class MixQuestionController extends BaseAdminController
                     'id_de_thi' => $id_de_thi,
                 ]);
                 $filepath = "DeThi_" . $id_de_thi . ".doc";
-                //@header("Cache-Control: ");// leave blank to avoid IE errors
-                //@header("Pragma: ");// leave blank to avoid IE errors
-                //@header("Content-type: application/octet-stream");
-                //@header("Content-Disposition: attachment; filename=\"{$filepath}\"");
                 ob_start();
                 echo $output;
                 $output_so_far = ob_get_contents();
