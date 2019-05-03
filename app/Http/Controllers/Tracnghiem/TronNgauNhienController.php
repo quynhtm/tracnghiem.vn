@@ -20,6 +20,7 @@ use App\Library\AdminFunction\Upload;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
+use PhpZip\ZipFile;
 
 class TronNgauNhienController extends BaseAdminController{
 
@@ -268,7 +269,7 @@ class TronNgauNhienController extends BaseAdminController{
 	private function zipFiles(){
 		$data['directory'][] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/DeThi/MaDe_10";
 		$data['directory'][] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/DeThi/MaDe_11";
-		$data['file'] = '/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/file_cau_hoi_mau1.docx';
+		$data['file'] = '/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/DeThi/MaDe_10/DapAn_DeThi_10.doc';
 		$a = app(CZips::class)->zipPclZip($data, $name='/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/Archive.zip');
 		vmDebug($a);
 	}
