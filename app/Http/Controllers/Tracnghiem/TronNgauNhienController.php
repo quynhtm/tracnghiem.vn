@@ -13,6 +13,7 @@ use App\Http\Models\Admin\VmDefine;
 use App\Http\Models\Tracnghiem\Question;
 use App\Library\AdminFunction\CExtracts;
 use App\Library\AdminFunction\CGlobal;
+use App\Library\AdminFunction\CZips;
 use App\Library\AdminFunction\FunctionLib;
 use App\Library\AdminFunction\Pagging;
 use App\Library\AdminFunction\Upload;
@@ -260,5 +261,15 @@ class TronNgauNhienController extends BaseAdminController{
 			}
 		}
 		return true;
+	}
+
+	//Demo zip
+
+	private function zipFiles(){
+		$data['directory'][] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/DeThi/MaDe_10";
+		$data['directory'][] = "/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/DeThi/MaDe_11";
+		$data['file'] = '/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/file_cau_hoi_mau1.docx';
+		$a = app(CZips::class)->zipPclZip($data, $name='/Volumes/PROJECT/xampp/project.vn/Edu/trondethi.vn/uploads/Archive.zip');
+		vmDebug($a);
 	}
 }
