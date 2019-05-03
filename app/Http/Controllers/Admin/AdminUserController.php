@@ -19,6 +19,7 @@ use App\Http\Models\Admin\VmDefine;
 use App\Library\AdminFunction\CGlobal;
 use App\Library\AdminFunction\Define;
 use App\Library\AdminFunction\FunctionLib;
+use App\Library\AdminFunction\Loader;
 use App\Library\AdminFunction\Pagging;
 use App\Library\AdminFunction\Upload;
 use Illuminate\Support\Facades\Redirect;
@@ -100,9 +101,16 @@ class AdminUserController extends BaseAdminController
 
     public function _outDataView($data)
     {
+        if (isset($data['role_type']) && is_array($data['role_type'])) {
+            $arrSelectRoleType = $data['role_type'];
+        } else {
+            $arrSelectRoleType = (isset($data['role_type']) && trim($data['role_type']) != '') ? explode(',', $data['role_type']) : [];
+        }
+        $optionRoleType = FunctionLib::getOptionMultil($this->arrRoleType, $arrSelectRoleType);
+
         $optionStatus = FunctionLib::getOption($this->arrStatus, isset($data['user_status']) ? $data['user_status'] : CGlobal::status_show);
         $optionSex = FunctionLib::getOption($this->arrSex, isset($data['user_sex']) ? $data['user_sex'] : CGlobal::status_show);
-        $optionRoleType = FunctionLib::getOption($this->arrRoleType, isset($data['role_type']) ? $data['role_type'] : STATUS_INT_KHONG);
+
         $optionAutoLoan = FunctionLib::getOption($this->arrAutoLoan, isset($data['auto_loan']) ? $data['auto_loan'] : STATUS_INT_KHONG);
         $optionGroupSale = FunctionLib::getOption($this->arrGroupSale, isset($data['group_sale']) ? $data['group_sale'] : STATUS_INT_KHONG);
         $optionPosition = FunctionLib::getOption($this->arrPosition, isset($data['position']) ? $data['position'] : STATUS_INT_KHONG);
@@ -179,7 +187,9 @@ class AdminUserController extends BaseAdminController
         ], $this->viewOptionData);
     }
 
-    //get
+    /*********************************************************************************************************
+     * Sửa User
+     *********************************************************************************************************/
     public function editInfo($ids)
     {
         $id = FunctionLib::outputId($ids);
@@ -188,15 +198,18 @@ class AdminUserController extends BaseAdminController
         if (!$this->is_root && !in_array($this->permission_edit, $this->permission)) {
             return Redirect::route('admin.dashboard', array('error' => STATUS_INT_MOT));
         }
+
+        Loader::loadJS('lib/chosen/jquery-3.2.1.min.js', CGlobal::$POS_END);
+        Loader::loadJS('lib/chosen/chosen.jquery.js', CGlobal::$POS_END);
+        Loader::loadJS('lib/chosen/prism.js', CGlobal::$POS_END);
+        Loader::loadJS('lib/chosen/init.js', CGlobal::$POS_END);
+
         $arrUserGroupMenu = $data = array();
         if ($id > 0) {
             $data = $this->_user->getUserById($id);
             $data['user_group'] = explode(',', $data['user_group']);
             $arrUserGroupMenu = explode(',', $data['user_group_menu']);
         }
-        //vmDebug($data);
-        $arrGroupUser = GroupUser::getListGroupUser($this->is_boss);
-        $menuAdmin = MenuSystem::getListMenuPermission();
 
         $this->getDataDefault();
         $this->_outDataView($data);
@@ -204,8 +217,6 @@ class AdminUserController extends BaseAdminController
             'data' => $data,
             'id' => $id,
             'arrStatus' => $this->arrStatus,
-            'arrGroupUser' => $arrGroupUser,
-            'menuAdmin' => $menuAdmin,
             'arrUserGroupMenu' => $arrUserGroupMenu,
         ], $this->viewOptionData);
     }
@@ -217,46 +228,83 @@ class AdminUserController extends BaseAdminController
         if (!$this->is_root && !in_array($this->permission_edit, $this->permission)) {
             return Redirect::route('admin.dashboard', array('error' => STATUS_INT_MOT));
         }
+        Loader::loadJS('lib/chosen/jquery-3.2.1.min.js', CGlobal::$POS_END);
+        Loader::loadJS('lib/chosen/chosen.jquery.js', CGlobal::$POS_END);
+        Loader::loadJS('lib/chosen/prism.js', CGlobal::$POS_END);
+        Loader::loadJS('lib/chosen/init.js', CGlobal::$POS_END);
         $id = FunctionLib::outputId($ids);
 
         $data = $_POST;
         $this->validUser($id, $data);
 
+        //check chọn role quyền
+        $arrRoleCheck = [];
+        if (isset($data['role_type_chose']) && !empty($data['role_type_chose'])) {
+            foreach ($data['role_type_chose'] as $role_id) {
+                if ($role_id > 0) {
+                    $arrRoleCheck[$role_id] = $role_id;
+                }
+            }
+        }
+        if (empty($arrRoleCheck)) {
+            $this->error[] = 'Bạn chưa chọn vai trò cho user này';
+        }
         //lấy phân quyền theo role
         if (empty($this->error)) {
-            $groupRole = Role::getOptionRole();
-            $role_code = '';
-            $inforRole = app(Role::class)->getItemById($data['role_type']);
-            if (isset($inforRole->role_id)) {
-                $role_code = (trim($inforRole->role_code) != '') ? $inforRole->role_code : '';
-            }
             $dataInsert = $data;
             //Insert dữ liệu
-            if($this->is_root){
-                if ($data['role_type'] > 0) {
-                    $infoPermiRole = RoleMenu::getInfoByRoleId((int)$data['role_type']);
-                    if ($infoPermiRole) {
-                        $dataInsert['user_group'] = (isset($infoPermiRole->role_group_permission) && trim($infoPermiRole->role_group_permission) != '') ? $infoPermiRole->role_group_permission : '';
-                        $dataInsert['user_group_menu'] = (isset($infoPermiRole->role_group_menu_id) && trim($infoPermiRole->role_group_menu_id) != '') ? $infoPermiRole->role_group_menu_id : '';
+            if ($this->is_root) {
+                $role_type_new = implode(',', $arrRoleCheck);
+                if (strcmp($role_type_new, trim($data['role_type_old'])) != 0) {
+                    $inforRole = app(Role::class)->getDataByArrayRoleId($arrRoleCheck);
+                    $arr_user_group = [];
+                    $arr_user_group_menu = [];
+                    if ($inforRole) {
+                        foreach ($inforRole as $kk => $role) {
+                            $infoPermiRole = RoleMenu::getInfoByRoleId((int)$role->role_id);
+                            $str_user_group = (isset($infoPermiRole->role_group_permission) && trim($infoPermiRole->role_group_permission) != '') ? $infoPermiRole->role_group_permission : '';
+                            $user_group = explode(',', $str_user_group);
+                            if (!empty($user_group)) {
+                                foreach ($user_group as $group_id) {
+                                    if ($group_id > 0 && !in_array($group_id, $arr_user_group)) {
+                                        $arr_user_group[] = $group_id;
+                                    }
+                                }
+                            }
+
+                            //group menu
+                            $str_user_group_menu = (isset($infoPermiRole->role_group_menu_id) && trim($infoPermiRole->role_group_menu_id) != '') ? $infoPermiRole->role_group_menu_id : '';
+                            $user_group_menu = explode(',', $str_user_group_menu);
+                            if (!empty($user_group_menu)) {
+                                foreach ($user_group_menu as $group_menu) {
+                                    if ($group_menu > 0 && !in_array($group_menu, $arr_user_group_menu)) {
+                                        $arr_user_group_menu[] = $group_menu;
+                                    }
+                                }
+                            }
+                        }
                     }
+
+                    $dataInsert['user_group'] = !empty($arr_user_group) ? implode(',', $arr_user_group) : '';
+                    $dataInsert['user_group_menu'] = !empty($arr_user_group_menu) ? implode(',', $arr_user_group_menu) : '';
+                    $dataInsert['role_type'] = implode(',', $arrRoleCheck);
                 }
                 $dataInsert['user_name'] = $data['user_name'];
                 $dataInsert['user_email'] = $data['user_email'];
-                $dataInsert['role_type'] = $data['role_type'];
-                $dataInsert['role_name'] = isset($groupRole[$data['role_type']]) ? $groupRole[$data['role_type']] : '';
-                $dataInsert['role_code'] = $role_code;
+                //$dataInsert['role_name'] = isset($groupRole[$data['role_type']]) ? $groupRole[$data['role_type']] : '';
             }
 
-            if(isset($_FILES['image']) && count($_FILES['image'])>0 && $_FILES['image']['name'] != '') {
+            if (isset($_FILES['image']) && count($_FILES['image']) > 0 && $_FILES['image']['name'] != '') {
                 $folder = FOLDER_FILE_USER_ADMIN;;
                 $_max_file_size = 2 * 1024 * 1024;
                 $_file_ext = 'jpg,jpeg,png,gif';
                 $pathFileUpload = app(Upload::class)->uploadFile('image', $_file_ext, $folder, $_max_file_size);
-                if(trim($pathFileUpload) != ''){
+                if (trim($pathFileUpload) != '') {
                     app(Upload::class)->removeFile($data['user_image']);
                     $dataInsert['user_image'] = $pathFileUpload;
                 }
             }
+
             if ($id > 0) {
                 if ($this->_user->updateUser($id, $dataInsert)) {
                     return Redirect::route('admin.user_view');
@@ -265,26 +313,27 @@ class AdminUserController extends BaseAdminController
                 }
             } else {
                 $dataInsert['user_password'] = 'Vaymuon4@!2018';
-                if ($this->_user->createNew($dataInsert)) {
-                    return Redirect::route('admin.user_view');
-                } else {
-                    $this->error[] = 'Lỗi truy xuất dữ liệu';;
+                if($dataInsert['user_team_id'] > 0){
+                    $inforTeam = app(VmDefine::class)->getItemById($dataInsert['user_team_id']);
+                    $departId = (isset($inforTeam->type_item) && $inforTeam->type_item > 0) ? $inforTeam->type_item : 0;
+                    $inforDepart = app(VmDefine::class)->getItemById($departId);
+
+                    $dataInsert['user_id_leader'] = isset($inforTeam->object_id) ? $inforTeam->object_id : 0;;
+                    $dataInsert['user_depart_id'] = $departId;
+                    $dataInsert['user_id_boss_depart'] = isset($inforDepart->object_id) ? $inforDepart->object_id : 0;
                 }
+                $id_new = $this->_user->createNew($dataInsert);
             }
         }
-        $arrGroupUser = GroupUser::getListGroupUser();
-        $menuAdmin = MenuSystem::getListMenuPermission();
+        $data['role_type'] = isset($data['role_type_chose']) ? implode(',', $data['role_type_chose']) : (isset($data['role_type'])?implode(',', $data['role_type']):[]);
         $this->getDataDefault();
         $this->_outDataView($data);
         return view('admin.AdminUser.add', [
             'data' => $data,
             'id' => $id,
             'arrStatus' => $this->arrStatus,
-            'arrGroupUser' => $arrGroupUser,
-            'menuAdmin' => $menuAdmin,
-            'arrUserGroupMenu' => array(),
             'error' => $this->error,
-       ], $this->viewOptionData);
+        ], $this->viewOptionData);
     }
 
     private function validUser($user_id = 0, $data = array())

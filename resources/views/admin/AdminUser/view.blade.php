@@ -78,7 +78,7 @@
                                 <th width="5%" class="text-center">Ảnh</th>
                                 <th width="15%">Thông tin User</th>
                                 <th width="15%">Thông tin liên hệ</th>
-                                <th width="10%" class="text-center">Chức vụ</th>
+                                <th width="10%" class="text-center">Vay trò</th>
                                 <th width="10%">Phòng ban</th>
                                 <th width="10%" class="text-center">Quyền</th>
                                 <th width="10%">Thao tác trên YCV</th>
@@ -107,8 +107,20 @@
                                         @if(trim($item['user_phone']) != '')<div><b>Phone: </b>{{ $item['user_phone'] }}</div>@endif
                                         @if(trim($item['user_email']) != '')<div><b>E: </b>{{ $item['user_email'] }}</div>@endif
                                     </td>
-                                    <td class="text-center middle">
-                                        @if(isset($arrPosition[$item['position']]) && $item['position'] > 0){{$arrPosition[$item['position']]}}@endif
+                                    <td>
+                                        <?php
+                                        $arrRoleTypeChose = (trim($item['role_type']) != '')?explode(',',$item['role_type']): [];
+                                        $count = count($arrRoleTypeChose);
+                                        ?>
+                                        @if(!empty($arrRoleTypeChose))
+                                            @foreach($arrRoleTypeChose as $ke=>$role_ids)
+                                                @if(isset($arrRoleType[$role_ids]))<b class="red">{{$arrRoleType[$role_ids]}}</b>@endif
+                                                @if($count > ($ke+1)), @endif
+                                            @endforeach
+                                        @endif
+
+                                        @if(trim($item['user_phone']) != '')<div>{{ $item['user_phone'] }}</div>@endif
+                                        @if(trim($item['user_email']) != '')<div>{{ $item['user_email'] }}</div>@endif
                                     </td>
                                     <td>
                                         @if(isset($arrDepartment[$item['user_depart_id']]) && $item['user_depart_id'] > 0){{$arrDepartment[$item['user_depart_id']]}} <br/>@endif

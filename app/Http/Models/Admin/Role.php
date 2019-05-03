@@ -169,6 +169,17 @@ class Role extends BaseModel
         return $data;
     }
 
+    public function getDataByArrayRoleId($arrRoleId = [])
+    {
+        if (!empty($arrRoleId)) {
+            $query = Role::whereIn('role_id',$arrRoleId);
+            $query->where('role_status', '=', STATUS_SHOW);
+            $data = $query->orderBy('role_order', 'ASC')->get();
+            return $data;
+        }
+        return false;
+    }
+
     public static function getOptionRole($project = 0)
     {
         $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_OPTION_ROLE . '_' . $project) : [];

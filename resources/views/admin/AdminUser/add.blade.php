@@ -80,15 +80,18 @@
                     </div>
 
                     <div class="clearfix"></div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-12">
                         <div class="form-group">
-                            <label for="name" class="control-label">Loại quyền<span class="red"> (*) </span></label>
-                            <select name="role_type" id="role_type" class="form-control input-sm">
+                            <label for="name" class="control-label">Vai trò<span class="red"> (*) </span></label>
+                            <select name="role_type_chose[]" id="role_type_chose" class="form-control input-sm chosen-select" multiple tabindex="8">
+                                <option value=""></option>
                                 {!! $optionRoleType !!}
                             </select>
+                            <input type="hidden" id="role_type_old" name="role_type_old" value="@if(isset($data['role_type'])){{$data['role_type']}}@endif">
                         </div>
                     </div>
-                    <div class="col-sm-4">
+
+                    <div class="col-sm-6">
                         <div class="form-group">
                             <label for="name" class="control-label">Trạng thái<span class="red"> (*) </span></label>
                             <select name="user_status" id="user_status" class="form-control input-sm">
@@ -96,7 +99,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-6">
                         <div class="form-group">
                             <label for="name" class="control-label">Chức vụ<span class="red"> (*) </span></label>
                             <select name="position" id="position" class="form-control input-sm">
