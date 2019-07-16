@@ -30,7 +30,7 @@ class AdminManageMenuController extends BaseAdminController
     public function __construct()
     {
         parent::__construct();
-        $this->arrMenuParent = MenuSystem::getAllParentMenu();
+        $this->arrMenuParent = app(MenuSystem::class)->getAllParentMenu();
         $this->arrMenuTabTop = CGlobal::$arrMenuTabTop;
         CGlobal::$pageAdminTitle = 'Quản lý menu';
     }
@@ -61,7 +61,7 @@ class AdminManageMenuController extends BaseAdminController
     public function view()
     {
         //Check phan quyen.
-        if (!$this->is_root && !in_array($this->permission_full, $this->permission) && !in_array($this->permission_view, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_full, $this->permission_view])) {
             return Redirect::route('admin.dashboard', array('error' => Define::ERROR_PERMISSION));
         }
         $pageNo = (int)Request::get('page_no', 1);
@@ -77,9 +77,9 @@ class AdminManageMenuController extends BaseAdminController
         //$search['field_get'] = 'menu_name,menu_id,parent_id';//cac truong can lay
 
         $dataSearch = app(MenuSystem::class)->searchByCondition($search, $limit, $offset, $total);
-        if (!empty($dataSearch)) {
-            $data = MenuSystem::getTreeMenu($dataSearch);
-            $data = !empty($data) ? $data : $dataSearch;
+        if (!empty($dataSearch['data'])) {
+            $data = app(MenuSystem::class)->getTreeMenu($dataSearch['data']);
+            $data = !empty($data) ? $data : $dataSearch['data'];
         }
         $paging = '';
 
@@ -105,12 +105,12 @@ class AdminManageMenuController extends BaseAdminController
     public function getItem($ids)
     {
         $id = FunctionLib::outputId($ids);
-        if (!$this->is_root && !in_array($this->permission_full, $this->permission) && !in_array($this->permission_edit, $this->permission) && !in_array($this->permission_create, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_full, $this->permission_edit, $this->permission_create])) {
             return Redirect::route('admin.dashboard', array('error' => Define::ERROR_PERMISSION));
         }
         $data = array();
         if ($id > 0) {
-            $data = MenuSystem::find($id);
+            $data = app(MenuSystem::class)->getItemById($id);
         }
 
         $this->_getDataDefault();
@@ -126,7 +126,7 @@ class AdminManageMenuController extends BaseAdminController
     public function postItem($ids)
     {
         $id = FunctionLib::outputId($ids);
-        if (!$this->is_root && !in_array($this->permission_full, $this->permission) && !in_array($this->permission_edit, $this->permission) && !in_array($this->permission_create, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_full, $this->permission_edit, $this->permission_create])) {
             return Redirect::route('admin.dashboard', array('error' => Define::ERROR_PERMISSION));
         }
         $id_hiden = (int)Request::get('id_hiden', 0);
@@ -190,7 +190,7 @@ class AdminManageMenuController extends BaseAdminController
     public function deleteMenu()
     {
         $data = array('isIntOk' => 0);
-        if (!$this->is_root && !in_array($this->permission_full, $this->permission) && !in_array($this->permission_delete, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_full, $this->permission_delete])) {
             return Response::json($data);
         }
         $id = (int)Request::get('id', 0);

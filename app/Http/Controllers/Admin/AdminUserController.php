@@ -11,13 +11,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\BaseAdminController;
 use App\Http\Models\Admin\GroupUser;
 use App\Http\Models\Admin\User;
-use App\Http\Models\Admin\MenuSystem;
 use App\Http\Models\Admin\RoleMenu;
 use App\Http\Models\Admin\Role;
 
 use App\Http\Models\Admin\VmDefine;
 use App\Library\AdminFunction\CGlobal;
-use App\Library\AdminFunction\Define;
 use App\Library\AdminFunction\FunctionLib;
 use App\Library\AdminFunction\Loader;
 use App\Library\AdminFunction\Pagging;
@@ -25,7 +23,6 @@ use App\Library\AdminFunction\Upload;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class AdminUserController extends BaseAdminController
@@ -61,7 +58,7 @@ class AdminUserController extends BaseAdminController
 
     public function getDataDefault()
     {
-        $this->arrRoleType = Role::getOptionRole();
+        $this->arrRoleType = app(Role::class)->getOptionRole();
         $this->arrStatus = array(
             STATUS_HIDE => viewLanguage('status_all'),
             STATUS_SHOW => viewLanguage('status_show'),
@@ -157,7 +154,6 @@ class AdminUserController extends BaseAdminController
         if (!$this->checkMultiPermiss([$this->permission_view])) {
             return Redirect::route('admin.dashboard', array('error' => ERROR_PERMISSION));
         }
-
         $page_no = Request::get('page_no', 1);
         $dataSearch['user_status'] = Request::get('user_status', 0);
         $dataSearch['auto_loan'] = Request::get('auto_loan', STATUS_DEFAULT);
@@ -171,7 +167,9 @@ class AdminUserController extends BaseAdminController
         $limit = CGlobal::number_limit_show;
         $total = 0;
         $offset = ($page_no - 1) * $limit;
-        $data = $this->_user->searchByCondition($dataSearch, $limit, $offset, $total);
+        $result = $this->_user->searchByCondition($dataSearch, $limit, $offset, $total);
+        $total = isset($result['total']) ? $result['total'] : STATUS_INT_KHONG;
+        $data = isset($result['data']) ? $result['data'] : [];
         $paging = $total > 0 ? Pagging::getNewPager(3, $page_no, $total, $limit, $dataSearch) : '';
         $arrGroupUser = GroupUser::getListGroupUser();
 
@@ -192,12 +190,12 @@ class AdminUserController extends BaseAdminController
      *********************************************************************************************************/
     public function editInfo($ids)
     {
-        $id = FunctionLib::outputId($ids);
-        CGlobal::$pageAdminTitle = "Sửa User | " . CGlobal::web_name;
-//        //check permission
-        if (!$this->is_root && !in_array($this->permission_edit, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_edit])) {
             return Redirect::route('admin.dashboard', array('error' => STATUS_INT_MOT));
         }
+
+        $id = FunctionLib::outputId($ids);
+        CGlobal::$pageAdminTitle = "Sửa User | " . CGlobal::web_name;
 
         Loader::loadJS('lib/chosen/jquery-3.2.1.min.js', CGlobal::$POS_END);
         Loader::loadJS('lib/chosen/chosen.jquery.js', CGlobal::$POS_END);
@@ -224,8 +222,7 @@ class AdminUserController extends BaseAdminController
     //post
     public function edit($ids)
     {
-        //check permission
-        if (!$this->is_root && !in_array($this->permission_edit, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_edit])) {
             return Redirect::route('admin.dashboard', array('error' => STATUS_INT_MOT));
         }
         Loader::loadJS('lib/chosen/jquery-3.2.1.min.js', CGlobal::$POS_END);
@@ -261,7 +258,7 @@ class AdminUserController extends BaseAdminController
                     $arr_user_group_menu = [];
                     if ($inforRole) {
                         foreach ($inforRole as $kk => $role) {
-                            $infoPermiRole = RoleMenu::getInfoByRoleId((int)$role->role_id);
+                            $infoPermiRole = app(RoleMenu::class)->getInfoByRoleId((int)$role->role_id);
                             $str_user_group = (isset($infoPermiRole->role_group_permission) && trim($infoPermiRole->role_group_permission) != '') ? $infoPermiRole->role_group_permission : '';
                             $user_group = explode(',', $str_user_group);
                             if (!empty($user_group)) {
@@ -313,7 +310,7 @@ class AdminUserController extends BaseAdminController
                 }
             } else {
                 $dataInsert['user_password'] = 'Vaymuon4@!2018';
-                if($dataInsert['user_team_id'] > 0){
+                if ($dataInsert['user_team_id'] > 0) {
                     $inforTeam = app(VmDefine::class)->getItemById($dataInsert['user_team_id']);
                     $departId = (isset($inforTeam->type_item) && $inforTeam->type_item > 0) ? $inforTeam->type_item : 0;
                     $inforDepart = app(VmDefine::class)->getItemById($departId);
@@ -325,7 +322,7 @@ class AdminUserController extends BaseAdminController
                 $id_new = $this->_user->createNew($dataInsert);
             }
         }
-        $data['role_type'] = isset($data['role_type_chose']) ? implode(',', $data['role_type_chose']) : (isset($data['role_type'])?implode(',', $data['role_type']):[]);
+        $data['role_type'] = isset($data['role_type_chose']) ? implode(',', $data['role_type_chose']) : (isset($data['role_type']) ? implode(',', $data['role_type']) : []);
         $this->getDataDefault();
         $this->_outDataView($data);
         return view('admin.AdminUser.add', [
@@ -362,7 +359,7 @@ class AdminUserController extends BaseAdminController
 
             if (isset($data['user_email']) && trim($data['user_email']) == '') {
                 $this->error[] = 'Mail không được bỏ trống';
-            }elseif(isset($data['user_email']) && trim($data['user_email']) != ''){
+            } elseif (isset($data['user_email']) && trim($data['user_email']) != '') {
                 $checkIssetUser = $this->_user->getUserByEmail($data['user_email']);
                 if ($checkIssetUser && $checkIssetUser->user_id != $user_id) {
                     $this->error[] = 'Mail này đã tồn tại, hãy tạo lại';
@@ -392,7 +389,7 @@ class AdminUserController extends BaseAdminController
         $id = FunctionLib::outputId($ids);
         $user = $this->_user->user_login();
         //check permission
-        if (!$this->is_root && !in_array($this->permission_change_pass, $this->permission) && (int)$id !== (int)$user['user_id']) {
+        if (!$this->checkMultiPermiss([$this->permission_change_pass]) && (int)$id !== (int)$user['user_id']) {
             return Redirect::route('admin.dashboard', array('error' => STATUS_INT_MOT));
         }
 
@@ -448,34 +445,15 @@ class AdminUserController extends BaseAdminController
     {
         $id = FunctionLib::outputId($ids);
         $data['success'] = 0;
-        if (!$this->is_root && !in_array($this->permission_remove, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_remove])) {
             return Response::json($data);
         }
-        $user = User::find($id);
-        if ($user) {
-            if ($this->_user->remove($user)) {
+        if ($id > STATUS_INT_KHONG) {
+            if ($this->_user->deleteItem($id)) {
                 $data['success'] = 1;
             }
         }
         return Response::json($data);
-    }
-
-    //ajax
-    public function ajaxGetInfoSettingUser()
-    {
-        $user_ids = Request::get('user_id', '');
-        $user_id = FunctionLib::outputId($user_ids);
-        $arrData = $data = array();
-        $arrData['intReturn'] = 1;
-        $arrData['msg'] = '';
-
-        $html = view('admin.AdminUser.infoUserSetting', [
-            'data' => $data,
-            'optionPayment' => [],
-            'user_id' => $user_ids,
-        ])->render();
-        $arrData['html'] = $html;
-        return response()->json($arrData);
     }
 
     public function getProfile()
@@ -510,12 +488,12 @@ class AdminUserController extends BaseAdminController
             $dataUpdate['user_sex'] = $data['user_sex'];
             $dataUpdate['user_full_name'] = $data['user_full_name'];
 
-            if(isset($_FILES['image']) && count($_FILES['image'])>0 && $_FILES['image']['name'] != '') {
+            if (isset($_FILES['image']) && count($_FILES['image']) > 0 && $_FILES['image']['name'] != '') {
                 $folder = FOLDER_FILE_USER_ADMIN;;
                 $_max_file_size = 2 * 1024 * 1024;
                 $_file_ext = 'jpg,jpeg,png,gif';
                 $pathFileUpload = app(Upload::class)->uploadFile('image', $_file_ext, $folder, $_max_file_size);
-                if(trim($pathFileUpload) != ''){
+                if (trim($pathFileUpload) != '') {
                     app(Upload::class)->removeFile($data['user_image']);
                     $dataUpdate['user_image'] = $pathFileUpload;
                 }
@@ -540,9 +518,9 @@ class AdminUserController extends BaseAdminController
     }
 
 
-
     //quản lý nhân viên
-    public function viewEmployee(){
+    public function viewEmployee()
+    {
         CGlobal::$pageAdminTitle = "Quản trị nhân viên | Admin CMS";
         //check permission
         if (!$this->checkMultiPermiss([$this->permission_full_employee])) {
@@ -559,7 +537,7 @@ class AdminUserController extends BaseAdminController
         $dataSearch['role_type'] = Request::get('role_type', 0);
         $dataSearch['position'] = Request::get('position', 0);
 
-        $dataSearch['managerEmployee'] = ($this->is_tech)? 0 : $this->user_id;
+        $dataSearch['managerEmployee'] = ($this->is_tech) ? 0 : $this->user_id;
 
         $limit = CGlobal::number_limit_show;
         $total = 0;
@@ -579,6 +557,7 @@ class AdminUserController extends BaseAdminController
             'arrGroupUser' => $arrGroupUser,
         ], $this->viewOptionData);
     }
+
     public function getEmployee($ids)
     {
         if (!$this->checkMultiPermiss([$this->permission_full_employee])) {
@@ -618,12 +597,12 @@ class AdminUserController extends BaseAdminController
             $dataUpdate['user_sex'] = $data['user_sex'];
             $dataUpdate['user_full_name'] = $data['user_full_name'];
 
-            if(isset($_FILES['image']) && count($_FILES['image'])>0 && $_FILES['image']['name'] != '') {
+            if (isset($_FILES['image']) && count($_FILES['image']) > 0 && $_FILES['image']['name'] != '') {
                 $folder = FOLDER_FILE_USER_ADMIN;;
                 $_max_file_size = 2 * 1024 * 1024;
                 $_file_ext = 'jpg,jpeg,png,gif';
                 $pathFileUpload = app(Upload::class)->uploadFile('image', $_file_ext, $folder, $_max_file_size);
-                if(trim($pathFileUpload) != ''){
+                if (trim($pathFileUpload) != '') {
                     app(Upload::class)->removeFile($data['user_image']);
                     $dataUpdate['user_image'] = $pathFileUpload;
                 }

@@ -8,12 +8,9 @@
  */
 namespace App\Http\Models\Admin;
 use App\Http\Models\BaseModel;
-
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 use App\Library\AdminFunction\Memcache;
-use App\library\AdminFunction\Define;
 
 class Permission extends BaseModel{
 
@@ -39,24 +36,7 @@ class Permission extends BaseModel{
                 }
             }
             $permission->save();
-
-            // tạo môi quan hê nhóm quyên
-            /*if ($permission->permission_id == 1) {
-                $dataEx = array();
-                $permission_id = $permission->permission_id;
-                $dataEx['group_user_id'] = 1;
-                $dataEx['permission_id'] = $permission_id;
-                DB::table(TABLE_GROUP_USER_PERMISSION)->insert($dataEx);
-
-                $dataEx2['group_user_id'] = 1;
-                $dataEx2['group_user_name'] = $permission->permission_name;
-                $dataEx2['group_user_status'] = 1;
-                $dataEx2['group_user_type'] = 1;
-                DB::table(TABLE_GROUP_USER)->insert($dataEx2);
-            }*/
-
             DB::connection()->getPdo()->commit();
-
             return $permission->permission_id;
         }  catch (PDOException $e) {
             //var_dump($e->getMessage());die;
@@ -77,23 +57,9 @@ class Permission extends BaseModel{
                 }
             }
             $permission->save();
-            // tạo môi quan hê nhóm quyên
-            /*if (is_array($arr_group)) {
-                DB::table(TABLE_GROUP_USER_PERMISSION)->where('permission_id', $id)->delete();
-                $dataEx = array();
-                $permission_id = $permission->permission_id;
-                if(count($arr_group) > 0){
-                    foreach ($arr_group as $k => $group) {
-                        $dataEx[$k]['group_user_id'] = $group;
-                        $dataEx[$k]['permission_id'] = $permission_id;
-                    }
-                    DB::table(TABLE_GROUP_USER_PERMISSION)->insert($dataEx);
-                }
-            }*/
             DB::connection()->getPdo()->commit();
             return true;
         }  catch (PDOException $e) {
-            //var_dump($e->getMessage());die;
             DB::connection()->getPdo()->rollBack();
             throw new PDOException();
         }

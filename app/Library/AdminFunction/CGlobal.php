@@ -21,17 +21,22 @@ class CGlobal
     public static $extraFooterCSS = '';
     public static $extraFooterJS = '';
     public static $extraMeta = '';
-    public static $pageAdminTitle = 'Quản trị câu hỏi trắc nghiệm';
-    public static $pageAdminTitleEdit = 'Quản trị câu hỏi trắc nghiệm';
+    public static $pageAdminTitle = 'Quản trị site';
+    public static $pageAdminTitleEdit = 'Quản trị site';
     public static $pageShopTitle = '';
 
     const project_name = 'tracnghiem.vn';
     const code_shop_share = '';
-    const web_name = 'Quản trị câu hỏi trắc nghiệm';
-    const web_title_dashboard = 'CHÀO MỪNG BẠN ĐẾN VỚI HỆ THỐNG QUẢN TRỊ CÂU HỎI TRẮC NGHIỆM';
-    const web_keywords = 'Quản trị câu hỏi trắc nghiệm';
-    const web_description = 'Quản trị câu hỏi trắc nghiệm';
-    public static $pageTitle = 'Quản trị câu hỏi trắc nghiệm';
+    const web_name = 'Quản trị site';
+    const web_title_dashboard = 'CHÀO MỪNG BẠN ĐẾN VỚI HỆ THỐNG QUẢN TRỊ SITE';
+    const web_keywords = 'Quản trị site';
+    const web_description = 'Quản trị site';
+    public static $pageTitle = 'Quản trị site';
+
+    const site_name = 'Shopcuatui.com.vn';
+    const meta_title = 'Chuyên các mặt hàng xách tay từ nước ngoài - Shopcuatui.com.vn';
+    const meta_keywords = 'Hàng xách tay từ Đức, Nga, Nhật cao cấp';
+    const meta_description = 'Shopcuatui.com.vn chuyên các mặt hàng xách tay từ nước ngoài: Đức, Nga, Nhật';
 
     const phoneSupport = '';
 
@@ -53,6 +58,7 @@ class CGlobal
     static $arrLanguage = array(VIETNAM_LANGUAGE => 'vi', ENGLISH_LANGUAGE => 'en');
 
     public static $arrMenuTabTop = [
+        3 => 'Shop của tui',
         2 => 'Trắc nghiệm',
         1 => 'Setting',
     ];
@@ -61,20 +67,6 @@ class CGlobal
         '' => 'Chưa cập nhật',
         SEX_NAM => 'Nam',
         SEX_NU => 'Nữ'
-    ];
-
-    public static $alego_status = [
-        STATUS_INT_KHONG    => "Thất bại",
-        STATUS_INT_MOT      => "Thành công",
-    ];
-
-    public static $lender_rates = [
-        STATUS_INT_MOT  => "Hạng kim cương",
-        STATUS_INT_HAI    => "Hạng vàng",
-        STATUS_INT_BA  => "Hạng bạc",
-        STATUS_INT_BON   => "Hạng đồng",
-        STATUS_INT_NAM   => "Hạng phổ thông",
-        STATUS_INT_SAU  => "Chưa đạt hạng"
     ];
 
     public static $array_provide=[
@@ -228,67 +220,5 @@ class CGlobal
         "messageCode"=>"E000",
         "message"=>"E000",
         "data"=>[],
-    );
-
-    //trạng thái phiếu thu chi
-    public static $array_color_billExoenditure_status = [
-        STATUS_INT_KHONG => ['text'=>'font-status', 'background'=>'background-moi'],//mới
-        STATUS_INT_MOT => ['text'=>'font-status', 'background'=>'background-active'],//đã thu-chi
-        STATUS_INT_AM_MOT => ['text'=>'font-status', 'background'=>'lender-cancel'],//đã hủy
-        STATUS_INT_HAI => ['text'=>'font-status', 'background'=>'lender-pendding'],//đang xử lý
-        STATUS_INT_AM_HAI => ['text'=>'font-status', 'background'=>'lender-block'],//chi lỗi
-        STATUS_DELETE => ['text'=>'font-status', 'background'=>'lender-block'],
-    ];
-
-    public static $point_contents = [
-        '1' => 'Cảm ơn quý khách đã tin tưởng sử dụng dịch vụ của Vay Mượn',
-        '2' => 'Thanh toán khoản vay trước hạn/trong hạn',
-        '3' => 'Đổi mã ưu đãi',
-        '4' => 'Xu hoàn lại do thanh toán thừa',
-        '5' => 'Quy đổi mã ưu đãi Vay Mượn',
-        '6' => 'Quy đổi mã thẻ điện thoại',
-        '7' => 'Giới thiệu người vay thành công',
-        '8' => 'Yêu cầu vay được duyệt thành công',
-    ];
-
-    // trang thai marketing campaign
-    public static $array_marketing_campaign_status = [
-        STATUS_INT_AM_MOT => ['text'=>'font-status', 'background'=>'mc_cancel'],
-        STATUS_INT_KHONG => ['text'=>'font-status', 'background'=>'mc_new'],
-        STATUS_INT_MOT => ['text'=>'font-status', 'background'=>'mc_active'],
-        STATUS_INT_HAI => ['text'=>'font-status', 'background'=>'mc_lock'],
-    ];
-
-    public static $report_duration = [
-        10 => '10 ngày',
-        20 => '20 ngày',
-        30 => '30 ngày'
-    ];
-
-    public static $array_lender_popup_state = [
-        STATUS_INT_AM_MOT => 'Mới',
-        STATUS_INT_KHONG => 'Dừng',
-        STATUS_INT_MOT => 'Áp Dụng',
-    ];
-
-    public static $array_lender_popup_status=[
-        STATUS_INT_AM_MOT => 'Chưa có',
-        STATUS_INT_KHONG => 'NĐT Chưa Kích Hoạt',
-        STATUS_INT_MOT => 'NĐT Đã Kích Hoạt',
-    ];
-
-    public static $array_color_lender_popup_state = [
-        STATUS_INT_AM_MOT => ['text'=>'font-status', 'background'=>'background-new'],
-        STATUS_INT_MOT => ['text'=>'font-status', 'background'=>'background-active'],
-        STATUS_INT_KHONG => ['text'=>'font-status', 'background'=>'background-stop'],
-    ];
-
-    public static $arrXacMinhTknh = array(
-        0=>'Chưa kiểm tra',
-        1=>'Tài khoản đúng (Thủ công)',
-        2=>'Tài khoản không đúng (Thủ công)',
-        3=>'Tài khoản này không hỗ trợ',
-        4=>'Tài khoản đúng (tự động)',
-        5=>'Tài khoản sai (tự động)',
     );
 }

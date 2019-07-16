@@ -6,9 +6,6 @@
 namespace App\Http\Models\Admin;
 
 use App\Http\Models\BaseModel;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use App\Library\AdminFunction\CGlobal;
 use App\Library\AdminFunction\Memcache;
 
 
@@ -18,138 +15,24 @@ class MenuSystem extends BaseModel
     protected $primaryKey = 'menu_id';
     public $timestamps = false;
 
-    protected $fillable = array('parent_id', 'menu_tab_top_id', 'menu_name_en', 'menu_url', 'menu_name', 'menu_type',
-        'role_id', 'showcontent', 'show_permission', 'show_menu', 'ordering', 'position', 'menu_icons', 'active', 'access_data', 'allow_guest');
-
-    public function createItem($data)
+    public function searchByCondition($dataSearch = array(), $limit = STATUS_INT_KHONG, $offset = STATUS_INT_KHONG, $is_total = true)
     {
         try {
-            DB::connection()->getPdo()->beginTransaction();
-            $fieldInput = $this->checkFieldInTable($data);
-            $item = new MenuSystem();
-            if (is_array($fieldInput) && count($fieldInput) > 0) {
-                foreach ($fieldInput as $k => $v) {
-                    $item->$k = $v;
-                }
-            }
-            $item->save();
-
-            DB::connection()->getPdo()->commit();
-            self::removeCache($item->menu_id, $item);
-            return $item->menu_id;
-        } catch (PDOException $e) {
-            DB::connection()->getPdo()->rollBack();
-            throw new PDOException();
-        }
-    }
-
-    public function updateItem($id, $data)
-    {
-        try {
-            DB::connection()->getPdo()->beginTransaction();
-            $fieldInput = $this->checkFieldInTable($data);
-            $item = MenuSystem::find($id);
-            foreach ($fieldInput as $k => $v) {
-                $item->$k = $v;
-            }
-            $item->update();
-            DB::connection()->getPdo()->commit();
-            self::removeCache($item->menu_id, $item);
-            return true;
-        } catch (PDOException $e) {
-            //var_dump($e->getMessage());
-            DB::connection()->getPdo()->rollBack();
-            throw new PDOException();
-        }
-    }
-
-    public function deleteItem($id)
-    {
-        if ($id <= 0) return false;
-        try {
-            DB::connection()->getPdo()->beginTransaction();
-            $item = $dataOld = MenuSystem::find($id);
-            if ($item) {
-                $item->delete();
-                self::removeCache($item->menu_id, $dataOld);
-            }
-            DB::connection()->getPdo()->commit();
-            return true;
-        } catch (PDOException $e) {
-            DB::connection()->getPdo()->rollBack();
-            throw new PDOException();
-            return false;
-        }
-    }
-
-    public function removeCache($id = 0, $data)
-    {
-        if ($id > 0) {
-        }
-        Cache::forget(Memcache::CACHE_LIST_MENU_PERMISSION);
-        Cache::forget(Memcache::CACHE_ALL_PARENT_MENU);
-        Cache::forget(Memcache::CACHE_TREE_MENU);
-        if($data){
-            Cache::forget(Memcache::CACHE_MENU_BY_TAB_ID.$data->menu_tab_top_id);
-        }
-    }
-
-    public function getMenuByTab($menu_tab_top_id) {
-        $data = (Memcache::CACHE_ON)? Cache::get(Memcache::CACHE_MENU_BY_TAB_ID.$menu_tab_top_id) : array();
-        $data = false;
-        if (!$data || sizeof($data) == 0) {
-            $district = MenuSystem::where('menu_id', '>', 0)
-                ->where('menu_tab_top_id', '=',$menu_tab_top_id)
-                ->where('parent_id', '=',STATUS_HIDE)
-                ->where('menu_type', '=',STATUS_HIDE)
-                ->where('active', '=',STATUS_SHOW)
-                ->orderBy('ordering', 'asc')->get();
-            foreach($district as $itm) {
-                $data[$itm['menu_id']] = $itm['menu_name'];
-            }
-            if(!empty($data) && Memcache::CACHE_ON){
-                Cache::put(Memcache::CACHE_MENU_BY_TAB_ID.$menu_tab_top_id, $data, CACHE_THREE_MONTH);
-            }
-        }
-        return $data;
-    }
-
-    public function conditionQuery($objQuery, $dataSearch=array()) {
-        if (isset($dataSearch['menu_name']) && $dataSearch['menu_name'] != '') {
-            $objQuery->where('menu_name', 'LIKE', '%' . $dataSearch['menu_name'] . '%');
-        }
-        if (isset($dataSearch['parent_id']) && $dataSearch['parent_id'] > -1) {
-            $objQuery->where('parent_id', $dataSearch['parent_id']);
-        }
-        if (isset($dataSearch['active']) && $dataSearch['active'] > -1) {
-            $objQuery->where('active', $dataSearch['active']);
-        }
-        if (isset($dataSearch['menu_tab_top_id']) && $dataSearch['menu_tab_top_id'] > -1) {
-            $objQuery->where('menu_tab_top_id', $dataSearch['menu_tab_top_id']);
-        }
-        parent::conditionQuery($objQuery, $dataSearch);
-
-        return $objQuery;
-    }
-
-    public function searchByCondition($dataSearch = array(), $limit = 0, $offset = 0, &$total)
-    {
-        try {
-            $query = MenuSystem::where('menu_id', '>', 0);
+            $query = MenuSystem::where('menu_id', '>', STATUS_INT_KHONG);
             if (isset($dataSearch['menu_name']) && $dataSearch['menu_name'] != '') {
                 $query->where('menu_name', 'LIKE', '%' . $dataSearch['menu_name'] . '%');
             }
 
-            if (isset($dataSearch['parent_id']) && $dataSearch['parent_id'] > -1) {
+            if (isset($dataSearch['parent_id']) && $dataSearch['parent_id'] > STATUS_DEFAULT) {
                 $query->where('parent_id', $dataSearch['parent_id']);
             }
-            if (isset($dataSearch['active']) && $dataSearch['active'] > -1) {
+            if (isset($dataSearch['active']) && $dataSearch['active'] > STATUS_DEFAULT) {
                 $query->where('active', $dataSearch['active']);
             }
-            if (isset($dataSearch['menu_tab_top_id']) && $dataSearch['menu_tab_top_id'] > -1) {
+            if (isset($dataSearch['menu_tab_top_id']) && $dataSearch['menu_tab_top_id'] > STATUS_DEFAULT) {
                 $query->where('menu_tab_top_id', $dataSearch['menu_tab_top_id']);
             }
-            $total = $query->count();
+            $total = ($is_total)? $query->count(): STATUS_INT_KHONG;
             $query->orderBy('ordering', 'asc');
 
             //get field can lay du lieu
@@ -159,19 +42,114 @@ class MenuSystem extends BaseModel
             } else {
                 $result = $query->take($limit)->skip($offset)->get();
             }
-            return $result;
-
-        } catch (PDOException $e) {
-            throw new PDOException();
+            return ['data' => $result, 'total' => $total];
+        } catch (\PDOException $e) {
+            throw new \PDOException();
         }
     }
 
-    public static function getAllParentMenu()
+    public function createItem($data)
     {
-        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_ALL_PARENT_MENU) : array();
-        if (!$data || sizeof($data) == 0) {
-            $menu = MenuSystem::where('menu_id', '>', 0)
-                ->where('parent_id', 0)
+        try {
+            $fieldInput = $this->checkFieldInTable($data);
+            if (is_array($fieldInput) && count($fieldInput) > STATUS_INT_KHONG) {
+                $item = new MenuSystem();
+                foreach ($fieldInput as $k => $v) {
+                    $item->$k = $v;
+                }
+                $item->save();
+                self::removeCache($item->menu_id, $item);
+                return $item->menu_id;
+            }
+            return STATUS_INT_KHONG;
+        } catch (\PDOException $e) {
+            throw new \PDOException();
+        }
+    }
+
+    public function updateItem($id, $data)
+    {
+        try {
+            $fieldInput = $this->checkFieldInTable($data);
+            if (is_array($fieldInput) && count($fieldInput) > STATUS_INT_KHONG) {
+                $item = self::getItemById($id);
+                foreach ($fieldInput as $k => $v) {
+                    $item->$k = $v;
+                }
+                $item->update();
+                self::removeCache($item->menu_id, $item);
+                return true;
+            }
+            return false;
+        } catch (\PDOException $e) {
+            throw new \PDOException();
+        }
+    }
+
+    public function getItemById($id)
+    {
+        $data = Memcache::getCache(Memcache::CACHE_MENU_BY_ID.$id);
+        if (!$data) {
+            $data = MenuSystem::find($id);
+            if ($data) {
+                Memcache::putCache(Memcache::CACHE_MENU_BY_ID.$id, $data);
+            }
+        }
+        return $data;
+    }
+
+    public function deleteItem($id)
+    {
+        if ($id <= STATUS_INT_KHONG) return false;
+        try {
+            $item = $dataOld = self::getItemById($id);;
+            if ($item) {
+                $item->delete();
+                self::removeCache($item->menu_id, $dataOld);
+            }
+            return true;
+        } catch (\PDOException $e) {
+            throw new \PDOException();
+            return false;
+        }
+    }
+
+    public function removeCache($id = STATUS_INT_KHONG, $data)
+    {
+        Memcache::forgetCache(Memcache::CACHE_MENU_BY_ID.$id);
+        Memcache::forgetCache(Memcache::CACHE_LIST_MENU_PERMISSION);
+        Memcache::forgetCache(Memcache::CACHE_ALL_PARENT_MENU);
+        Memcache::forgetCache(Memcache::CACHE_TREE_MENU);
+        if($data){
+            Memcache::forgetCache(Memcache::CACHE_MENU_BY_TAB_ID.$data->menu_tab_top_id);
+        }
+    }
+
+    public function getMenuByTab($menu_tab_top_id) {
+        $data = Memcache::getCache(Memcache::CACHE_MENU_BY_TAB_ID.$menu_tab_top_id);
+        if (!$data || sizeof($data) == STATUS_INT_KHONG) {
+            $district = MenuSystem::where('menu_id', '>', STATUS_INT_KHONG)
+                ->where('menu_tab_top_id', '=',$menu_tab_top_id)
+                ->where('parent_id', '=',STATUS_HIDE)
+                ->where('menu_type', '=',STATUS_HIDE)
+                ->where('active', '=',STATUS_SHOW)
+                ->orderBy('ordering', 'asc')->get();
+            foreach($district as $itm) {
+                $data[$itm['menu_id']] = $itm['menu_name'];
+            }
+            if(!empty($data) && Memcache::CACHE_ON){
+                Memcache::putCache(Memcache::CACHE_MENU_BY_TAB_ID.$menu_tab_top_id, $data);
+            }
+        }
+        return $data;
+    }
+
+    public function getAllParentMenu()
+    {
+        $data = Memcache::getCache(Memcache::CACHE_ALL_PARENT_MENU);
+        if (!$data || sizeof($data) == STATUS_INT_KHONG) {
+            $menu = MenuSystem::where('menu_id', '>', STATUS_INT_KHONG)
+                ->where('parent_id', STATUS_INT_KHONG)
                 ->where('active', STATUS_SHOW)
                 ->orderBy('ordering', 'asc')->get();
             if ($menu) {
@@ -180,20 +158,20 @@ class MenuSystem extends BaseModel
                 }
             }
             if (!empty($data)) {
-                Cache::put(Memcache::CACHE_ALL_PARENT_MENU, $data, CACHE_THREE_MONTH);
+                Memcache::putCache(Memcache::CACHE_ALL_PARENT_MENU, $data);
             }
         }
         return $data;
     }
 
-    public static function buildMenuAdmin()
+    public function buildMenuAdmin()
     {
         $data = $menuTree = array();
-        $menuTree = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_TREE_MENU) : false;
+        $menuTree = Memcache::getCache(Memcache::CACHE_TREE_MENU);
         $total = 0;
-        if (!$menuTree || count($menuTree) == 0) {
+        if (!$menuTree || count($menuTree) == STATUS_INT_KHONG) {
             $search['active'] = STATUS_SHOW;
-            $dataSearch = app(MenuSystem::class)->searchByCondition($search, 200, 0, $total);
+            $dataSearch = app(MenuSystem::class)->searchByCondition($search, 200, STATUS_INT_KHONG, $total);
             if (!empty($dataSearch)) {
                 $data = MenuSystem::getTreeMenu($dataSearch);
                 $data = !empty($data) ? $data : $dataSearch;
@@ -247,15 +225,15 @@ class MenuSystem extends BaseModel
                 }
             }
             if (!empty($menuTree)) {
-                Cache::put(Memcache::CACHE_TREE_MENU, $menuTree, CACHE_THREE_MONTH);
+                Memcache::putCache(Memcache::CACHE_TREE_MENU, $menuTree);
             }
         }
         return $menuTree;
     }
 
-    public static function getTreeMenu($data)
+    public function getTreeMenu($data)
     {
-        $max = 0;
+        $max = STATUS_INT_KHONG;
         $aryCategoryProduct = $arrCategory = array();
         if (!empty($data)) {
             foreach ($data as $k => $value) {
@@ -277,18 +255,18 @@ class MenuSystem extends BaseModel
             }
         }
 
-        if ($max > 0) {
+        if ($max > STATUS_INT_KHONG) {
             $aryCategoryProduct = self::showMenu($max, $arrCategory);
         }
         return $aryCategoryProduct;
     }
 
-    public static function showMenu($max, $aryDataInput)
+    public function showMenu($max, $aryDataInput)
     {
         $aryData = array();
-        if (is_array($aryDataInput) && count($aryDataInput) > 0) {
+        if (is_array($aryDataInput) && count($aryDataInput) > STATUS_INT_KHONG) {
             foreach ($aryDataInput as $k => $val) {
-                if ((int)$val['parent_id'] == 0) {
+                if ((int)$val['parent_id'] == STATUS_INT_KHONG) {
                     $val['padding_left'] = '';
                     $val['menu_name_parent'] = '';
                     $val['menu_name_parent_en'] = '';
@@ -300,7 +278,7 @@ class MenuSystem extends BaseModel
         return $aryData;
     }
 
-    public static function showSubMenu($cat_id, $cat_name, $cat_name_en, $max, $aryDataInput, &$aryData)
+    public function showSubMenu($cat_id, $cat_name, $cat_name_en, $max, $aryDataInput, &$aryData)
     {
         if ($cat_id <= $max) {
             foreach ($aryDataInput as $chk => $chval) {
@@ -314,21 +292,22 @@ class MenuSystem extends BaseModel
             }
         }
     }
-    public static function getDataPermission(){
-        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_LIST_MENU_PERMISSION) : false;
+
+    public function getDataPermission(){
+        $data = Memcache::getCache(Memcache::CACHE_LIST_MENU_PERMISSION);
         if (!$data) {
-            $data = MenuSystem::where('menu_id', '>', 0)
+            $data = MenuSystem::where('menu_id', '>', STATUS_INT_KHONG)
                 ->where('active', STATUS_SHOW)
                 ->where('show_permission',STATUS_SHOW)
                 ->orderBy('parent_id', 'asc')->orderBy('ordering', 'asc')->get();
-            if ($data && Memcache::CACHE_ON) {
-                Cache::put(Memcache::CACHE_LIST_MENU_PERMISSION, $data, CACHE_THREE_MONTH);
+            if ($data) {
+                Memcache::putCache(Memcache::CACHE_LIST_MENU_PERMISSION, $data);
             }
         }
         return $data;
     }
 
-    public static function getListMenuPermission()
+    public function getListMenuPermission()
     {
         $data = self::getDataPermission();
         $result = [];

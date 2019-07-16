@@ -36,12 +36,9 @@ class AdminPermissionController extends BaseAdminController
 
     public function view()
     {
-        if (!$this->is_root && !in_array($this->permission_full, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_full])) {
             return Redirect::route('admin.dashboard', array('error' => 1));
         }
-        /*echo strtotime('17-10-2016 14:30:41');
-        echo '<br/>'.strtotime('17-10-2016 14:32:41');
-        die;*/
 
         $dataSearch = $dataResponse = $data = array();
         $page_no = Request::get('page_no', 1);//phan trang
@@ -79,10 +76,9 @@ class AdminPermissionController extends BaseAdminController
 
     public function create()
     {
-//        //check permission
-//        if (!in_array($this->permission_create, $this->permission)) {
-//            return Redirect::route('admin.dashboard',array('error'=>1));
-//        }
+        if (!$this->checkMultiPermiss([$this->permission_full])) {
+            return Redirect::route('admin.dashboard', array('error' => 1));
+        }
         $error = array();
         $data['permission_code'] = htmlspecialchars(trim(Request::get('permission_code', '')));
         $data['permission_name'] = htmlspecialchars(trim(Request::get('permission_name', '')));
@@ -117,10 +113,9 @@ class AdminPermissionController extends BaseAdminController
 
     public function editInfo($id)
     {
-//        CGlobal::$pageTitle = "Sửa quyền | Admin Seo";
-//        if (!in_array($this->permission_edit, $this->permission)) {
-//            return Redirect::route('admin.dashboard',array('error'=>1));
-//        }
+        if (!$this->checkMultiPermiss([$this->permission_full])) {
+            return Redirect::route('admin.dashboard', array('error' => 1));
+        }
         $data = Permission::find($id);//lay dl permission theo id
         return view('admin.AdminPermission.create', [
             'arrStatus' => $this->arrStatus,
@@ -130,13 +125,9 @@ class AdminPermissionController extends BaseAdminController
 
     public function edit($id)
     {
-        //check permission
-//        if (!in_array($this->permission_edit, $this->permission)) {
-//            return Redirect::route('admin.dashboard',array('error'=>1));
-//        }
-        //DB::table(TABLE_PERMISSION)->truncate();
-        //DB::table(TABLE_GROUP_USER)->truncate();
-        //DB::table(TABLE_GROUP_USER_PERMISSION)->truncate();
+        if (!$this->checkMultiPermiss([$this->permission_full])) {
+            return Redirect::route('admin.dashboard', array('error' => 1));
+        }
 
         $error = array();
         $data['permission_code'] = htmlspecialchars(trim(Request::get('permission_code', '')));
@@ -174,6 +165,9 @@ class AdminPermissionController extends BaseAdminController
 
     public function deletePermission()
     {
+        if (!$this->checkMultiPermiss([$this->permission_full])) {
+            return Redirect::route('admin.dashboard', array('error' => 1));
+        }
         $data = array('isIntOk' => 0);
         if (!$this->is_root && !in_array($this->permission_full, $this->permission)) {
             return Response::json($data);
@@ -187,6 +181,9 @@ class AdminPermissionController extends BaseAdminController
 
     public function addPermiss()
     {
+        if (!$this->checkMultiPermiss([$this->permission_full])) {
+            return Redirect::route('admin.dashboard', array('error' => 1));
+        }
         $arrPermit = ArrayPermission::$arrNewPermiss;
         foreach ($arrPermit as $k => $group) {
             foreach ($group['infor'] as $kk => $infor) {

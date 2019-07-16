@@ -9,10 +9,7 @@
 namespace App\Http\Models\Admin;
 
 use App\Http\Models\BaseModel;
-
 use App\Library\AdminFunction\Memcache;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 
 class VmDefine extends BaseModel
@@ -21,43 +18,10 @@ class VmDefine extends BaseModel
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-    protected $fillable = array('define_code', 'define_name','define_color', 'define_type', 'type_item','object_id', 'define_order', 'define_status', 'define_value_min', 'define_value_max',
-        'define_note', 'created_at', 'updated_at', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update');
-
-    public function conditionQuery($objQuery, $dataSearch = array())
-    {
-        $objQuery->where('id', '>', 0);
-        if (!empty($dataSearch['id'])) {
-            if (is_array($dataSearch['id']))
-                $objQuery->whereIn('id', $dataSearch['id']);
-            else
-                $objQuery->where('id', $dataSearch['id']);
-        }
-
-        if (isset($dataSearch['define_type'])) {
-            if (is_array($dataSearch['define_type']))
-                $objQuery->whereIn('define_type', $dataSearch['define_type']);
-            else
-                $objQuery->where('define_type', $dataSearch['define_type']);
-        }
-        if (isset($dataSearch['define_status'])) {
-            if (is_array($dataSearch['define_status']))
-                $objQuery->whereIn('define_status', $dataSearch['define_status']);
-            else
-                $objQuery->where('define_status', $dataSearch['define_status']);
-        }
-        if (isset($dataSearch['define_name']) && $dataSearch['define_name'] != '') {
-            $objQuery->where('define_name','like','%'.$dataSearch['define_name'].'%');
-        }
-
-        parent::conditionQuery($objQuery, $dataSearch);
-        return $objQuery;
-    }
-
-    public function searchByCondition($dataSearch = array(), $limit = 0, $offset = 0, $is_total = true)
+    public function searchByCondition($dataSearch = array(), $limit = STATUS_INT_KHONG, $offset = STATUS_INT_KHONG, $is_total = true)
     {
         try {
-            $query = VmDefine::where('id', '>', 0);
+            $query = VmDefine::where('id', '>', STATUS_INT_KHONG);
             if (isset($dataSearch['define_name']) && $dataSearch['define_name'] != '') {
                 $query->where('define_name', 'LIKE', '%' . $dataSearch['define_name'] . '%');
             }
@@ -67,10 +31,10 @@ class VmDefine extends BaseModel
             if (isset($dataSearch['define_status']) && $dataSearch['define_status'] > -1) {
                 $query->where('define_status', $dataSearch['define_status']);
             }
-            if (isset($dataSearch['define_type']) && $dataSearch['define_type'] > 0) {
+            if (isset($dataSearch['define_type']) && $dataSearch['define_type'] > STATUS_INT_KHONG) {
                 $query->where('define_type', $dataSearch['define_type']);
             }
-            $total = ($is_total) ? $query->count() : 0;
+            $total = ($is_total) ? $query->count() : STATUS_INT_KHONG;
 
             $query->orderBy('define_status', 'asc');
             $query->orderBy('define_order', 'asc');
@@ -83,8 +47,8 @@ class VmDefine extends BaseModel
             }
             return ['data' => $result, 'total' => $total];
 
-        } catch (PDOException $e) {
-            throw new PDOException();
+        } catch (\PDOException $e) {
+            throw new \PDOException();
         }
     }
 
@@ -92,19 +56,22 @@ class VmDefine extends BaseModel
     {
         try {
             $fieldInput = $this->checkFieldInTable($data);
-            $item = new VmDefine();
-            if (is_array($fieldInput) && count($fieldInput) > 0) {
-                foreach ($fieldInput as $k => $v) {
-                    $item->$k = $v;
+            if (is_array($fieldInput) && count($fieldInput) > STATUS_INT_KHONG) {
+                $item = new VmDefine();
+                if (is_array($fieldInput) && count($fieldInput) > STATUS_INT_KHONG) {
+                    foreach ($fieldInput as $k => $v) {
+                        $item->$k = $v;
+                    }
                 }
+                $item->user_id_creater = app(User::class)->user_id();
+                $item->user_name_creater = app(User::class)->user_name();
+                $item->save();
+                self::removeCache($item->id, $item);
+                return $item->id;
             }
-            $item->user_id_creater = app(User::class)->user_id();
-            $item->user_name_creater = app(User::class)->user_name();
-            $item->save();
-            self::removeCache($item->id, $item);
-            return $item->id;
-        } catch (PDOException $e) {
-            throw new PDOException();
+            return STATUS_INT_KHONG;
+        } catch (\PDOException $e) {
+            throw new \PDOException();
         }
     }
 
@@ -112,83 +79,37 @@ class VmDefine extends BaseModel
     {
         try {
             $fieldInput = $this->checkFieldInTable($data);
-            $item = self::getItemById($id);
-            foreach ($fieldInput as $k => $v) {
-                $item->$k = $v;
+            if (is_array($fieldInput) && count($fieldInput) > STATUS_INT_KHONG) {
+                $item = self::getItemById($id);
+                foreach ($fieldInput as $k => $v) {
+                    $item->$k = $v;
+                }
+                $item->user_id_update = app(User::class)->user_id();
+                $item->user_name_update = app(User::class)->user_name();
+                $item->update();
+                self::removeCache($item->id, $item);
             }
-            $item->user_id_update = app(User::class)->user_id();
-            $item->user_name_update = app(User::class)->user_name();
-            $item->update();
-            self::removeCache($item->id, $item);
             return true;
-        } catch (PDOException $e) {
-            throw new PDOException();
+        } catch (\PDOException $e) {
+            throw new \PDOException();
         }
     }
 
     public function getItemById($id)
     {
-        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_VMDEFINE_ID . $id) : false;
+        $data = Memcache::getCache(Memcache::CACHE_VMDEFINE_ID.$id);
         if (!$data) {
             $data = VmDefine::find($id);
             if ($data) {
-                Cache::put(Memcache::CACHE_VMDEFINE_ID . $id, $data, CACHE_THREE_MONTH);
+                Memcache::putCache(Memcache::CACHE_VMDEFINE_ID.$id, $data);
             }
         }
         return $data;
-    }
-
-    public function getDataByType($define_type = 0)
-    {
-        if ($define_type == 0) return [];
-        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_VMDEFINE_BY_TYPE . $define_type) : false;
-        if (!$data) {
-            $data = VmDefine::where('id', '>', 0)
-                ->where('define_type', $define_type)
-                ->orderBy('define_order', 'asc')->get();
-            if ($data) {
-                Cache::put(Memcache::CACHE_VMDEFINE_BY_TYPE . $define_type, $data, CACHE_THREE_MONTH);
-            }
-        }
-        return $data;
-    }
-
-    public function getOptionNameByType($define_type = 0, $define_status = true)
-    {
-        if ($define_type == 0) return [];
-        $arrOption = [];
-        $data = self::getDataByType($define_type);
-        if ($data || $data->count() > 0) {
-            foreach ($data as $v) {
-                if ($define_status && $v->define_status == STATUS_SHOW) {
-                    $arrOption[$v->id] = $v->define_name;
-                } else {
-                    $arrOption[$v->id] = $v->define_name;
-                }
-            }
-        }
-        return $arrOption;
-    }
-    public function getOptionColorByType($define_type = 0, $define_status = true)
-    {
-        if ($define_type == 0) return [];
-        $arrOption = [];
-        $data = self::getDataByType($define_type);
-        if ($data || $data->count() > 0) {
-            foreach ($data as $v) {
-                if ($define_status && $v->define_status == STATUS_SHOW) {
-                    $arrOption[$v->id] = ['name'=>$v->define_name,'color'=>$v->define_color];
-                } else {
-                    $arrOption[$v->id] = ['name'=>$v->define_name,'color'=>$v->define_color];
-                }
-            }
-        }
-        return $arrOption;
     }
 
     public function deleteItem($id)
     {
-        if ($id <= 0) return false;
+        if ($id <= STATUS_INT_KHONG) return false;
         try {
             $item = $dataOld = self::getItemById($id);
             if ($item) {
@@ -196,26 +117,75 @@ class VmDefine extends BaseModel
                 self::removeCache($id, $dataOld);
             }
             return true;
-        } catch (PDOException $e) {
-            throw new PDOException();
+        } catch (\PDOException $e) {
+            throw new \PDOException();
             return false;
         }
     }
 
-    public function removeCache($id = 0, $data = [])
+    public function removeCache($id = STATUS_INT_KHONG, $data = [])
     {
-        if ($id > 0) {
-            Cache::forget(Memcache::CACHE_VMDEFINE_ID . $id);
+        if ($id > STATUS_INT_KHONG) {
+            Memcache::forgetCache(Memcache::CACHE_VMDEFINE_ID . $id);
         }
         if ($data && isset($data->define_type)) {
-            Cache::forget(Memcache::CACHE_VMDEFINE_BY_TYPE . $data->define_type);
+            Memcache::forgetCache(Memcache::CACHE_VMDEFINE_BY_TYPE . $data->define_type);
         }
+    }
+
+    public function getDataByType($define_type = STATUS_INT_KHONG)
+    {
+        if ($define_type == STATUS_INT_KHONG) return [];
+        $data = Memcache::getCache(Memcache::CACHE_VMDEFINE_BY_TYPE.$define_type);
+        if (!$data) {
+            $data = VmDefine::where('id', '>', STATUS_INT_KHONG)
+                ->where('define_type', $define_type)
+                ->orderBy('define_order', 'asc')->get();
+            if ($data) {
+                Memcache::putCache(Memcache::CACHE_VMDEFINE_BY_TYPE.$define_type, $data);
+            }
+        }
+        return $data;
+    }
+
+    public function getOptionNameByType($define_type = STATUS_INT_KHONG, $define_status = true)
+    {
+        if ($define_type == STATUS_INT_KHONG) return [];
+        $arrOption = [];
+        $data = self::getDataByType($define_type);
+        if ($data || $data->count() > STATUS_INT_KHONG) {
+            foreach ($data as $v) {
+                if ($define_status && $v->define_status == STATUS_SHOW) {
+                    $arrOption[$v->id] = $v->define_name;
+                } else {
+                    $arrOption[$v->id] = $v->define_name;
+                }
+            }
+        }
+        return $arrOption;
+    }
+
+    public function getOptionColorByType($define_type = STATUS_INT_KHONG, $define_status = true)
+    {
+        if ($define_type == STATUS_INT_KHONG) return [];
+        $arrOption = [];
+        $data = self::getDataByType($define_type);
+        if ($data || $data->count() > STATUS_INT_KHONG) {
+            foreach ($data as $v) {
+                if ($define_status && $v->define_status == STATUS_SHOW) {
+                    $arrOption[$v->id] = ['name'=>$v->define_name,'color'=>$v->define_color];
+                } else {
+                    $arrOption[$v->id] = ['name'=>$v->define_name,'color'=>$v->define_color];
+                }
+            }
+        }
+        return $arrOption;
     }
 
     public function getArrByType($define_type){
         $data = $this->getDataByType($define_type);
         $result = [];
-        if($data->count() > 0){
+        if($data->count() > STATUS_INT_KHONG){
             foreach($data as $item){
                 $result[$item->id] = $item->define_name;
             }

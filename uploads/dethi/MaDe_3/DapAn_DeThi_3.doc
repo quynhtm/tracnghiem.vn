@@ -1,0 +1,35 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>BỘ GIÁO DỤC VÀ ĐÀO TẠO</title>
+</head>
+<body link="blue">
+<div>
+    <table border="0" cellspacing="0" cellpadding="0" width="600" style="border-collapse:collapse">
+        <tr style="height:0.5in;text-align: center!important;">
+            <td width="200" colspan="2" valign="top" style="padding:0;text-align: center;" class="text-center">
+                <br>
+                <b>PHÒNG GD&ĐT</b><br>
+                <b>Mã đề 3</b><br>
+                <i>( 4 câu hỏi )</i>
+            </td>
+            <td width="400" colspan="2" valign="top" style="padding:0;text-align: center;" class="text-center">
+                <b>Đề thi test</b><br>
+                Năm học: <b>2018-2019</b><br>
+                Môn thi: <b>thuwr xem</b> - Khối: <b>Thu hồi nợ6</b><br>
+                Chuyên đề: <b>Do khách hàng yêu cầu</b><br>
+                <i>Thời gian làm bài : 30 phút <br>
+                    (không kể thời gian phát đề)
+                </i>
+            </td>
+        </tr>
+    </table>
+    <h2 style="width: 100%; text-align: center">Đáp án của Mã đề 3</h2>
+    <br>
+                        Câu 1: <b>B</b><br>
+                    Câu 2: <b>C</b><br>
+                    Câu 3: <b>A</b><br>
+                    Câu 4: <b>A</b><br>
+            </div>
+</body>
+</html>

@@ -11,7 +11,6 @@ use App\Http\Models\Admin\RoleMenu;
 use App\Http\Models\Admin\MenuSystem;
 use App\Library\AdminFunction\FunctionLib;
 use App\Library\AdminFunction\CGlobal;
-use App\Library\AdminFunction\Define;
 use App\Library\AdminFunction\Pagging;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -39,7 +38,7 @@ class AdminGroupUserController extends BaseAdminController
     public function view()
     {
         //check permission
-        if (!$this->is_root && !in_array($this->permission_view, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_view])) {
             return Redirect::route('admin.dashboard', array('error' => 1));
         }
         CGlobal::$pageAdminTitle = 'Quản lý nhóm quyền';
@@ -95,7 +94,7 @@ class AdminGroupUserController extends BaseAdminController
 
     public function createInfo()
     {
-        if (!$this->is_root && !in_array($this->permission_view, $this->permission) && !in_array($this->permission_create, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_view,$this->permission_create])) {
             return Redirect::route('admin.dashboard', array('error' => 1));
         }
         $listPermission = Permission::getListPermission();
@@ -112,7 +111,7 @@ class AdminGroupUserController extends BaseAdminController
     public function create()
     {
         //check permission
-        if (!$this->is_root && !in_array($this->permission_view, $this->permission) && !in_array($this->permission_create, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_view,$this->permission_create])) {
             return Redirect::route('admin.dashboard', array('error' => 1));
         }
 
@@ -156,8 +155,7 @@ class AdminGroupUserController extends BaseAdminController
 
     public function editInfo($id = 0)
     {
-//        CGlobal::$pageTitle = "Sửa nhóm User | Admin Seo";
-        if (!$this->is_root && !in_array($this->permission_view, $this->permission) && !in_array($this->permission_edit, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_view,$this->permission_create])) {
             return Redirect::route('admin.dashboard', array('error' => 1));
         }
 
@@ -195,7 +193,7 @@ class AdminGroupUserController extends BaseAdminController
     public function edit($id = 0)
     {
         //check permission
-        if (!$this->is_root && !in_array($this->permission_view, $this->permission) && !in_array($this->permission_edit, $this->permission)) {
+        if (!$this->checkMultiPermiss([$this->permission_view,$this->permission_edit])) {
             return Redirect::route('admin.dashboard', array('error' => 1));
         }
         $error = array();
@@ -285,8 +283,8 @@ class AdminGroupUserController extends BaseAdminController
     public function viewRole()
     {
         //Check phan quyen.
-        if (!$this->is_root && !in_array($this->permission_role_view, $this->permission)) {
-            return Redirect::route('admin.dashboard', array('error' => Define::ERROR_PERMISSION));
+        if (!$this->checkMultiPermiss([$this->permission_role_view])) {
+            return Redirect::route('admin.dashboard', array('error' => 1));
         }
         $pageNo = (int)Request::get('page_no', 1);
         $sbmValue = Request::get('submit', 1);
@@ -299,14 +297,13 @@ class AdminGroupUserController extends BaseAdminController
         $search['role_id'] = (int)Request::get('role_id', -1);
         //$search['field_get'] = 'menu_name,menu_id,parent_id';//cac truong can lay
 
-        $dataSearch = app(RoleMenu::class)->searchByCondition($search, $limit, $offset, $total);
-        if (!empty($dataSearch)) {
-            $data = $dataSearch;
+        $dataSearch = app(RoleMenu::class)->searchByCondition($search, $limit, $offset);
+        if (!empty($dataSearch['data'])) {
+            $data = $dataSearch['data'];
         }
         $paging = '';
 
-        //FunctionLib::debug($data);
-        $arrRoleType = Role::getOptionRole();
+        $arrRoleType = app(Role::class)->getOptionRole();
         $optionStatus = FunctionLib::getOption($arrRoleType, $search['role_id']);
 
         $dataGroupUser = GroupUser::getListGroupUser($this->is_boss);
@@ -333,22 +330,21 @@ class AdminGroupUserController extends BaseAdminController
     public function getRole($ids)
     {
         $id = FunctionLib::outputId($ids);
-
-        if (!$this->is_root && !in_array($this->permission_role_view, $this->permission) && !in_array($this->permission_role_edit, $this->permission) && !in_array($this->permission_role_create, $this->permission)) {
-            return Redirect::route('admin.dashboard', array('error' => Define::ERROR_PERMISSION));
+        if (!$this->checkMultiPermiss([$this->permission_role_view, $this->permission_role_edit, $this->permission_role_create])) {
+            return Redirect::route('admin.dashboard', array('error' => 1));
         }
         $action_copy = (int)Request::get('action_copy', 0);
         $arrUserGroupMenu = $data = array();
         if ($id > 0) {
-            $data = RoleMenu::find($id);
+            $data = app(RoleMenu::class)->getItemById($id);
             $data['role_group_permission'] = explode(',', $data['role_group_permission']);
             $arrUserGroupMenu = explode(',', $data['role_group_menu_id']);
         }
 
         $arrGroupUser = GroupUser::getListGroupUser($this->is_boss);
-        $menuAdmin = MenuSystem::getListMenuPermission();
+        $menuAdmin = app(MenuSystem::class)->getListMenuPermission();
         //vmDebug($menuAdmin);
-        $arrRoleType = Role::getOptionRole();
+        $arrRoleType = app(Role::class)->getOptionRole();
         $optionRole = FunctionLib::getOption($arrRoleType, isset($data['role_id']) ? $data['role_id'] : 0);
         $optionStatus = FunctionLib::getOption($this->arrStatus, isset($data['role_status']) ? $data['role_status'] : CGlobal::status_show);
 
@@ -369,10 +365,10 @@ class AdminGroupUserController extends BaseAdminController
     public function postRole($ids)
     {
         $id = FunctionLib::outputId($ids);
-        if (!$this->is_root && !in_array($this->permission_role_view, $this->permission) && !in_array($this->permission_role_edit, $this->permission) && !in_array($this->permission_role_create, $this->permission)) {
-            return Redirect::route('admin.dashboard', array('error' => Define::ERROR_PERMISSION));
+        if (!$this->checkMultiPermiss([$this->permission_role_view, $this->permission_role_edit, $this->permission_role_create])) {
+            return Redirect::route('admin.dashboard', array('error' => 1));
         }
-        $arrRoleType = Role::getOptionRole();
+        $arrRoleType = app(Role::class)->getOptionRole();
 
         $id_hiden = (int)Request::get('id_hiden', 0);
         $action_copy = (int)Request::get('action_copy', 0);
@@ -399,7 +395,7 @@ class AdminGroupUserController extends BaseAdminController
                 $role['role_name'] = $data['role_name'];
                 $role['role_order'] = 1;
                 $role['role_project'] = $data['role_menu_project'];
-                $role_id = Role::createItem($role);
+                $role_id = app(Role::class)->createItem($role);
                 $dataInsert['role_id'] = $role_id;
                 //them moi
                 if (app(RoleMenu::class)->createItem($dataInsert)) {
@@ -408,18 +404,13 @@ class AdminGroupUserController extends BaseAdminController
             }else{
                 $id = ($id == 0) ? $id_hiden : $id;
                 if ($id > 0) {
-                    //cap nhat
-                    if (app(RoleMenu::class)->updateItem($id, $dataInsert)) {
-                        return Redirect::route('admin.viewRole');
-                    }
-                } else {
-                    //them moi
-                    return Redirect::route('admin.viewRole');
+                    app(RoleMenu::class)->updateItem($id, $dataInsert);
                 }
+                return Redirect::route('admin.viewRole');
             }
         }
         $arrGroupUser = GroupUser::getListGroupUser($this->is_boss);
-        $menuAdmin = MenuSystem::getListMenuPermission();
+        $menuAdmin = app(MenuSystem::class)->getListMenuPermission();
 
         $optionRole = FunctionLib::getOption($arrRoleType, isset($data['role_id']) ? $data['role_id'] : 0);
         $optionStatus = FunctionLib::getOption($this->arrStatus, isset($data['role_status']) ? $data['role_status'] : CGlobal::status_show);
@@ -449,8 +440,8 @@ class AdminGroupUserController extends BaseAdminController
     public function deleteGroupRole()
     {
         $data = array('isIntOk' => 0);
-        if(!$this->is_root && !in_array($this->permission_role_edit,$this->permission)){
-            return Response::json($data);
+        if (!$this->checkMultiPermiss([$this->permission_role_view, $this->permission_role_edit])) {
+            return Redirect::route('admin.dashboard', array('error' => 1));
         }
         $id = (int)Request::get('id', 0);
         if ($id > 0 && app(RoleMenu::class)->deleteItem($id)) {

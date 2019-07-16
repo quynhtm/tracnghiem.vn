@@ -3,12 +3,9 @@
 namespace App\Http\Models\Admin;
 
 use App\Http\Models\BaseModel;
-
-use App\Library\AdminFunction\FunctionLib;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Cache;
 use App\library\AdminFunction\Define;
 use App\library\AdminFunction\CGlobal;
 use App\Library\AdminFunction\Memcache;
@@ -20,12 +17,165 @@ class User extends BaseModel
     protected $primaryKey = 'user_id';
     public $timestamps = false;
 
-    protected $fillable = array('user_id', 'user_name', 'user_project', 'user_object_id', 'user_parent', 'user_password', 'user_full_name', 'user_email', 'user_phone',
-        'user_status', 'user_sex', 'user_view', 'user_group', 'user_group_menu', 'user_last_login','user_last_logout', 'user_last_ip','is_receive_loan',
-        'user_depart_id','user_is_manager','user_manager_id','user_image','role_type', 'role_name', 'role_code', 'address', 'group_sale', 'position', 'change_pass', 'telephone',
-        'auto_loan', 'created_flag', 'sum_all', 'last_assign', 'last_loan', 'auto_flag', 'sum_new', 'sum_old'
-        ,'user_id_creater','user_name_creater','user_id_update','user_name_update', 'created_at', 'updated_at'
-    );
+    public function searchByCondition($data = array(), $limit = STATUS_INT_KHONG, $offset = STATUS_INT_KHONG, $is_total = true)
+    {
+        try {
+            $query = User::where('user_id', '>', STATUS_INT_KHONG);
+
+            if (isset($data['user_view']) && $data['user_view'] == STATUS_INT_MOT) {
+                $query->whereIn('user_view', array(STATUS_INT_KHONG, STATUS_INT_MOT));
+            }
+
+            if (isset($data['user_id'])) {
+                if (!empty($data['user_id'])) {
+                    $query->whereIn('user_id', $data['user_id']);
+                } else {
+                    $query->where('user_id', $data['user_id']);
+                }
+            }
+
+            if (isset($data['user_name']) && $data['user_name'] != '') {
+                $query->where('user_name', 'LIKE', '%' . $data['user_name'] . '%');
+            }
+            if (isset($data['user_phone']) && $data['user_phone'] != '') {
+                $query->where('user_phone', 'LIKE', '%' . $data['user_phone'] . '%');
+            }
+            if (isset($data['user_email']) && $data['user_email'] != '') {
+                $query->where('user_email', 'LIKE', '%' . $data['user_email'] . '%');
+            }
+            if (isset($data['user_full_name']) && $data['user_full_name'] != '') {
+                $query->where('user_full_name', 'LIKE', '%' . $data['user_full_name'] . '%');
+            }
+            if (isset($data['user_status']) && $data['user_status'] != STATUS_INT_KHONG) {
+                $query->where('user_status', $data['user_status']);
+            }
+            if (isset($data['position']) && $data['position'] > STATUS_INT_KHONG) {
+                $query->where('position', $data['position']);
+            }
+            if (isset($data['auto_loan']) && $data['auto_loan'] != STATUS_DEFAULT) {
+                $query->where('auto_loan', $data['auto_loan']);
+            }
+            if (isset($data['user_group']) && $data['user_group'] > STATUS_INT_KHONG) {
+                $query->whereRaw('FIND_IN_SET(' . $data['user_group'] . ',' . 'user_group)');
+            }
+            if (isset($data['role_type']) && $data['role_type'] > STATUS_INT_KHONG) {
+                $query->where('role_type', $data['role_type']);
+            }
+            //tìm theo user quản lý các NV của họ
+            if (isset($data['managerEmployee']) && $data['managerEmployee'] > STATUS_INT_KHONG) {
+                $query->where('user_manager_id', $data['managerEmployee']);
+            }
+            $total = ($is_total)? $query->count(): STATUS_INT_KHONG;
+            $result = $query->orderBy('user_status', 'desc')
+                ->orderBy('user_last_login', 'desc')
+                ->orderBy('user_last_logout', 'desc')
+                ->orderBy('user_id', 'desc')->take($limit)->skip($offset)->get();
+
+            return ['data' => $result, 'total' => $total];
+        } catch (\PDOException $e) {
+            throw new \PDOException();
+            return null;
+        }
+    }
+
+    public function createNew($data)
+    {
+        try {
+            $fieldInput = $this->checkFieldInTable($data);
+            if (is_array($fieldInput) && count($fieldInput) > STATUS_INT_KHONG) {
+                $item = new User();
+                if (is_array($fieldInput) && count($fieldInput) > STATUS_INT_KHONG) {
+                    foreach ($fieldInput as $k => $v) {
+                        $item->$k = $v;
+                    }
+                }
+                $item->user_password = self::encode_password($item->user_password);
+                $item->user_id_creater = app(User::class)->user_id();
+                $item->user_name_creater = app(User::class)->user_name();
+                $item->created_at = getCurrentFull();
+                $item->save();
+                self::removeCache($item->user_id, $item);
+                return $item->user_id;
+            }
+            return STATUS_INT_KHONG;
+
+        } catch (\PDOException $e) {
+            throw new \PDOException();
+        }
+    }
+
+    public function updateUser($id, $data)
+    {
+        try {
+            $fieldInput = $this->checkFieldInTable($data);
+            if (is_array($fieldInput) && count($fieldInput) > STATUS_INT_KHONG) {
+                $item = $dataOld = self::getUserById($id);
+                foreach ($fieldInput as $k => $v) {
+                    $item->$k = $v;
+                }
+                $item->user_id_update = app(User::class)->user_id();
+                $item->user_name_update = app(User::class)->user_name();
+                $item->updated_at = getCurrentFull();
+                $item->update();
+                self::removeCache($item->user_id, $item, $dataOld);
+            }
+            return true;
+        } catch (\PDOException $e) {
+            throw new \PDOException();
+        }
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function getUserById($id)
+    {
+        $data = Memcache::getCache(Memcache::CACHE_USER_ADMIN_ID . $id);
+        if (!$data) {
+            $data = User::find($id);
+            if ($data) {
+                Memcache::putCache(Memcache::CACHE_USER_ADMIN_ID . $id, $data);
+            }
+        }
+        return $data;
+    }
+
+    public function deleteItem($id)
+    {
+        if ($id <= STATUS_INT_KHONG) return false;
+        try {
+            $item = $dataOld = self::getUserById($id);;
+            if ($item) {
+                $item->delete();
+                self::removeCache($item->user_id, $dataOld);
+            }
+            return true;
+        } catch (\PDOException $e) {
+            throw new \PDOException();
+            return false;
+        }
+    }
+
+    public function removeCache($id = STATUS_INT_KHONG, $dataOld, $dataNew = false)
+    {
+        if ($id > STATUS_INT_KHONG) {
+            Memcache::forgetCache(Memcache::CACHE_USER_ADMIN_ID . $id);
+        }
+        Memcache::forgetCache(Memcache::CACHE_OPTION_USER);
+        Memcache::forgetCache(Memcache::CACHE_INFO_USER);
+        Memcache::forgetCache(Memcache::CACHE_ALL_USER_ADMIN);
+        if($dataOld){
+            Memcache::forgetCache(Memcache::CACHE_USER_BY_MANAGER.$dataOld->user_manager_id);
+            Memcache::forgetCache(Memcache::CACHE_USER_BY_DEPART.$dataOld->user_depart_id.$dataOld->position);
+            Memcache::forgetCache(Memcache::CACHE_USER_BY_DEPART_ONE.$dataOld->user_depart_id);
+        }
+        if($dataNew){
+            Memcache::forgetCache(Memcache::CACHE_USER_BY_MANAGER.$dataNew->user_manager_id);
+            Memcache::forgetCache(Memcache::CACHE_USER_BY_DEPART.$dataNew->user_depart_id.$dataNew->position);
+            Memcache::forgetCache(Memcache::CACHE_USER_BY_DEPART_ONE.$dataNew->user_depart_id);
+        }
+    }
 
     /**
      * @param $name
@@ -64,11 +214,11 @@ class User extends BaseModel
 
     public function getAllUser()
     {
-        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_ALL_USER_ADMIN) : false;
+        $data = Memcache::getCache(Memcache::CACHE_ALL_USER_ADMIN);
         if (!$data) {
             $data = User::where('user_id', '>',STATUS_INT_KHONG)->get();
             if ($data) {
-                Cache::put(Memcache::CACHE_ALL_USER_ADMIN, $data, CACHE_THREE_MONTH);
+                Memcache::putCache(Memcache::CACHE_ALL_USER_ADMIN, $data);
             }
         }
         return $data;
@@ -125,12 +275,12 @@ class User extends BaseModel
 
     public function stringCode($string)
     {
-        return $string . CGlobal::project_name . '-!@0938413368!@';
+        return $string . CGlobal::project_name . env('KEY_PASS','-!@0938413368!@');
     }
 
     public function updateLogin($user_id)
     {
-        if($user_id <= 0) return;
+        if($user_id <= STATUS_INT_KHONG) return;
         $updateData['user_last_login'] = getCurrentDateTime();
         $updateData['user_last_ip'] = request()->ip();
         self::updateUser($user_id, $updateData);
@@ -138,7 +288,7 @@ class User extends BaseModel
 
     public function updateLogOut($user_id)
     {
-        if($user_id <= 0) return;
+        if($user_id <= STATUS_INT_KHONG) return;
         $updateData['user_last_logout'] = getCurrentDateTime();
         $updateData['user_last_ip'] = request()->ip();
         self::updateUser($user_id, $updateData);
@@ -155,11 +305,11 @@ class User extends BaseModel
 
     public function get_user_project()
     {
-        $user_project = 0;
+        $user_project = STATUS_INT_KHONG;
         if (Session::has('user')) {
             $user = Session::get('user');
             if (!empty($user)) {
-                $user_project = (isset($user['user_project'])) ? $user['user_project'] : 0;
+                $user_project = (isset($user['user_project'])) ? $user['user_project'] : STATUS_INT_KHONG;
             }
         }
         return $user_project;
@@ -167,7 +317,7 @@ class User extends BaseModel
 
     public function get_project_search()
     {
-        $user_project = 0;
+        $user_project = STATUS_INT_KHONG;
         if (Session::has('user')) {
             $user = Session::get('user');
             if (!empty($user)) {
@@ -175,7 +325,7 @@ class User extends BaseModel
                     $user_project = Define::STATUS_SEARCH_ALL;
                     return $user_project;
                 }
-                $user_project = (isset($user['user_project'])) ? $user['user_project'] : 0;
+                $user_project = (isset($user['user_project'])) ? $user['user_project'] : STATUS_INT_KHONG;
             }
         }
         return $user_project;
@@ -183,7 +333,7 @@ class User extends BaseModel
 
     public function user_id()
     {
-        $id = 0;
+        $id = STATUS_INT_KHONG;
         if (Session::has('user')) {
             $user = Session::get('user');
             $id = $user['user_id'];
@@ -201,147 +351,6 @@ class User extends BaseModel
         return $user_name;
     }
 
-    public function searchByCondition($data = array(), $limit = 0, $offset = 0, &$size)
-    {
-        try {
-            $query = User::where('user_id', '>', 0);
-
-            if (isset($data['user_view']) && $data['user_view'] == 1) {
-                $query->whereIn('user_view', array(0, 1));
-            }
-
-            if (isset($data['user_id'])) {
-                if (!empty($data['user_id'])) {
-                    $query->whereIn('user_id', $data['user_id']);
-                } else {
-                    $query->where('user_id', $data['user_id']);
-                }
-            }
-
-            if (isset($data['user_name']) && $data['user_name'] != '') {
-                $query->where('user_name', 'LIKE', '%' . $data['user_name'] . '%');
-            }
-            if (isset($data['user_phone']) && $data['user_phone'] != '') {
-                $query->where('user_phone', 'LIKE', '%' . $data['user_phone'] . '%');
-            }
-            if (isset($data['user_email']) && $data['user_email'] != '') {
-                $query->where('user_email', 'LIKE', '%' . $data['user_email'] . '%');
-            }
-            if (isset($data['user_full_name']) && $data['user_full_name'] != '') {
-                $query->where('user_full_name', 'LIKE', '%' . $data['user_full_name'] . '%');
-            }
-            if (isset($data['user_status']) && $data['user_status'] != 0) {
-                $query->where('user_status', $data['user_status']);
-            }
-            if (isset($data['position']) && $data['position'] > 0) {
-                $query->where('position', $data['position']);
-            }
-            if (isset($data['auto_loan']) && $data['auto_loan'] != STATUS_DEFAULT) {
-                $query->where('auto_loan', $data['auto_loan']);
-            }
-            if (isset($data['user_group']) && $data['user_group'] > 0) {
-                $query->whereRaw('FIND_IN_SET(' . $data['user_group'] . ',' . 'user_group)');
-            }
-            if (isset($data['role_type']) && $data['role_type'] > 0) {
-                $query->where('role_type', $data['role_type']);
-            }
-            //tìm theo user quản lý các NV của họ
-            if (isset($data['managerEmployee']) && $data['managerEmployee'] > 0) {
-                $query->where('user_manager_id', $data['managerEmployee']);
-            }
-            $size = $query->get(['user_id'])->count();
-            $data = $query->orderBy('user_status', 'desc')
-                ->orderBy('user_last_login', 'desc')
-                ->orderBy('user_last_logout', 'desc')
-                ->orderBy('user_id', 'desc')->take($limit)->skip($offset)->get();
-
-            return $data;
-
-        } catch (PDOException $e) {
-            $size = 0;
-            return null;
-            throw new PDOException();
-        }
-    }
-
-
-    public function createNew($data)
-    {
-        try {
-            $fieldInput = $this->checkFieldInTable($data);
-            $item = new User();
-            if (is_array($fieldInput) && count($fieldInput) > 0) {
-                foreach ($fieldInput as $k => $v) {
-                    $item->$k = $v;
-                }
-            }
-            $item->user_password = self::encode_password($item->user_password);
-            $item->user_id_creater = app(User::class)->user_id();
-            $item->user_name_creater = app(User::class)->user_name();
-            $item->created_at = getCurrentFull();
-            $item->save();
-            self::removeCache($item->user_id, $item);
-            return $item->user_id;
-        } catch (PDOException $e) {
-            throw new PDOException();
-        }
-    }
-
-    public function updateUser($id, $data)
-    {
-        try {
-            $fieldInput = $this->checkFieldInTable($data);
-            $item = $dataOld = self::getUserById($id);
-            foreach ($fieldInput as $k => $v) {
-                $item->$k = $v;
-            }
-            $item->user_id_update = app(User::class)->user_id();
-            $item->user_name_update = app(User::class)->user_name();
-            $item->updated_at = getCurrentFull();
-            $item->update();
-
-            //Disable UsersPermissionStringeeCall
-            if($item->user_status != STATUS_SHOW){
-                $dataPermissStringeeUpdate['status_call_stringee'] = STATUS_HIDE;
-                $dataPermissStringeeUpdate['status_call_stringee_me'] = STATUS_HIDE;
-                $dataPermissStringeeUpdate['disable_created'] = time();
-                app(UsersPermissionStringeeCall::class)->updateItemByUid($item->user_id, $dataPermissStringeeUpdate);
-            }
-
-            self::removeCache($item->user_id, $item, $dataOld);
-            return true;
-        } catch (PDOException $e) {
-            throw new PDOException();
-        }
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function getUserById($id)
-    {
-        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_USER_ADMIN_ID . $id) : false;
-        if (!$data) {
-            $data = User::find($id);
-            if ($data) {
-                Cache::put(Memcache::CACHE_USER_ADMIN_ID . $id, $data, CACHE_THREE_MONTH);
-            }
-        }
-        return $data;
-    }
-    public function getUserByUsername($array_name)
-    {
-        if(is_array($array_name)){
-            dd($array_name);
-            $data = User::select('user_id','user_full_name','position')->whereIn('user_full_name',$array_name)->get();
-        }
-        else{
-            $data = User::select('user_id','user_full_name','position')->where('user_full_name',$array_name)->get();
-        }
-        return $data;
-    }
-
     public function updatePassWord($id, $pass)
     {
         try {
@@ -351,41 +360,38 @@ class User extends BaseModel
             $user->update();
             self::removeCache($user->user_id, $user);
             return true;
-        } catch (PDOException $e) {
-            //var_dump($e->getMessage());
-            throw new PDOException();
+        } catch (\PDOException $e) {
+            throw new \PDOException();
         }
     }
 
     public function isLogin()
     {
-        $result = 0;
         if (session()->has('user')) {
-            $result = 1;
+            return true;
         }
-        return $result;
+        return false;
     }
 
     public static function isCustomerLogin()
     {
-        $result = 0;
         if (session()->has('customer')) {
-            $result = 1;
+            return true;
         }
-        return $result;
+        return false;
     }
 
-    public static function getList($role_type = 0)
+    public function getList($role_type = STATUS_INT_KHONG)
     {
-        if ($role_type == 0) {
-            $user = User::where('user_status', '>', 0)->orderBy('user_id', 'desc')->get();
+        if ($role_type == STATUS_INT_KHONG) {
+            $user = User::where('user_status', '>', STATUS_INT_KHONG)->orderBy('user_id', 'desc')->get();
         } else {
-            $user = User::where('user_status', '>', 0)->where('role_type', '=', $role_type)->orderBy('user_id', 'desc')->get();
+            $user = User::where('user_status', '>', STATUS_INT_KHONG)->where('role_type', '=', $role_type)->orderBy('user_id', 'desc')->get();
         }
         return $user ? $user : array();
     }
 
-    public static function getOptionUserFullName($role_type = 0)
+    public function getOptionUserFullName($role_type = STATUS_INT_KHONG)
     {
         $arr = User::getList($role_type);
         foreach ($arr as $value) {
@@ -394,89 +400,34 @@ class User extends BaseModel
         return $data;
     }
 
-    public static function getListUserNameFullName()
+    public function getListUserNameFullName()
     {
-        $data = (Define::CACHE_ON) ? Cache::get(Memcache::CACHE_INFO_USER) : array();
+        $data = Memcache::getCache(Memcache::CACHE_INFO_USER);
         if (!$data) {
             $arr = User::getList();
             foreach ($arr as $value) {
                 $data[$value->user_id] = $value->user_name . ' - ' . $value->user_full_name;
             }
             if (!empty($data)) {
-                Cache::put(Memcache::CACHE_INFO_USER, $data, CACHE_THREE_MONTH);
+                Memcache::putCache(Memcache::CACHE_INFO_USER, $data);
             }
         }
         return $data;
     }
 
-    public static function getOptionUserFullNameAndMail()
+    public function getOptionUserFullNameAndMail()
     {
-        $data = (Define::CACHE_ON) ? Cache::get(Memcache::CACHE_OPTION_USER) : array();
+        $data = Memcache::getCache(Memcache::CACHE_OPTION_USER);
         if (!$data) {
             $arr = User::getList();
             foreach ($arr as $value) {
                 $data[$value->user_id] = $value->user_full_name . ' - ' . $value->user_email;
             }
             if (!empty($data)) {
-                Cache::put(Memcache::CACHE_OPTION_USER, $data, CACHE_THREE_MONTH);
+                Memcache::putCache(Memcache::CACHE_OPTION_USER, $data);
             }
         }
         return $data;
-    }
-
-    public static function getOptionUserMail()
-    {
-        $data = (Define::CACHE_ON) ? Cache::get(Define::CACHE_OPTION_USER_MAIL) : array();
-        if (!$data) {
-            $arr = User::getList();
-            foreach ($arr as $value) {
-                $data[$value->user_id] = $value->user_email;
-            }
-            if (!empty($data)) {
-                Cache::put(Define::CACHE_OPTION_USER_MAIL, $data, CACHE_THREE_MONTH);
-            }
-        }
-        return $data;
-    }
-
-    public function remove($user){
-        try {
-            DB::connection()->getPdo()->beginTransaction();
-            $user->delete();
-            DB::connection()->getPdo()->commit();
-            self::removeCache($user->user_id, $user);
-
-            //Delete UsersPermissionStringeeCall
-            app(UsersPermissionStringeeCall::class)->deleteItemByUid($user->user_id);
-
-            return true;
-        } catch (PDOException $e) {
-            //var_dump($e->getMessage());
-            DB::connection()->getPdo()->rollBack();
-            throw new PDOException();
-            return false;
-        }
-    }
-
-    public static function removeCache($id = 0, $dataOld, $dataNew=false)
-    {
-        if ($id > 0) {
-            Cache::forget(Memcache::CACHE_USER_ADMIN_ID . $id);
-        }
-        Cache::forget(Memcache::CACHE_OPTION_USER);
-        Cache::forget(Memcache::CACHE_INFO_USER);
-        Cache::forget(Memcache::CACHE_ALL_USER_ADMIN);
-        if($dataOld){
-            Cache::forget(Memcache::CACHE_USER_BY_MANAGER.$dataOld->user_manager_id);
-            Cache::forget(Memcache::CACHE_USER_BY_DEPART.$dataOld->user_depart_id.$dataOld->position);
-            Cache::forget(Memcache::CACHE_USER_BY_DEPART_ONE.$dataOld->user_depart_id);
-        }
-        if($dataNew){
-            Cache::forget(Memcache::CACHE_USER_BY_MANAGER.$dataNew->user_manager_id);
-            Cache::forget(Memcache::CACHE_USER_BY_DEPART.$dataNew->user_depart_id.$dataNew->position);
-            Cache::forget(Memcache::CACHE_USER_BY_DEPART_ONE.$dataNew->user_depart_id);
-        }
-
     }
 
     public static function executesSQL($str_sql = '')
@@ -516,27 +467,26 @@ class User extends BaseModel
     }
 
     public static function getListUserByUserManagerId($user_manager_id){
-        $data = (Define::CACHE_ON) ? Cache::get(Memcache::CACHE_USER_BY_MANAGER.$user_manager_id) : array();
+        $data = Memcache::getCache(Memcache::CACHE_USER_BY_MANAGER.$user_manager_id);
         if(!$data) {
             $data = User::where('user_manager_id', $user_manager_id)->where('user_status', STATUS_SHOW)->get();
             if(!empty($data)) {
-                Cache::put(Memcache::CACHE_USER_BY_MANAGER.$user_manager_id, $data, CACHE_ONE_MONTH);
+                Memcache::putCache(Memcache::CACHE_USER_BY_MANAGER.$user_manager_id, $data);
             }
         }
         return $data;
     }
 
     public static function getListUserByUserDepartIdPosition($user_depart_id, $position){
-        $data = (Define::CACHE_ON) ? Cache::get(Memcache::CACHE_USER_BY_DEPART.$user_depart_id.$position) : array();
+        $data = Memcache::getCache(Memcache::CACHE_USER_BY_DEPART.$user_depart_id.$position);
         if(!$data) {
             $data = User::where('user_depart_id', $user_depart_id)->where('position', $position)->where('user_status', STATUS_SHOW)->get();
             if(!empty($data)) {
-                Cache::put(Memcache::CACHE_USER_BY_DEPART.$user_depart_id.$position, $data, CACHE_ONE_MONTH);
+                Memcache::putCache(Memcache::CACHE_USER_BY_DEPART.$user_depart_id.$position, $data);
             }
         }
         return $data;
     }
-
 
     public function getAllUserByUserDepartIdPosition(){
         $userLogin = app(User::class)->user_login();
@@ -570,6 +520,7 @@ class User extends BaseModel
         }
         return $result;
     }
+
     public function getArrUserByManager($user_manager_id = 0){
         $data = [];
         if($user_manager_id > 0){
@@ -584,11 +535,11 @@ class User extends BaseModel
     }
 
     public static function getListUserByUserDepartId($user_depart_id){
-        $data = (Define::CACHE_ON) ? Cache::get(Memcache::CACHE_USER_BY_DEPART_ONE.$user_depart_id) : array();
+        $data = Memcache::getCache(Memcache::CACHE_USER_BY_DEPART_ONE.$user_depart_id);
         if(!$data) {
             $data = User::where('user_depart_id', $user_depart_id)->where('user_status', STATUS_SHOW)->get();
             if(!empty($data)) {
-                Cache::put(Memcache::CACHE_USER_BY_DEPART_ONE.$user_depart_id, $data, CACHE_ONE_MONTH);
+                Memcache::putCache(Memcache::CACHE_USER_BY_DEPART_ONE.$user_depart_id, $data);
             }
         }
         return $data;
@@ -605,7 +556,6 @@ class User extends BaseModel
         }
         return $data;
     }
-
 
     public function getPermit(){
         $user = app(User::class)->user_login();

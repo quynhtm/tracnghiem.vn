@@ -1,0 +1,41 @@
+input[type=text],
+input[type=password],
+textarea.form-control{
+    border-radius: 10px;
+}
+
+input[type=checkbox]{
+    margin-right: 10px;
+}
+
+input[type=checkbox]:after{
+    background-color: #fff;
+}
+
+ul.dropdown-menu li,
+ul.dropdown-menu{
+    width: 100%;
+}
+
+.zozo-form input[type=text],
+.zozo-form textarea{
+    border: none;
+    background: #f6f6f6;
+    box-shadow: none;
+    margin-bottom: 20px;
+    display: inline-block;
+    padding-left: 20px;
+}
+
+.purchasing-page .zozo-form{
+    margin-top: 25px;
+}
+
+.purchasing-page .command-row{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.command-row .btn--zozo + .btn--zozo{
+    margin-left: 10px;
+}

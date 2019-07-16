@@ -3,6 +3,8 @@
 Auth::routes();
 
 const Admin = "Admin";
+const Site = "Site";
+const Shop = "Shop";
 const TracNghiem = "Tracnghiem";
 const Api = "Api";
 
@@ -19,19 +21,22 @@ if(Session::has('is_debug_of_tech')){
 require __DIR__.'/site.php';
 
 //Quan tri CMS cho admin
-Route::get('', array('as' => 'admin.login','uses' => Admin.'\AdminLoginController@getLogin'));
-Route::post('',  array('as' => 'admin.login','uses' => Admin.'\AdminLoginController@postLogin'));
-Route::get('/quan-tri.html', array('as' => 'admin.login','uses' => Admin.'\AdminLoginController@getLogin'));
-Route::post('/quan-tri.html',  array('as' => 'admin.login','uses' => Admin.'\AdminLoginController@postLogin'));
+//Route::get('', array('as' => 'admin.login','uses' => Admin.'\AdminLoginController@getLogin'));
+//Route::post('',  array('as' => 'admin.login','uses' => Admin.'\AdminLoginController@postLogin'));
+Route::get('/quan-tri-site.html', array('as' => 'admin.login','uses' => Admin.'\AdminLoginController@getLogin'));
+Route::post('/quan-tri-site.html',  array('as' => 'admin.login','uses' => Admin.'\AdminLoginController@postLogin'));
 
 Route::group(array('prefix' => 'manager', 'before' => ''), function(){
 	require __DIR__.'/admin.php';
 });
 
 Route::group(array('prefix' => 'manager', 'before' => ''), function(){
-	require __DIR__.'/tracnghiem.php';
+	require __DIR__.'/shop.php';
 });
 
+Route::group(array('prefix' => 'manager', 'before' => ''), function(){
+	require __DIR__.'/tracnghiem.php';
+});
 
 Route::group(array('prefix' => 'manager', 'before' => ''), function () {
     require __DIR__.'/api.php';

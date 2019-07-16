@@ -153,7 +153,7 @@ class BaseAdminController extends Controller
 
     public function getMenuSystem()
     {
-        $menuTree = MenuSystem::buildMenuAdmin();
+        $menuTree = app(MenuSystem::class)->buildMenuAdmin();
         return $menuTree;
     }
 

@@ -3,10 +3,7 @@
 namespace App\Http\Models\Admin;
 
 use App\Http\Models\BaseModel;
-use Illuminate\Support\Facades\DB;
-use App\Library\AdminFunction\Define;
 use App\Library\AdminFunction\Memcache;
-use Illuminate\Support\Facades\Cache;
 
 class Role extends BaseModel
 {
@@ -14,104 +11,14 @@ class Role extends BaseModel
     protected $primaryKey = 'role_id';
     public $timestamps = true;
 
-    protected $fillable = array('role_name', 'role_code', 'role_project', 'role_order', 'role_status', 'user_id_creater', 'user_name_creater', 'user_id_update', 'user_name_update', 'created_at', 'updated_at');
-
-    public static function createItem($data)
-    {
-        try {
-            $checkData = new Role();
-            $fieldInput = $checkData->checkField($data);
-            $item = new Role();
-            if (is_array($fieldInput) && count($fieldInput) > 0) {
-                foreach ($fieldInput as $k => $v) {
-                    $item->$k = $v;
-                }
-            }
-            $item->user_id_creater = app(User::class)->user_id();
-            $item->user_name_creater = app(User::class)->user_name();
-            $item->save();
-
-            self::removeCache($item->role_id, $item);
-            if($item->role_id > 0){
-                $dataRoleMenu['role_id'] = $item->role_id;
-                $dataRoleMenu['role_name'] = $item->role_name;
-                $dataRoleMenu['role_status'] = $item->role_status;
-                $dataRoleMenu['role_order'] = $item->role_order;
-                $dataRoleMenu['role_code'] = $item->role_code;
-                app(RoleMenu::class)->createItem($dataRoleMenu);
-            }
-            return $item->role_id;
-        } catch (PDOException $e) {
-            throw new PDOException();
-        }
-    }
-
-    public static function updateItem($id, $data)
-    {
-        try {
-            $checkData = new Role();
-            $fieldInput = $checkData->checkField($data);
-            $item = Role::find($id);
-            foreach ($fieldInput as $k => $v) {
-                $item->$k = $v;
-            }
-            $item->user_id_update = app(User::class)->user_id();
-            $item->user_name_update = app(User::class)->user_name();
-            $item->update();
-            if($item->role_id > 0){
-                $dataRoleMenu['role_id'] = $item->role_id;
-                $dataRoleMenu['role_name'] = $item->role_name;
-                $dataRoleMenu['role_status'] = $item->role_status;
-                $dataRoleMenu['role_order'] = $item->role_order;
-                $dataRoleMenu['role_code'] = $item->role_code;
-                app(RoleMenu::class)->updateDataWithRoleId($item->role_id,$dataRoleMenu);
-            }
-            self::removeCache($item->role_id, $item);
-            return true;
-        } catch (PDOException $e) {
-            //var_dump($e->getMessage());
-            throw new PDOException();
-        }
-    }
-
-    public function checkField($dataInput)
-    {
-        $fields = $this->fillable;
-        $dataDB = array();
-        if (!empty($fields)) {
-            foreach ($fields as $field) {
-                if (isset($dataInput[$field])) {
-                    $dataDB[$field] = $dataInput[$field];
-                }
-            }
-        }
-        return $dataDB;
-    }
-
-    public static function deleteItem($id)
-    {
-        if ($id <= 0) return false;
-        try {
-            $item = Role::find($id);
-            if ($item) {
-                $item->delete();
-            }
-            self::removeCache($item->role_id, $item);
-            return true;
-        } catch (PDOException $e) {
-            throw new PDOException();
-            return false;
-        }
-    }
-
-    public static function searchByCondition($dataSearch = array(), $limit = 0, $offset = 0, &$total)
+    public function searchByCondition($dataSearch = array(), $limit = 0, $offset = 0, $is_total = true)
     {
         try {
             $query = Role::where('role_id', '>', 0);
             if (isset($dataSearch['role_name']) && $dataSearch['role_name'] != '') {
                 $query->where('role_name', 'LIKE', '%' . $dataSearch['role_name'] . '%');
             }
-            $total = $query->count();
+            $total = ($is_total)? $query->count(): STATUS_INT_KHONG;
             $query->orderBy('role_project', 'asc');
             $query->orderBy('role_order', 'asc');
 
@@ -127,43 +34,117 @@ class Role extends BaseModel
             } else {
                 $result = $query->get();
             }
-            return $result;
+            return ['data' => $result, 'total' => $total];
         } catch (PDOException $e) {
             throw new PDOException();
         }
     }
 
-    public static function removeCache($id = 0, $data)
+    public function createItem($data)
     {
-        if ($id > 0) {
-            Cache::forget(Memcache::CACHE_ROLE_ID . $id);
+        try {
+            $fieldInput = $this->checkFieldInTable($data);
+            if (is_array($fieldInput) && count($fieldInput) > 0) {
+                $item = new Role();
+                foreach ($fieldInput as $k => $v) {
+                    $item->$k = $v;
+                }
+                $item->user_id_creater = app(User::class)->user_id();
+                $item->user_name_creater = app(User::class)->user_name();
+                $item->save();
+
+                self::removeCache($item->role_id, $item);
+                if($item->role_id > 0){
+                    $dataRoleMenu['role_id'] = $item->role_id;
+                    $dataRoleMenu['role_name'] = $item->role_name;
+                    $dataRoleMenu['role_status'] = $item->role_status;
+                    $dataRoleMenu['role_order'] = $item->role_order;
+                    $dataRoleMenu['role_code'] = $item->role_code;
+                    app(RoleMenu::class)->createItem($dataRoleMenu);
+                }
+                return $item->role_id;
+            }
+            return 0;
+        } catch (\PDOException $e) {
+            throw new \PDOException();
         }
-        Cache::forget(Memcache::CACHE_OPTION_ROLE . '_' . $data->role_project);
-        Cache::forget(Memcache::CACHE_ROLE_ALL);
+    }
+
+    public function updateItem($id, $data)
+    {
+        try {
+            $fieldInput = $this->checkFieldInTable($data);
+            if (is_array($fieldInput) && count($fieldInput) > 0) {
+                $item = self::getItemById($id);
+                foreach ($fieldInput as $k => $v) {
+                    $item->$k = $v;
+                }
+                $item->user_id_update = app(User::class)->user_id();
+                $item->user_name_update = app(User::class)->user_name();
+                $item->update();
+                if ($item->role_id > 0) {
+                    $dataRoleMenu['role_id'] = $item->role_id;
+                    $dataRoleMenu['role_name'] = $item->role_name;
+                    $dataRoleMenu['role_status'] = $item->role_status;
+                    $dataRoleMenu['role_order'] = $item->role_order;
+                    $dataRoleMenu['role_code'] = $item->role_code;
+                    app(RoleMenu::class)->updateDataWithRoleId($item->role_id, $dataRoleMenu);
+                }
+                self::removeCache($item->role_id, $item);
+            }
+            return true;
+        } catch (\PDOException $e) {
+            throw new \PDOException();
+        }
     }
 
     public function getItemById($id)
     {
         if ($id <= 0) return false;
-        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_ROLE_ID . $id) : false;
+        $data = Memcache::getCache(Memcache::CACHE_ROLE_ID . $id);
         if (!$data) {
             $data = Role::find($id);
             if ($data) {
-                Cache::put(Memcache::CACHE_ROLE_ID . $id, $data, CACHE_THREE_MONTH);
+                Memcache::putCache(Memcache::CACHE_ROLE_ID . $id, $data);
             }
         }
         return $data;
     }
 
+    public function deleteItem($id)
+    {
+        if ($id <= 0) return false;
+        try {
+            $item = $dataOld = self::getItemById($id);
+            if ($item) {
+                $item->delete();
+            }
+            self::removeCache($item->role_id, $dataOld);
+            return true;
+        } catch (PDOException $e) {
+            throw new PDOException();
+            return false;
+        }
+    }
+
+    public function removeCache($id = 0, $data)
+    {
+        if ($id > 0) {
+            Memcache::forgetCache(Memcache::CACHE_ROLE_ID . $id);
+        }
+        Memcache::forgetCache(Memcache::CACHE_OPTION_ROLE . '_' . $data->role_project);
+        Memcache::forgetCache(Memcache::CACHE_ROLE_ALL);
+    }
+
     public static function getListAll($user_project = 0)
     {
-        $data = (Define::CACHE_ON) ? Cache::get(Memcache::CACHE_ROLE_ALL) : false;
+        $data = Memcache::getCache(Memcache::CACHE_ROLE_ALL);
         if (!$data) {
             $query = Role::where('role_id', '>', 0);
             $query->where('role_status', '=', STATUS_SHOW);
             $data = $query->orderBy('role_order', 'ASC')->get();
             if (!empty($data)) {
-                Cache::put(Memcache::CACHE_ROLE_ALL, $data, CACHE_THREE_MONTH);
+                Memcache::putCache(Memcache::CACHE_ROLE_ALL, $data);
             }
         }
         return $data;
@@ -180,16 +161,16 @@ class Role extends BaseModel
         return false;
     }
 
-    public static function getOptionRole($project = 0)
+    public function getOptionRole($project = 0)
     {
-        $data = (Memcache::CACHE_ON) ? Cache::get(Memcache::CACHE_OPTION_ROLE . '_' . $project) : [];
+        $data = Memcache::getCache(Memcache::CACHE_OPTION_ROLE . '_' . $project);
         if (!$data || empty($data)) {
             $arr = Role::getListAll($project);
             foreach ($arr as $value) {
                 $data[$value->role_id] = $value->role_name;
             }
             if (!empty($data)) {
-                Cache::put(Memcache::CACHE_OPTION_ROLE . '_' . $project, $data, CACHE_THREE_MONTH);
+                Memcache::putCache(Memcache::CACHE_OPTION_ROLE . '_' . $project, $data);
             }
         }
         return $data;
